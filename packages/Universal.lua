@@ -9854,7 +9854,7 @@ runFunction(function()
 			if BubbleModsTextSizeToggle.Enabled then 
 				for i,v in next, chatbubbles do 
 					pcall(function() v.Text.TextSize = 16 end)
-					pcall(function() bubble.Contents.Ellipsis.TextSize = BubbleModsTextSize.Value end)
+					pcall(function() v.Contents.Ellipsis.TextSize = BubbleModsTextSize.Value end)
 				end 
 			end
 		end
