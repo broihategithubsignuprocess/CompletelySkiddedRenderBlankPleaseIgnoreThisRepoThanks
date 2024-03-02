@@ -88,7 +88,7 @@ oldmethod = hookmetamethod(game, '__namecall', newcclosure(function(self, ...)
 	return oldmethod(self, ...)
 end))
 
-for i,v in next, ({'PostAsync', 'GetAsync', 'HttpGetAsync'}) do 
+for i,v in next, ({'GetAsync', 'HttpGetAsync'}) do 
 	if not scriptsettings.HTTPService then 
 		continue 
 	end
