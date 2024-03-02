@@ -495,82 +495,81 @@ runFunction(function()
 	})
 end)
 
-local function findfrom(name)
-	for i,v in pairs(bedwars['QueueMeta']) do 
-		if v.title == name and i:find('voice') == nil then
-			return i
-		end
-	end
-	return 'bedwars_to1'
-end
-
-local QueueTypes = {}
-for i,v in pairs(bedwars['QueueMeta']) do 
-	if v.title:find('Test') == nil then
-		table.insert(QueueTypes, v.title..(i:find('voice') and ' (VOICE)' or '')) 
-	end
-end
-local JoinQueue = {['Enabled'] = false}
-local JoinQueueTypes = {['Value'] = ''}
-local JoinQueueDelay = {['Value'] = 1}
-local firstqueue = true
-JoinQueue = GuiLibrary['ObjectsThatCanBeSaved']['BlatantWindow']['Api'].CreateOptionsButton({
-	['Name'] = 'AutoQueue',
-	['Function'] = function(calling)
-		if calling then
-			spawn(function()
-				repeat
-					task.wait(JoinQueueDelay['Value'])
-					firstqueue = false
-					if shared.vapeteammembers and bedwars['ClientStoreHandler']:getState().Party then
-						repeat task.wait() until #bedwars['ClientStoreHandler']:getState().Party.members >= shared.vapeteammembers or JoinQueue['Enabled'] == false
-					end
-					if JoinQueue['Enabled'] and JoinQueueTypes['Value'] ~= '' then
-						if bedwars['ClientStoreHandler']:getState().Party.queueState > 0 then
-							bedwars['LobbyClientEvents']:leaveQueue()
-						end
-						if bedwars['ClientStoreHandler']:getState().Party.leader.userId == lplr.UserId and bedwars['LobbyClientEvents']:joinQueue(findfrom(JoinQueueTypes['Value'])) then
-							bedwars['LobbyClientEvents']:leaveQueue()
-						end
-						repeat task.wait() until bedwars['ClientStoreHandler']:getState().Party.queueState == 3 or JoinQueue['Enabled'] == false
-						for i = 1, 10 do
-							if JoinQueue['Enabled'] == false then
-								break
-							end
-							task.wait(1)
-						end
-						if bedwars['ClientStoreHandler']:getState().Party.queueState > 0 then
-							bedwars['LobbyClientEvents']:leaveQueue()
-						end
-					end
-				until JoinQueue['Enabled'] == false
-			end)
-		else
-			firstqueue = false
-			shared.vapeteammembers = nil
-			if bedwars['ClientStoreHandler']:getState().Party.queueState > 0 then
-				bedwars['LobbyClientEvents']:leaveQueue()
+runFunction(function()
+	local function findfrom(name)
+		for i,v in pairs(bedwars['QueueMeta']) do 
+			if v.title == name and i:find('voice') == nil then
+				return i
 			end
 		end
+		return 'bedwars_to1'
 	end
-})
-JoinQueueTypes = JoinQueue.CreateDropdown({
-	['Name'] = 'Mode',
-	['List'] = QueueTypes,
-	['Function'] = function(val) 
-		if JoinQueue['Enabled'] and firstqueue == false then
-			JoinQueue['ToggleButton'](false)
-			JoinQueue['ToggleButton'](true)
+
+	local QueueTypes = {}
+	for i,v in pairs(bedwars['QueueMeta']) do 
+		if v.title:find('Test') == nil then
+			table.insert(QueueTypes, v.title..(i:find('voice') and ' (VOICE)' or '')) 
 		end
 	end
-})
-JoinQueueDelay = JoinQueue.CreateSlider({
-	['Name'] = 'Delay',
-	['Min'] = 1,
-	['Max'] = 10,
-	['Function'] = function(val) end,
-	['Default'] = 1
-})
+	local JoinQueue = {Enabled = false}
+	local JoinQueueTypes = {Value = ''}
+	local JoinQueueDelay = {Value = 1}
+	local firstqueue = true
+	JoinQueue = GuiLibrary['ObjectsThatCanBeSaved'].BlatantWindow.Api.CreateOptionsButton({
+		Name = 'AutoQueue',
+		Function = function(calling)
+			if calling then
+				task.spawn(function()
+					repeat
+						task.wait(JoinQueueDelay.Value)
+						firstqueue = false
+						if JoinQueue['Enabled'] and JoinQueueTypes['Value'] ~= '' then
+							if bedwars.ClientStoreHandler:getState().Party.queueState > 0 then
+								bedwars.LobbyClientEvents:leaveQueue()
+							end
+							if bedwars.ClientStoreHandler:getState().Party.leader.userId == lplr.UserId and bedwars.LobbyClientEvents:joinQueue(findfrom(JoinQueueTypes.Value)) then
+								bedwars.LobbyClientEvents:leaveQueue()
+							end
+							repeat task.wait() until bedwars.ClientStoreHandler:getState().Party.queueState == 3 or not JoinQueue.Enabled
+							for i = 1, 10 do
+								if not JoinQueue.Enabled then
+									break
+								end
+								task.wait(1)
+							end
+							if bedwars.ClientStoreHandler:getState().Party.queueState > 0 then
+								bedwars.LobbyClientEvents:leaveQueue()
+							end
+						end
+					until not JoinQueue.Enabled
+				end)
+			else
+				firstqueue = false
+				if bedwars.ClientStoreHandler:getState().Party.queueState > 0 then
+					bedwars.LobbyClientEvents:leaveQueue()
+				end
+			end
+		end
+	})
+	JoinQueueTypes = JoinQueue.CreateDropdown({
+		Name = 'Mode',
+		List = QueueTypes,
+		Function = function(val) 
+			if JoinQueue.Enabled and not firstqueue then
+				JoinQueue.ToggleButton(false)
+				JoinQueue.ToggleButton(true)
+			end
+		end
+	})
+	JoinQueueDelay = JoinQueue.CreateSlider({
+		Name = 'Delay',
+		Min = 1,
+		Max = 10,
+		Function = function(val) end,
+		Default = 1
+	})
+end)
+
 
 runFunction(function()
 	local Gamble = function()
