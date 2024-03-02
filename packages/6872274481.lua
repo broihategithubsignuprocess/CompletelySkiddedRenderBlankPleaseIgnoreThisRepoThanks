@@ -837,6 +837,17 @@ local function AllNearPosition(distance, amount, sortfunction, prediction)
                 end
 			end
 		end
+		for i, v in collectionService:GetTagged('trainingRoomDummy') do 
+			if v.PrimaryPart then
+				local mag = (entityLibrary.character.HumanoidRootPart.Position - v.PrimaryPart.Position).magnitude
+				if prediction and mag > distance then
+					mag = (RenderStore.LocalPosition - v.PrimaryPart.Position).magnitude
+				end
+                if mag <= distance then
+                    table.insert(sortedentities, {Player = {Name = 'Dummy', UserId = 1443379645}, GetAttribute = function() return 'none' end, Character = v, RootPart = v.PrimaryPart, Humanoid = v.Humanoid})
+                end
+			end
+		end
 		if sortfunction then
 			table.sort(sortedentities, sortfunction)
 		end
@@ -10790,7 +10801,8 @@ GetTarget = function(distance, healthmethod, raycast, npc, mouse, bypass)
 			DiamondGuardian = collectionService:GetTagged('DiamondGuardian'),
 			Titan = collectionService:GetTagged('GolemBoss'),
 			Drone = collectionService:GetTagged('Drone'),
-			Monarch = collectionService:GetTagged('GooseBoss')
+			Monarch = collectionService:GetTagged('GooseBoss'),
+			Dummy = collectionService:GetTagged('trainingRoomDummy')
 		}
 		for i,v in entities do 
 			for i2, ent in next, v do 
