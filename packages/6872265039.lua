@@ -1,3 +1,4 @@
+-- Render Custom Vape Signed File
 --[[
 
     Render Intents | Bedwars lobby
@@ -11,7 +12,7 @@
 local GuiLibrary = shared.GuiLibrary
 local players = game:GetService('Players')
 local textservice = game:GetService('TextService')
-local repstorage = game:GetService('ReplicatedStorage')
+local replicatedStorageService = game:GetService('ReplicatedStorage')
 local lplr = players.LocalPlayer
 local workspace = game:GetService('Workspace')
 local lighting = game:GetService('Lighting')
@@ -244,32 +245,32 @@ runFunction(function()
     local flaggedremotes = {'SelfReport'}
 
     getfunctions = function()
-        local Flamework = require(repstorage['rbxts_include']['node_modules']['@flamework'].core.out).Flamework
+        local Flamework = require(replicatedStorageService['rbxts_include']['node_modules']['@flamework'].core.out).Flamework
 		repeat task.wait() until Flamework.isInitialized
         local KnitClient = debug.getupvalue(require(lplr.PlayerScripts.TS.knit).setup, 6)
-        local Client = require(repstorage.TS.remotes).default.Client
+        local Client = require(replicatedStorageService.TS.remotes).default.Client
         local OldClientGet = getmetatable(Client).Get
 		local OldClientWaitFor = getmetatable(Client).WaitFor
         bedwars = {
-			AppController = require(repstorage['rbxts_include']['node_modules']['@easy-games']['game-core'].out.client.controllers['app-controller']).AppController,
-			BedwarsKits = require(repstorage.TS.games.bedwars.kit['bedwars-kit-shop']).BedwarsKitShop,
+			AppController = require(replicatedStorageService['rbxts_include']['node_modules']['@easy-games']['game-core'].out.client.controllers['app-controller']).AppController,
+			BedwarsKits = require(replicatedStorageService.TS.games.bedwars.kit['bedwars-kit-shop']).BedwarsKitShop,
             ClientHandler = Client,
             ClientStoreHandler = require(lplr.PlayerScripts.TS.ui.store).ClientStore,
-			EmoteMeta = require(repstorage.TS.locker.emote['emote-meta']).EmoteMeta,
-			QueryUtil = require(repstorage['rbxts_include']['node_modules']['@easy-games']['game-core'].out).GameQueryUtil,
-			KitMeta = require(repstorage.TS.games.bedwars.kit['bedwars-kit-meta']).BedwarsKitMeta,
+			EmoteMeta = require(replicatedStorageService.TS.locker.emote['emote-meta']).EmoteMeta,
+			QueryUtil = require(replicatedStorageService['rbxts_include']['node_modules']['@easy-games']['game-core'].out).GameQueryUtil,
+			KitMeta = require(replicatedStorageService.TS.games.bedwars.kit['bedwars-kit-meta']).BedwarsKitMeta,
 			LobbyClientEvents = KnitClient.Controllers.QueueController,
             sprintTable = KnitClient.Controllers.SprintController,
-			WeldTable = require(repstorage.TS.util['weld-util']).WeldUtil,
-			QueueMeta = require(repstorage.TS.game['queue-meta']).QueueMeta,
-			getEntityTable = require(repstorage.TS.entity['entity-util']).EntityUtil,
+			WeldTable = require(replicatedStorageService.TS.util['weld-util']).WeldUtil,
+			QueueMeta = require(replicatedStorageService.TS.game['queue-meta']).QueueMeta,
+			getEntityTable = require(replicatedStorageService.TS.entity['entity-util']).EntityUtil,
         }
 		if not shared.vapebypassed then
-			local realremote = repstorage:WaitForChild('GameAnalyticsError')
+			local realremote = replicatedStorageService:WaitForChild('GameAnalyticsError')
 			realremote.Parent = nil
 			local fakeremote = Instance.new('RemoteEvent')
 			fakeremote.Name = 'GameAnalyticsError'
-			fakeremote.Parent = repstorage
+			fakeremote.Parent = replicatedStorageService
 			game:GetService('ScriptContext').Error:Connect(function(p1, p2, p3)
 				if not p3 then
 					return;
@@ -570,25 +571,16 @@ runFunction(function()
 	})
 end)
 
-
 runFunction(function()
 	local Gamble = function()
-		local args = {
-			[1] = {
-				["crateType"] = "level_up_crate",
-				["altarId"] = 0
-			}
-		}
-		
-		game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("RewardCrate/SpawnRewardCrate"):FireServer(unpack(args))
-		local args = {
-			[1] = {
-				["crateType"] = "level_up_crate",
-				["altarId"] = 1
-			}
-		}
-		
-		game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("RewardCrate/SpawnRewardCrate"):FireServer(unpack(args))
+		replicatedStorageService["rbxts_include"]["node_modules"]["@rbxts"]["net"]["out"]["_NetManaged"]["RewardCrate/SpawnRewardCrate"]:FireServer({
+			["crateType"] = "level_up_create",
+			["altarId"] = 0
+		})
+		replicatedStorageService["rbxts_include"]["node_modules"]["@rbxts"]["net"]["out"]["_NetManaged"]["RewardCrate/SpawnRewardCrate"]:FireServer({
+			["crateType"] = "level_up_create",
+			["altarId"] = 1
+		})
 	end
 	local AutoGamble = {Enabled = false}
 	AutoGamble = GuiLibrary['ObjectsThatCanBeSaved']['BlatantWindow']['Api'].CreateOptionsButton({
@@ -1962,17 +1954,6 @@ runFunction(function()
 		end, 
 		['Priority'] = 2
 	})
-end)
-
-task.spawn(function()
-	task.wait()
-	local autoleavesession = AutoLeaveSession
-	getgenv().AutoLeaveSession = nil
-	repeat task.wait() until shared.VapeFullyLoaded 
-	if autoleavesession then 
-		InfoNotification('AutoLeave', 'A staff member has joined in your last session, so AutoLeave has terminated the session. We\'ll queue for you.', 25) 
-		bedwars.LobbyClientEvents:joinQueue(autoleavesession)
-	end
 end)
 
 runFunction(function()
