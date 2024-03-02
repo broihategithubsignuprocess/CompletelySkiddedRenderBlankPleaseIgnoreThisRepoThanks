@@ -573,8 +573,7 @@ JoinQueueDelay = JoinQueue.CreateSlider({
 })
 
 runFunction(function()
-	local GambleVal = {Value = 1}
-	local Gamble = function(Id)
+	local Gamble = function()
 		local args = {
 			[1] = {
 				["crateType"] = "level_up_crate",
@@ -586,7 +585,7 @@ runFunction(function()
 		local args = {
 			[1] = {
 				["crateType"] = "level_up_crate",
-				["altarId"] = val
+				["altarId"] = 1
 			}
 		}
 		
@@ -599,7 +598,7 @@ runFunction(function()
 			if calling then
 				task.spawn(function()
 					repeat task.wait(4)
-						Gamble(GambleVal["Value"])
+						Gamble()
 						print("AutoGamble: Start Gambling!")
 					until (not AutoGamble.Enabled)
 				end)
