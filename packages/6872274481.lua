@@ -2249,7 +2249,6 @@ runFunction(function()
 	local AutoLeaveStaff = {}
 	local AutoLeaveRealLeave = {}
 	local AutoLeaveStaff2 = {}
-	local AutoLeaveRandom = {}
 	local stafftable = {}
 	local leaveAttempted = false
 
@@ -2343,21 +2342,13 @@ runFunction(function()
 				table.insert(AutoLeave.Connections, vapeEvents.EntityDeathEvent.Event:Connect(function(deathTable)
 					if (not leaveAttempted) and deathTable.finalKill and deathTable.entityInstance == lplr.Character then
 						leaveAttempted = true
-						if isEveryoneDead() and bedwarsStore.matchState ~= 2 then
+						if bedwarsStore.matchState ~= 2 then
 							task.wait(1 + (AutoLeaveDelay.Value / 10))
 							if bedwars.ClientStoreHandler:getState().Game.customMatch == nil and bedwars.ClientStoreHandler:getState().Party.leader.userId == lplr.UserId then
 								if not AutoPlayAgain.Enabled then
 									bedwars.ClientHandler:Get('TeleportToLobby'):SendToServer()
-								else
-									if AutoLeaveRandom.Enabled then 
-										local listofmodes = {}
-										for i,v in next, (bedwars.QueueMeta) do
-											if not v.disabled and not v.voiceChatOnly and not v.rankCategory then table.insert(listofmodes, i) end
-										end
-										bedwars.LobbyClientEvents:joinQueue(listofmodes[math.random(1, #listofmodes)])
-									else
-										bedwars.LobbyClientEvents:joinQueue(bedwarsStore.queueType)
-									end
+								elseif AutoPlayAgain.Enabled then
+									bedwars.LobbyClientEvents:joinQueue(bedwarsStore.queueType)
 								end
 							end
 						end
@@ -2372,17 +2363,7 @@ runFunction(function()
 						if not AutoPlayAgain.Enabled then
 							bedwars.ClientHandler:Get('TeleportToLobby'):SendToServer()
 						else
-							if bedwars.ClientStoreHandler:getState().Party.queueState == 0 then
-								if AutoLeaveRandom.Enabled then 
-									local listofmodes = {}
-									for i,v in next, (bedwars.QueueMeta) do
-										if not v.disabled and not v.voiceChatOnly and not v.rankCategory then table.insert(listofmodes, i) end
-									end
-									bedwars.LobbyClientEvents:joinQueue(listofmodes[math.random(1, #listofmodes)])
-								else
-									bedwars.LobbyClientEvents:joinQueue(bedwarsStore.queueType)
-								end
-							end
+							bedwars.LobbyClientEvents:joinQueue(bedwarsStore.queueType) -- ill try it out
 						end
 					end
 				end))
@@ -13734,3 +13715,29 @@ runFunction(function()
 	autowinwhitelisted.Object.Visible = false
 end)
 
+
+runFunction(function()
+    local Transform = {Enabled = false}
+    local Block = {Value = "lucky_block"}
+	Transform = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+        Name = 'Transform Into A block',
+        Function = function(callback)
+            if callback then
+                task.spawn(function()
+					replicatedStorageService["rbxts_include"]["node_modules"]["@rbxts"].net.out._NetManaged.MimicBlock:FireServer({
+						["data"] = {
+							["blockType"] = Block.Value or "bedrock",
+						}
+					})
+                end)
+				Transform.ToggleButton(false)
+            end
+        end,
+        HoverText = 'Crashing All People in the game'
+    })
+	Block = Transform.CreateDropdown({
+		Name = 'Block',
+		Function = function() end,
+		List = {"bedrock", "lucky_block", "cosmic_lucky_block", "brick", "birch_log", "copper_block", "diamond_block", "emerald_block", "food_lucky_block"}
+	})
+end)
