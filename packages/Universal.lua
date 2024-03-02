@@ -3,7 +3,7 @@
     Render Intents | Universal
     The #1 vape mod you'll ever see.
 
-    Version: 1.6.1
+    Version: 1.7.1
     discord.gg/render
 	
 ]]
@@ -20,6 +20,7 @@ local teleportService = game:GetService('TeleportService')
 local playersService = game:GetService('Players')
 local textService = game:GetService('TextService')
 local lightingService = game:GetService('Lighting')
+local core = game:GetService('CoreGui')
 local textChatService = game:GetService('TextChatService')
 local inputService = game:GetService('UserInputService')
 local runService = game:GetService('RunService')
@@ -9669,6 +9670,7 @@ runFunction(function()
 	local Translation = {}
 	local language = {Value = 'chinese'} 
 	local oldnames = {}
+	local sitrequests = 0
 	local function addtranslated(old, translated)
 		if not isfolder('vape/Render/translations') then 
 			makefolder('vape/Render/translations') 
@@ -9688,10 +9690,17 @@ runFunction(function()
 		if data[text] then 
 			return (data[text] ~= '' and data[text])
 		end
+		local timeTaken = tick()
 		local translation = httprequest({Url = 'https://translate.renderintents.xyz', Method = 'GET', Headers = {Language = language.Value, Text = text}}) 
+		sitrequests += 1
 		if translation.StatusCode == 200 then 
 			local new = httpService:JSONDecode(translation.Body).translated
 			addtranslated(text, new) 
+			timeTaken = (tick() - timeTaken) 
+			if timeTaken < 10 and sitrequests >= 9 then -- site rate limits lol 
+				task.wait(10 - timeTaken)
+				sitrequests = 0
+			end
 			return (new ~= '' and new)
 		end
 	end
@@ -9731,15 +9740,122 @@ runFunction(function()
 	language = Translation.CreateDropdown({
 		Name = 'Language', 
 		List = {'Spanish', 'French', 'Japanese', 'Chinese', 'Hindi', 'Russian'},
-		Function = function() 
+		Function = function(calling) 
 			task.spawn(function()
-				if not shared.VapeFullyLoaded then return end
-				Translation.ToggleButton() 
-				task.wait(1)
+				if calling == false or not shared.VapeFullyLoaded then return end
+				Translation.ToggleButton()
 				if not Translation.Enabled then Translation.ToggleButton() end 
 			end)
 		end,
 	})
 end)
 
-
+runFunction(function()
+	local BubbleMods = {}
+	local BubbleModsColorToggle = {}
+	local BubbleModsTextSizeToggle = {}
+	local BubbleModsTextColorToggle = {}
+	local BubbleModsTextSize = {Value = 16}
+	local BubbleModsTextColor = {Hue = 0, Sat = 0, Value = 0}
+	local BubbleModsColor = {Hue = 0, Sat = 0, Value = 0}
+	local chatbubbles = {}
+	local function bubbleFunction(bubble)
+		pcall(function() 
+			local name = 'ChatBubbleFrame'
+			if core:FindFirstChild('BubbleChat') == nil then 
+				name = 'Frame' 
+			end
+			if tostring(bubble) ~= name and bubble:FindFirstChild('Text') == nil then 
+				return 
+			end
+			if BubbleModsColorToggle.Enabled then 
+				bubble.BackgroundColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value)
+				pcall(function() bubble.Parent.Caret.ImageColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value) end)
+			end
+			if BubbleModsTextColorToggle.Enabled then 
+				bubble.Text.TextColor3 = Color3.fromHSV(BubbleModsTextColor.Hue, BubbleModsTextColor.Sat, BubbleModsTextColor.Value) 
+			end
+			if BubbleModsTextSizeToggle.Enabled then 
+				bubble.Text.TextSize = BubbleModsTextSize.Value  
+			end
+			table.insert(chatbubbles, bubble)
+		end)
+	end
+	BubbleMods = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+		Name = 'BubbleMods',
+		HoverText = 'Mods the bubble chat experience.',
+		Function = function(calling) 
+			if calling then 
+				local bubblechat = (core:FindFirstChild('ExperienceChat') and core.ExperienceChat.bubbleChat or core:FindFirstChild('BubbleChat') or Instance.new('ScreenGui'))
+				for i,v in next, bubblechat:GetDescendants() do 
+					bubbleFunction(v)
+				end
+				table.insert(BubbleMods.Connections, bubblechat.DescendantAdded:Connect(bubbleFunction))
+			else 
+				for i,v in next, chatbubbles do 
+					pcall(function() 
+						v.BackgroundColor3 = Color3.fromRGB(250, 250, 250)
+						v.Text.TextColor3 = Color3.fromRGB(57, 59, 61) 
+						v.Text.TextSize = 16
+					end) 
+				end
+			end
+		end
+	})
+	BubbleModsColorToggle = BubbleMods.CreateToggle({
+		Name = 'Background Color',
+		Function = function(calling)
+			pcall(function() BubbleModsColor.Object.Visible = calling end)
+		end
+	})
+	BubbleModsTextColorToggle = BubbleMods.CreateToggle({
+		Name = 'Text Color',
+		Function = function(calling)
+			pcall(function() BubbleModsTextColor.Object.Visible = calling end)
+		end
+	})
+	BubbleModsTextSizeToggle = BubbleMods.CreateToggle({
+		Name = 'Text Size',
+		Function = function(calling)
+			pcall(function() BubbleModsTextSize.Object.Visible = calling end)
+		end
+	})
+	BubbleModsColor = BubbleMods.CreateColorSlider({
+		Name = 'Background Color',
+		Function = function()
+			if BubbleModsColorToggle.Enabled then 
+				for i,v in next, chatbubbles do 
+					pcall(function() 
+						v.BackgroundColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value) 
+						v.Parent.Caret.ImageColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value)
+					end)
+				end  
+			end
+		end
+	})
+	BubbleModsTextColor = BubbleMods.CreateColorSlider({
+		Name = 'Text Color',
+		Function = function()
+			if BubbleModsTextColorToggle.Enabled then   
+				for i,v in next, chatbubbles do 
+					pcall(function() v.Text.TextColor3 = Color3.fromRGB(BubbleModsTextColor.Hue, BubbleModsTextColor.Sat, BubbleModsTextColor.Value) end) 
+				end 
+			end
+		end
+	})
+	BubbleModsTextSize = BubbleMods.CreateSlider({
+		Name = 'Text Size',
+		Min = 10,
+		Max = 23,
+		Function = function(size)
+			if BubbleModsTextSizeToggle.Enabled then 
+				for i,v in next, chatbubbles do 
+					pcall(function() v.Text.TextSize = 16 end)
+				end 
+			end
+		end
+	})
+	BubbleModsColor.Object.Visible = false 
+	BubbleModsTextColor.Object.Visible = false
+	BubbleModsTextSize.Object.Visible = false
+end)
