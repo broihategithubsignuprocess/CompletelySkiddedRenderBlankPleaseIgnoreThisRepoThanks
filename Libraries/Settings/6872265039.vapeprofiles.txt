@@ -1,1 +1,1 @@
-{"Render Crystal":{"Selected":true,"Keybind":""},"Voidware Pink":{"Selected":false,"Keybind":""},"default":{"Selected":false,"Keybind":""},"Render White":{"Keybind":""}}
+{"Render Crystal":{"Keybind":"","Selected":false},"Render White":{"Keybind":""},"default":{"Keybind":"","Selected":false},"Voidware Pink":{"Keybind":"","Selected":true}}
