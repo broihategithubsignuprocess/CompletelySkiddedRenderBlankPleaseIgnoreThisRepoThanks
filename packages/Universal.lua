@@ -9762,21 +9762,24 @@ runFunction(function()
 	local function bubbleFunction(bubble)
 		pcall(function() 
 			local name = 'ChatBubbleFrame'
-			if core:FindFirstChild('BubbleChat') == nil then 
+			if core:FindFirstChild('BubbleChat') then 
 				name = 'Frame' 
 			end
-			if tostring(bubble) ~= name and bubble:FindFirstChild('Text') == nil then 
+			if tostring(bubble) ~= name and tostring(bubble) ~= 'RoundedFrame' then 
 				return 
 			end
 			if BubbleModsColorToggle.Enabled then 
 				bubble.BackgroundColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value)
 				pcall(function() bubble.Parent.Caret.ImageColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value) end)
+				pcall(function() bubble.Parent.Carat.ImageColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value) end)
 			end
 			if BubbleModsTextColorToggle.Enabled then 
-				bubble.Text.TextColor3 = Color3.fromHSV(BubbleModsTextColor.Hue, BubbleModsTextColor.Sat, BubbleModsTextColor.Value) 
+				pcall(function() bubble.Text.TextColor3 = Color3.fromHSV(BubbleModsTextColor.Hue, BubbleModsTextColor.Sat, BubbleModsTextColor.Value) end)
+				pcall(function() bubble.Contents.Ellipsis.TextColor3 = Color3.fromHSV(BubbleModsTextColor.Hue, BubbleModsTextColor.Sat, BubbleModsTextColor.Value) end)
 			end
 			if BubbleModsTextSizeToggle.Enabled then 
-				bubble.Text.TextSize = BubbleModsTextSize.Value  
+				pcall(function() bubble.Text.TextSize = BubbleModsTextSize.Value end)
+				pcall(function() bubble.Contents.Ellipsis.TextSize = BubbleModsTextSize.Value end)
 			end
 			table.insert(chatbubbles, bubble)
 		end)
@@ -9793,11 +9796,9 @@ runFunction(function()
 				table.insert(BubbleMods.Connections, bubblechat.DescendantAdded:Connect(bubbleFunction))
 			else 
 				for i,v in next, chatbubbles do 
-					pcall(function() 
-						v.BackgroundColor3 = Color3.fromRGB(250, 250, 250)
-						v.Text.TextColor3 = Color3.fromRGB(57, 59, 61) 
-						v.Text.TextSize = 16
-					end) 
+					pcall(function() v.Text.TextColor3 = Color3.fromRGB(57, 59, 61) end)
+					pcall(function() v.Text.TextSize = 16 end)
+					pcall(function() v.Parent.Carat.ImageColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value) end)
 				end
 			end
 		end
@@ -9827,7 +9828,8 @@ runFunction(function()
 				for i,v in next, chatbubbles do 
 					pcall(function() 
 						v.BackgroundColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value) 
-						v.Parent.Caret.ImageColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value)
+						pcall(function() v.Parent.Caret.ImageColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value) end)
+						pcall(function() v.Parent.Carat.ImageColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value) end)
 					end)
 				end  
 			end
@@ -9838,7 +9840,8 @@ runFunction(function()
 		Function = function()
 			if BubbleModsTextColorToggle.Enabled then   
 				for i,v in next, chatbubbles do 
-					pcall(function() v.Text.TextColor3 = Color3.fromRGB(BubbleModsTextColor.Hue, BubbleModsTextColor.Sat, BubbleModsTextColor.Value) end) 
+					pcall(function() v.Text.TextColor3 = Color3.fromHSV(BubbleModsTextColor.Hue, BubbleModsTextColor.Sat, BubbleModsTextColor.Value) end)
+					pcall(function() v.Contents.Ellipsis.TextColor3 =  Color3.fromHSV(BubbleModsTextColor.Hue, BubbleModsTextColor.Sat, BubbleModsTextColor.Value) end) 
 				end 
 			end
 		end
@@ -9851,6 +9854,7 @@ runFunction(function()
 			if BubbleModsTextSizeToggle.Enabled then 
 				for i,v in next, chatbubbles do 
 					pcall(function() v.Text.TextSize = 16 end)
+					pcall(function() bubble.Contents.Ellipsis.TextSize = BubbleModsTextSize.Value end)
 				end 
 			end
 		end
