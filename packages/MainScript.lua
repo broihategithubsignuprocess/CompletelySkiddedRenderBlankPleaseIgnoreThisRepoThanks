@@ -263,6 +263,11 @@ local World = GuiLibrary.CreateWindow({
 	Icon = "vape/assets/WorldIcon.png", 
 	IconSize = 16
 })
+local Legit = GuiLibrary.CreateWindow({
+	Name = "Legit", 
+	Icon = "vape/assets/TargetIcon2.png", 
+	IconSize = 16
+})
 local Matchmaking = GuiLibrary.CreateWindow({
 	Name = "Matchmaking", 
 	Icon = "vape/assets/SliderArrow1.png", 
@@ -317,6 +322,12 @@ GUI.CreateButton({
 	Name = "World", 
 	Function = function(callback) World.SetVisible(callback) end, 
 	Icon = "vape/assets/WorldIcon.png", 
+	IconSize = 16
+})
+GUI.CreateButton({
+	Name = "Legit", 
+	Function = function(callback) Legit.SetVisible(callback) end, 
+	Icon = "vape/assets/PinButton.png", 
 	IconSize = 16
 })
 GUI.CreateDivider("Custom")
