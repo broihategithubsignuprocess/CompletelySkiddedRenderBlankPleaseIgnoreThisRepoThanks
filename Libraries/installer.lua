@@ -29,7 +29,7 @@ return (function(ria)
 		return newtable
 	end
 
-	function decodebase64(data) -- from devforum cause some exploits don't have base_64_decode
+	local function decodebase64(data) -- from devforum cause some exploits don't have base_64_decode
 		local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 		data = string.gsub(data, '[^'..b..'=]', '')
 		return (data:gsub('.', function(x)
