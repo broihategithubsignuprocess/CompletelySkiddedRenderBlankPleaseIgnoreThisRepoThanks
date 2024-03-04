@@ -227,7 +227,7 @@ return (function(ria)
 		activated = true
 		if httprequest == nil or writefile == nil then 
 			progresstext.TextColor3 = Color3.fromRGB(255, 0, 0)
-			progresstext.Text = ('Render isn\'t supported for "'..executor..'".') 
+			progresstext.Text = ('Render isn\'t supported for "'..executor..'". Either httprequest or writefile returned nil.') 
 			return
 		end
 		installing = tick()
