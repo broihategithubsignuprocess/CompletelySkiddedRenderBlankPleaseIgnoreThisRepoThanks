@@ -225,16 +225,11 @@ return (function(ria)
 		mainframe.Visible = true 
 		guiframe.Visible = false 
 		activated = true
-<<<<<<< HEAD
 		if httprequest == nil or writefile == nil then 
-=======
-		--[[		
-		if httprequest == nil or base64_decode == nil or writefile == nil then 
->>>>>>> 2ea9f0957a719a441ddc51eba5f858d1e92ac982
 			progresstext.TextColor3 = Color3.fromRGB(255, 0, 0)
 			progresstext.Text = ('Render isn\'t supported for "'..executor..'".') 
 			return
-		end--]]
+		end
 		installing = tick()
 		for step, func in next, steps do 
 			progresstext.Text = titles[step]
