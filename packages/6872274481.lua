@@ -12842,6 +12842,9 @@ runFunction(function()
 		if item.itemType:find('ninja_chakram') then 
 			return getItem(item.itemType) 
 		end
+		if item.itemType:find('lasso') then
+			return getItem(item.itemType) 
+		end
 		if item.itemType == 'light_sword' then 
 			return {tool = 'sword_wave1'} 
 		end
