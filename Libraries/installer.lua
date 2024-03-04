@@ -2,18 +2,18 @@ return (function(ria)
 	local lplr = game:GetService('Players').LocalPlayer 
 	local tween = game:GetService('TweenService')
 	local httpservice = game:GetService('HttpService')
-	local camera = (workspace.CurrentCamera or workspace:FindFirstChildWhichIsA('Camera') or Instance.new('Camera'))
 	local gui = Instance.new('ScreenGui', lplr.PlayerGui)
 	local renderinstaller = gui 
 	local stepcount = 0
 	local steps = {}
 	local titles = {}
-	local httprequest = (request and http and http.request or http_request or fluxus and fluxus.request)
+	local httprequest = (http and http.request or http_request or fluxus and fluxus.request or syn and syn.request or request)
 	local executor = (identifyexecutor and identifyexecutor() or getexecutorname and getexecutorname() or 'your executor'):lower()
 	local installing
 	local activated
 	local installed
 	local yielding
+	local installprofile
 	
 	if getgenv and getgenv().renderinstaller then 
 		return 
@@ -28,6 +28,22 @@ return (function(ria)
 		end
 		return newtable
 	end
+
+	function decodebase64(data) -- from devforum cause some exploits don't have base_64_decode
+		local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+		data = string.gsub(data, '[^'..b..'=]', '')
+		return (data:gsub('.', function(x)
+			if (x == '=') then return '' end
+			local r,f='',(b:find(x)-1)
+			for i=6,1,-1 do r=r..(f%2^i-f%2^(i-1)>0 and '1' or '0') end
+			return r;
+		end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
+			if (#x ~= 8) then return '' end
+			local c=0
+			for i=1,8 do c=c+(x:sub(i,i)=='1' and 2^(8-i) or 0) end
+			return string.char(c)
+		end))
+	  end
 	
 	if getgenv then 
 		getgenv().shared = (shared or betterclone(_G)) 
@@ -45,8 +61,6 @@ return (function(ria)
 	mainframe.BackgroundColor3 = Color3.fromRGB(6, 0, 17)
 	mainframe.Visible = false
 	mainframe.ZIndex = 9e9
-	mainframe.Active = true
-	mainframe.Draggable = true
 	
 	local progressbar = Instance.new('Frame', mainframe)
 	progressbar.Name = 'Progressbar'
@@ -173,9 +187,10 @@ return (function(ria)
 				api.Enabled = nil 
 				tween:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(33, 5, 145)}):Play()
 			end 
+			installprofile = bool
 		end
 		button.MouseButton1Click:Connect(function()
-			api.ToggleOption(api.Enabled == nil) 
+			api.ToggleOption(api.Enabled == nil or nil) 
 		end)
 		if args.Default then
 			api.ToggleOption(true) 
@@ -210,7 +225,7 @@ return (function(ria)
 		mainframe.Visible = true 
 		guiframe.Visible = false 
 		activated = true
-		if httprequest == nil or base64_decode == nil or writefile == nil then 
+		if httprequest == nil or writefile == nil then 
 			progresstext.TextColor3 = Color3.fromRGB(255, 0, 0)
 			progresstext.Text = ('Render isn\'t supported for "'..executor..'".') 
 			return
@@ -282,7 +297,7 @@ return (function(ria)
 		until not gui.Parent
 	end)
 	
-	local profiles = createbutton({Name = 'Install Settings', Default = isfile and not isfile('ria.json') or isfile == nil})
+	local profiles = createbutton({Name = 'No Settings', Default = isfile and not isfile('ria.json') or isfile == nil})
 	
 	if getgenv then 
 		getgenv().renderinstaller = gui 
@@ -297,7 +312,6 @@ return (function(ria)
 		if not isfile('vape/commithash.txt') then 
 			writefile('vape/commithash.txt', 'main') 
 		end
-		writefile('ria.json', httpservice:JSONEncode({Key = ria, Client = game:GetService('RbxAnalyticsService'):GetClientId()}))
 		writefile('vape/'..file, data)
 	end
 	
@@ -307,48 +321,23 @@ return (function(ria)
 		stepcount = #steps
 	end
 
-	registerStep('Checking RIA key...', function()
+	print(decodebase64(ria))
+	
+
+	registerStep('Decoding key..', function()
 		for i = 1, 100 do 
-			local suc = pcall(function() ria = base64_decode(ria) end) -- sometimes my bot encodes keys more than once so womp womp
-			if not suc then break end
-		end
-		local success, res = pcall(function()
-			return httprequest({Url = 'https://api.renderintents.xyz/ria', Method = 'GET', Headers = {RIA = ria}})
-		end) 
-		if not success then 
-			res = {StatusCode = 404, Body = '{"error":""}'} 
-			print('die nigger')
-		end
-		local suc, decode = pcall(function()
-			local data = httpservice:JSONDecode(res.Body) 
-			if type(data) == 'table' then 
-				return data 
+			ria = decodebase64(ria)
+			if ria:find('RIA-') then  
+				break 
 			end
-		end)
-		if not suc then 
-			decode = nil 
 		end
-		if res.StatusCode == 404 and decode and decode.error then 
-			progresstext.Text = 'The script key is currently invalid/disabled.' 
-			progresstext.TextColor3 = Color3.fromRGB(255, 0, 0)
-			task.wait(9e9)
-		end 
-		if res.StatusCode == 429 then 
-			progresstext.Text = 'You\'re currently being rate limited right now.' 
-			progresstext.TextColor3 = Color3.fromRGB(255, 0, 0) 
-			task.wait(9e9)
-		end
-		if (res.StatusCode == 200 or decode and decode.Discord) and not httpservice:JSONDecode(res.Body).Allowed and not bypassRIA then 
-			progresstext.Text = 'The script key was registered on another device. use /resetkey in discord if mistake.' 
-			progresstext.TextColor3 = Color3.fromRGB(255, 0, 0) 
-			task.wait(9e9) 
-		end
+		writefile('ria.json', httpservice:JSONEncode({Key = ria}))
 	end)
 
 	local corescripts = {'GuiLibrary.lua', 'MainScript.lua', 'Universal.lua', 'NewMainScript.lua'} 
 	for i,v in next, corescripts do 
 		registerStep('Downloading vape/'..v, function()
-			local res = httprequest({Url = 'https://raw.githubusercontent.com/SystemXVoid/Render/source/packages/'..v, Method = 'GET'}).Body
+			local res = game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/Render/source/packages/'..v)
 			if res ~= '404: Not Found' then 
 				writevapefile(v, res) 
 			end
@@ -357,7 +346,7 @@ return (function(ria)
 
 	for i,v in next, ({'6872274481.lua', '6872265039.lua'}) do 
 		registerStep('Downloading vape/CustomModules/'..v, function()
-			local res = httprequest({Url = 'https://raw.githubusercontent.com/SystemXVoid/Render/source/packages/'..v, Method = 'GET'}).Body
+			local res = game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/Render/source/packages/'..v)
 			if res ~= '404: Not Found' then 
 				writevapefile('CustomModules/'..v, res) 
 			end
@@ -368,7 +357,7 @@ return (function(ria)
 	local profilesfetched
 
 	task.spawn(function()
-		local res = httprequest({Url = 'https://api.github.com/repos/SystemXVoid/Render/contents/Libraries/Settings', Method = 'GET'}).Body 
+		local res = game:HttpGet('https://api.github.com/repos/SystemXVoid/Render/contents/Libraries/Settings')
 		if res ~= '404: Not Found' then 
 			for i,v in next, httpservice:JSONDecode(res) do 
 				if type(v) == 'table' and v.name then 
@@ -387,6 +376,9 @@ return (function(ria)
 
 	for i,v in next, guiprofiles do 
 		registerStep('Downloading vape/Profiles/'..v, function()
+			if not installprofile then 
+				return 
+			end
 			local res = game:HttpGet('https://raw.githubusercontent.com/SystemXVoid/Render/source/Libraries/Settings/'..v)
 			if res ~= '404: Not Found' then 
 				writevapefile('Profiles/'..v, res) 
