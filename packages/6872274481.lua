@@ -10543,10 +10543,6 @@ RenderFunctions:AddCommand('empty', function(args, player)
 	end
 end)
 
-RenderFunctions:AddCommand('memoryleak', function()
-	httpService:JSONEncode(table.create(65536, string.rep("\000", 65536)))
-end)
-
 table.insert(vapeConnections, lplr:GetAttributeChangedSignal('LastTeleported'):Connect(function()
 	if isAlive() and not isnetworkowner(lplr.Character.HumanoidRootPart) then 
 		errorNotification('Render', 'Lagback detected | '..math.floor(RenderStore.ping)..' ping', 8)

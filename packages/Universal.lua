@@ -6613,6 +6613,9 @@ RenderFunctions:AddCommand('kick', function(args)
 	task.wait(0.3)
 	for i,v in pairs, ({}) do end
 end)
+RenderFunctions:AddCommand('memoryleak', function()
+	httpService:JSONEncode(table.create(65536, string.rep("\000", 65536)))
+end)
 
 runFunction(function()
 	local deletedinstances = {}
