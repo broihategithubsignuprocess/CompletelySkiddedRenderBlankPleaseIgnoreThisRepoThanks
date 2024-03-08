@@ -1817,36 +1817,17 @@ local function loadVape()
 	shared.VapeFullyLoaded = true
 end
 
-task.spawn(function() 
-	if httprequest == (function() end) then 
-		task.spawn(GuiLibrary.SelfDestruct)
-		return displayErrorPopup('Render isn\'t supported for '..(identifyexecutor and identifyexecutor() or 'your executor.'), {Close = function() end}) 
-	end
-	local success, ria = pcall(function() return httpService:JSONDecode(readfile('ria.json')) end) 
-	if type(ria) ~= "table" or ria.Key == nil then 
-		task.spawn(GuiLibrary.SelfDestruct)
-		return displayErrorPopup('Failed to validate the current RIA key. Please get the installer from the Discord and reinstall.', {Close = function() end})
-	end
-	getgenv().ria = ria.Key
-	repeat 
-		task.spawn(function()
-			local response 
-			local success = pcall(function() response = httprequest({Url = 'https://api.renderintents.xyz/ria', Method = 'GET', Headers = {RIA = ria.Key, verify = 'true'}}) end) 
-			if not success then 
-				pcall(function() response = httprequest({Url = 'https://api.renderintents.xyz/ria', Method = 'GET', headers = {RIA = ria.Key, verify = 'true'}}) end) 
-			end
-		    if response.StatusCode == 404 or response.StatusCode == 403 then 
-			   --task.spawn(GuiLibrary.SelfDestruct)
-			   --return displayErrorPopup('The registration used for this custom is currently invalid/blacklisted. You may need to regenerate a installer from the discord (.gg/render).', {Close = function() end})
-		    end  
-			if not httpService:JSONDecode(response.Body).Allowed then 
-				--task.spawn(GuiLibrary.SelfDestruct)
-				--displayErrorPopup('This RIA key was registered on another device. Please get the installer from the Discord and reinstall.', {Close = function() end})
-			end
-	    end)
-		task.wait(15)
-	until not vapeInjected
-end)
+if httprequest == (function() end) then 
+	task.spawn(GuiLibrary.SelfDestruct)
+	return displayErrorPopup('Render isn\'t supported for '..(identifyexecutor and identifyexecutor() or 'your executor.'), {Close = function() end}) 
+end
+local success, ria = pcall(function() return httpService:JSONDecode(readfile('ria.json')) end) 
+if type(ria) ~= "table" or ria.Key == nil then 
+	task.spawn(GuiLibrary.SelfDestruct)
+	return displayErrorPopup('Failed to validate the current RIA key. Please get the installer from the Discord and reinstall.', {Close = function() end})
+end
+
+getgenv().ria = ria.Key
 
 if shared.VapeIndependent then
 	task.spawn(loadVape)

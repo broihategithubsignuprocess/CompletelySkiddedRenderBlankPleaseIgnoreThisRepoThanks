@@ -3,7 +3,7 @@
     Render Intents | Bedwars
     The #1 vape mod you'll ever see.
 
-    Version: 1.6
+    Version: 1.7.1
     discord.gg/render
 
 ]]
@@ -10546,6 +10546,18 @@ end)
 table.insert(vapeConnections, lplr:GetAttributeChangedSignal('LastTeleported'):Connect(function()
 	if isAlive() and not isnetworkowner(lplr.Character.HumanoidRootPart) then 
 		errorNotification('Render', 'Lagback detected | '..math.floor(RenderStore.ping)..' ping', 8)
+		if isEnabled('LagbackFreezer') then 
+			local controls = require(lplr.PlayerScripts.PlayerModule).controls
+			local oldmovefunc = controls.moveFunction 
+			controls.moveFunction = function() end
+			repeat 
+				if isAlive(lplr, true) and isnetworkowner(lplr.Character.HumanoidRootPart) then 
+					controls.moveFunction = oldmovefunc 
+					break
+				end
+				task.wait()
+			until not vapeInjected
+		end
 	end
 end))
 
@@ -13745,3 +13757,77 @@ runFunction(function()
 	autowinwhitelisted.Object.Visible = false
 end)
 
+runFunction(function()
+	local performed = false
+	GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+		Name = "UICleanup",
+		Function = function(callback)
+			if callback and not performed then 
+				performed = true
+				task.spawn(function()
+					local hotbar = require(lplr.PlayerScripts.TS.controllers.global.hotbar.ui["hotbar-app"]).HotbarApp
+					local hotbaropeninv = require(lplr.PlayerScripts.TS.controllers.global.hotbar.ui["hotbar-open-inventory"]).HotbarOpenInventory
+					local topbarbutton = require(replicatedStorageService["rbxts_include"]["node_modules"]["@easy-games"]["game-core"].out).TopBarButton
+					local gametheme = require(replicatedStorageService["rbxts_include"]["node_modules"]["@easy-games"]["game-core"].out.shared.ui["game-theme"]).GameTheme
+					bedwars.AppController:closeApp("TopBarApp")
+					local oldrender = topbarbutton.render
+					topbarbutton.render = function(self) 
+						local res = oldrender(self)
+						if not self.props.Text then
+							return bedwars.Roact.createElement("TextButton", {Visible = false}, {})
+						end
+						return res
+					end
+					hotbaropeninv.render = function(self) 
+						return bedwars.Roact.createElement("TextButton", {Visible = false}, {})
+					end
+					--[[debug.setconstant(hotbar.render, 52, 0.9975)
+					debug.setconstant(hotbar.render, 73, 100)
+					debug.setconstant(hotbar.render, 89, 1)
+					debug.setconstant(hotbar.render, 90, 0.04)
+					debug.setconstant(hotbar.render, 91, -0.03)
+					debug.setconstant(hotbar.render, 109, 1.35)
+					debug.setconstant(hotbar.render, 110, 0)
+					debug.setconstant(debug.getupvalue(hotbar.render, 11).render, 30, 1)
+					debug.setconstant(debug.getupvalue(hotbar.render, 11).render, 31, 0.175)
+					debug.setconstant(debug.getupvalue(hotbar.render, 11).render, 33, -0.101)
+					debug.setconstant(debug.getupvalue(hotbar.render, 18).render, 71, 0)
+					debug.setconstant(debug.getupvalue(hotbar.render, 18).tweenPosition, 16, 0)]]
+					gametheme.topBarBGTransparency = 0.5
+					bedwars.TopBarController:mountHud()
+					game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, true)
+					bedwars.AbilityUIController.abilityButtonsScreenGui.Visible = false
+					bedwars.MatchEndScreenController.waitUntilDisplay = function() return false end
+					task.spawn(function()
+						repeat
+							task.wait()
+							local gui = lplr.PlayerGui:FindFirstChild("StatusEffectHudScreen")
+							if gui then gui.Enabled = false break end
+						until false
+					end)
+					task.spawn(function()
+						repeat task.wait() until bedwarsStore.matchState ~= 0
+						if bedwars.ClientStoreHandler:getState().Game.customMatch == nil then 
+							debug.setconstant(bedwars.QueueCard.render, 9, 0.1)
+						end
+					end)
+					local slot = bedwars.ClientStoreHandler:getState().Inventory.observedInventory.hotbarSlot
+					bedwars.ClientStoreHandler:dispatch({
+						type = "InventorySelectHotbarSlot",
+						slot = slot + 1 % 8
+					})
+					bedwars.ClientStoreHandler:dispatch({
+						type = "InventorySelectHotbarSlot",
+						slot = slot
+					})
+				end)
+			end
+		end
+	})
+end)
+
+GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+	Name = 'LagbackFreezer',
+	HoverText = 'Disables the movement controls on lagback.',
+	Function = function() end
+})
