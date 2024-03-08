@@ -1559,7 +1559,7 @@ local GUIbind = GUI.CreateGUIBind()
 local teleportConnection = playersService.LocalPlayer.OnTeleport:Connect(function(State)
     if (not teleportedServers) and (not shared.VapeIndependent) then
 		teleportedServers = true
-		local teleportScript = "loadfile('vape/NewMainScript.lua')()"
+		local teleportScript = "task.wait(3) loadfile('vape/NewMainScript.lua')()"
 		if shared.VapeCustomProfile then 
 			teleportScript = ("shared.VapeCustomProfile = '"..shared.VapeCustomProfile.."'\n"..teleportScript)
 		end
@@ -1817,10 +1817,7 @@ local function loadVape()
 	shared.VapeFullyLoaded = true
 end
 
-if httprequest == (function() end) then 
-	task.spawn(GuiLibrary.SelfDestruct)
-	return displayErrorPopup('Render isn\'t supported for '..(identifyexecutor and identifyexecutor() or 'your executor.'), {Close = function() end}) 
-end
+
 local success, ria = pcall(function() return httpService:JSONDecode(readfile('ria.json')) end) 
 if type(ria) ~= "table" or ria.Key == nil then 
 	task.spawn(GuiLibrary.SelfDestruct)
