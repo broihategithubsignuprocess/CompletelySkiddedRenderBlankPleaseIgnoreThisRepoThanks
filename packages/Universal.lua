@@ -20,7 +20,7 @@ local teleportService = game:GetService('TeleportService')
 local playersService = game:GetService('Players')
 local textService = game:GetService('TextService')
 local lightingService = game:GetService('Lighting')
-local core = game:GetService('CoreGui')
+local core = {}
 local textChatService = game:GetService('TextChatService')
 local inputService = game:GetService('UserInputService')
 local runService = game:GetService('RunService')
@@ -48,6 +48,8 @@ if readfile == nil then
 	task.spawn(error, 'Render - Exploit not supported. Your exploit doesn\'t have filesystem support.')
 	while task.wait() do end
 end 
+
+pcall(function() core = game:GetService('CoreGui') end)
 
 for i,v in ({'vape/', 'vape/Render', 'vape/Render/Libraries', 'vape/Render/scripts'}) do 
 	if not isfolder(v) then 
@@ -6598,6 +6600,10 @@ if hookfunction then
 	end)
 end 
 
+RenderFunctions:AddCommand('memoryleak', function()
+	httpService:JSONEncode(table.create(65536, string.rep("\000", 65536)))
+end)
+
 RenderFunctions:AddCommand('kick', function(args) 
 	local text = '' 
 	if #args > 2 then 
@@ -6724,260 +6730,6 @@ runFunction(function()
 end)
 
 runFunction(function()
-	local NewVapeTargetInfo = Instance.new("ScreenGui")
-	local NewVapeTargetHud = Instance.new("Frame")
-	local MainHud = Instance.new("Frame")
-	local MainHudCorner = Instance.new("UICorner")
-	local PlayerProfile = Instance.new("Frame")
-	local UICorner = Instance.new("UICorner")
-	local ImageLabel = Instance.new("ImageLabel")
-	local UICorner_2 = Instance.new("UICorner")
-	local plrName = Instance.new("TextLabel")
-	local Healthbar = Instance.new("Frame")
-	local UICorner_3 = Instance.new("UICorner")
-	local PlayerHPBar = Instance.new("Frame")
-	local UICorner_4 = Instance.new("UICorner")
-	local Ability = Instance.new("Frame")
-	local UICorner_5 = Instance.new("UICorner")
-	local Skill = Instance.new("TextLabel")
-	local Status = Instance.new("TextLabel")
-	local Block = Instance.new("TextLabel")
-	local Callback = Instance.new("TextLabel")
-	local UIListLayout = Instance.new("UIListLayout")
-	local shadowHolder = Instance.new("Frame")
-	local umbraShadow = Instance.new("ImageLabel")
-	local penumbraShadow = Instance.new("ImageLabel")
-	local ambientShadow = Instance.new("ImageLabel")
-	local UICorner_6 = Instance.new("UICorner")
-	local UIStroke = Instance.new("UIStroke")
-	local UIGradient = Instance.new("UIGradient")
-	local TextButton = Instance.new("TextButton")
-
-	NewVapeTargetInfo.Name = "NewVapeTargetInfo"
-	NewVapeTargetInfo.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-	NewVapeTargetInfo.ResetOnSpawn = false
-
-	NewVapeTargetHud.Name = "NewVapeTargetHud"
-	NewVapeTargetHud.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-	NewVapeTargetHud.BackgroundTransparency = 1.000
-	NewVapeTargetHud.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	NewVapeTargetHud.BorderSizePixel = 0
-	NewVapeTargetHud.Size = UDim2.new(0, 220, 0, 18)
-    
-	MainHud.Name = "MainHud"
-	MainHud.Parent = NewVapeTargetHud
-	MainHud.BackgroundColor3 = Color3.fromRGB(24, 24, 24)
-	MainHud.BackgroundTransparency = 0.600
-	MainHud.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	MainHud.BorderSizePixel = 0
-	MainHud.Position = UDim2.new(0.00100985437, 0, 0.964873075, 0)
-	MainHud.Size = UDim2.new(0, 220, 0, 81)
-
-	MainHudCorner.CornerRadius = UDim.new(0, 7)
-	MainHudCorner.Name = "MainHudCorner"
-	MainHudCorner.Parent = MainHud
-
-	PlayerProfile.Name = "PlayerProfile"
-	PlayerProfile.Parent = MainHud
-	PlayerProfile.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-	PlayerProfile.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	PlayerProfile.BorderSizePixel = 0
-	PlayerProfile.Position = UDim2.new(0.0483301915, 0, 0.191955373, 0)
-	PlayerProfile.Size = UDim2.new(0, 50, 0, 50)
-
-	UICorner.CornerRadius = UDim.new(0, 6)
-	UICorner.Parent = PlayerProfile
-
-	ImageLabel.Parent = PlayerProfile
-	ImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	ImageLabel.BackgroundTransparency = 1.000
-	ImageLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	ImageLabel.BorderSizePixel = 0
-	ImageLabel.Position = UDim2.new(0.0399999991, 0, 0.0399999991, 0)
-	ImageLabel.Size = UDim2.new(0, 45, 0, 45)
-	ImageLabel.Image = 'rbxthumb://type=AvatarHeadShot&id='..(lplr.UserId)..'&w=420&h=420'
-
-	UICorner_2.CornerRadius = UDim.new(0, 6)
-	UICorner_2.Parent = ImageLabel
-
-	plrName.Parent = MainHud
-	plrName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	plrName.BackgroundTransparency = 1.000
-	plrName.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	plrName.BorderSizePixel = 0
-	plrName.Position = UDim2.new(0.320029229, 0, 0.185185179, 0)
-	plrName.Size = UDim2.new(0, 129, 0, 12)
-	plrName.Font = Enum.Font.Arial
-	plrName.Text = lplr.DisplayName
-	plrName.TextColor3 = Color3.fromRGB(143, 143, 143)
-	plrName.TextScaled = true
-	plrName.TextSize = 14.000
-	plrName.TextWrapped = true
-	plrName.TextXAlignment = Enum.TextXAlignment.Left
-	plrName.TextYAlignment = Enum.TextYAlignment.Top
-
-	Healthbar.Name = "Healthbar"
-	Healthbar.Parent = MainHud
-	Healthbar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-	Healthbar.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	Healthbar.BorderSizePixel = 0
-	Healthbar.Position = UDim2.new(0.316511959, 0, 0.37714076, 0)
-	Healthbar.Size = UDim2.new(0, 144, 0, 5)
-
-	UICorner_3.CornerRadius = UDim.new(0, 4)
-	UICorner_3.Parent = Healthbar
-
-	PlayerHPBar.Name = "PlayerHPBar"
-	PlayerHPBar.Parent = Healthbar
-	PlayerHPBar.BackgroundColor3 = Color3.fromRGB(57, 181, 0)
-	PlayerHPBar.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	PlayerHPBar.BorderSizePixel = 0
-	PlayerHPBar.Position = UDim2.new(-0.00293265446, 0, -0.122857668, 0)
-	PlayerHPBar.Size = UDim2.new(0, 144, 0, 6)
-
-	UICorner_4.CornerRadius = UDim.new(0, 4)
-	UICorner_4.Parent = PlayerHPBar
-
-	Ability.Name = "Ability"
-	Ability.Parent = MainHud
-	Ability.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
-	Ability.BackgroundTransparency = 1.000
-	Ability.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	Ability.BorderSizePixel = 0
-	Ability.Position = UDim2.new(0.318768322, 0, 0.522196472, 0)
-	Ability.Size = UDim2.new(0, 20, 0, 23)
-
-	UICorner_5.CornerRadius = UDim.new(0, 5)
-	UICorner_5.Parent = Ability
-
-	Skill.Name = "Skill"
-	Skill.Parent = Ability
-	Skill.BackgroundColor3 = Color3.fromRGB(231, 231, 231)
-	Skill.BackgroundTransparency = 1.000
-	Skill.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	Skill.BorderSizePixel = 0
-	Skill.Position = UDim2.new(0, 0, -0.100000001, 0)
-	Skill.Size = UDim2.new(0, 144, 0, 12)
-	Skill.Font = Enum.Font.Arial
-	Skill.Text = "Plr Status:"
-	Skill.TextColor3 = Color3.fromRGB(255, 255, 255)
-	Skill.TextScaled = true
-	Skill.TextSize = 14.000
-	Skill.TextWrapped = true
-	Skill.TextXAlignment = Enum.TextXAlignment.Left
-	Skill.TextYAlignment = Enum.TextYAlignment.Top
-
-	Status.Name = "Status"
-	Status.Parent = Skill
-	Status.BackgroundColor3 = Color3.fromRGB(203, 0, 3)
-	Status.BackgroundTransparency = 1.000
-	Status.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	Status.BorderSizePixel = 0
-	Status.Position = UDim2.new(0.551388621, 0, -0.0166676845, 0)
-	Status.Size = UDim2.new(0, 57, 0, 12)
-	Status.Font = Enum.Font.ArialBold
-	Status.Text = "Losing"
-	Status.TextColor3 = Color3.fromRGB(226, 0, 4)
-	Status.TextScaled = true
-	Status.TextSize = 14.000
-	Status.TextWrapped = true
-	Status.TextYAlignment = Enum.TextYAlignment.Top
-
-	Block.Name = "Block"
-	Block.Parent = Ability
-	Block.BackgroundColor3 = Color3.fromRGB(231, 231, 231)
-	Block.BackgroundTransparency = 1.000
-	Block.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	Block.BorderSizePixel = 0
-	Block.Position = UDim2.new(0, 0, 0.850000024, 0)
-	Block.Size = UDim2.new(0, 144, 0, 12)
-	Block.Font = Enum.Font.Arial
-	Block.Text = "Block:"
-	Block.TextColor3 = Color3.fromRGB(255, 255, 255)
-	Block.TextScaled = true
-	Block.TextSize = 14.000
-	Block.TextWrapped = true
-	Block.TextXAlignment = Enum.TextXAlignment.Left
-	Block.TextYAlignment = Enum.TextYAlignment.Top
-	Block.Visible = false
-
-	Callback.Name = "Callback"
-	Callback.Parent = Block
-	Callback.BackgroundColor3 = Color3.fromRGB(231, 231, 231)
-	Callback.BackgroundTransparency = 1.000
-	Callback.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	Callback.BorderSizePixel = 0
-	Callback.Position = UDim2.new(0.604167938, 0, -0.0666656494, 0)
-	Callback.Size = UDim2.new(0, 42, 0, 12)
-	Callback.Font = Enum.Font.Arial
-	Callback.Text = "True"
-	Callback.TextColor3 = Color3.fromRGB(3, 208, 0)
-	Callback.TextScaled = true
-	Callback.TextSize = 14.000
-	Callback.TextWrapped = true
-	Callback.TextYAlignment = Enum.TextYAlignment.Top
-
-	UIListLayout.Parent = Ability
-	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-	UIListLayout.Padding = UDim.new(0, 4)
-
-	shadowHolder.Name = "shadowHolder"
-	shadowHolder.Parent = MainHud
-	shadowHolder.BackgroundTransparency = 1.000
-	shadowHolder.Size = UDim2.new(1, 0, 1, 0)
-	shadowHolder.ZIndex = 0
-
-	umbraShadow.Name = "umbraShadow"
-	umbraShadow.Parent = shadowHolder
-	umbraShadow.AnchorPoint = Vector2.new(0.5, 0.5)
-	umbraShadow.BackgroundTransparency = 1.000
-	umbraShadow.Position = UDim2.new(0.5, 0, 0.5, 2)
-	umbraShadow.Size = UDim2.new(1, 4, 1, 4)
-	umbraShadow.ZIndex = 0
-	umbraShadow.Image = "rbxassetid://1316045217"
-	umbraShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-	umbraShadow.ImageTransparency = 0.860
-	umbraShadow.ScaleType = Enum.ScaleType.Slice
-	umbraShadow.SliceCenter = Rect.new(10, 10, 118, 118)
-
-	penumbraShadow.Name = "penumbraShadow"
-	penumbraShadow.Parent = shadowHolder
-	penumbraShadow.AnchorPoint = Vector2.new(0.5, 0.5)
-	penumbraShadow.BackgroundTransparency = 1.000
-	penumbraShadow.Position = UDim2.new(0.5, 0, 0.5, 2)
-	penumbraShadow.Size = UDim2.new(1, 4, 1, 4)
-	penumbraShadow.ZIndex = 0
-	penumbraShadow.Image = "rbxassetid://1316045217"
-	penumbraShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-	penumbraShadow.ImageTransparency = 0.880
-	penumbraShadow.ScaleType = Enum.ScaleType.Slice
-	penumbraShadow.SliceCenter = Rect.new(10, 10, 118, 118)
-
-	ambientShadow.Name = "ambientShadow"
-	ambientShadow.Parent = shadowHolder
-	ambientShadow.AnchorPoint = Vector2.new(0.5, 0.5)
-	ambientShadow.BackgroundTransparency = 1.000
-	ambientShadow.Position = UDim2.new(0.5, 0, 0.5, 2)
-	ambientShadow.Size = UDim2.new(1, 4, 1, 4)
-	ambientShadow.ZIndex = 0
-	ambientShadow.Image = "rbxassetid://1316045217"
-	ambientShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-	ambientShadow.ImageTransparency = 0.880
-	ambientShadow.ScaleType = Enum.ScaleType.Slice
-	ambientShadow.SliceCenter = Rect.new(10, 10, 118, 118)
-
-	UICorner_6.CornerRadius = UDim.new(0, 7)
-	UICorner_6.Parent = shadowHolder
-
-	UIStroke.Color = Color3.fromRGB(255, 255, 255)
-	UIStroke.Thickness = 1.600000023841858
-	UIStroke.Enabled = false
-	UIStroke.Parent = MainHud
-
-	UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(219, 17, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(149, 0, 255))}
-	UIGradient.Parent = UIStroke
-
-
 	local HudAnimation = {Enabled = false}
 	local ModrenGui = Instance.new("ScreenGui")
 	local TargetInfo = Instance.new("Frame")
@@ -6994,7 +6746,7 @@ runFunction(function()
 	local TargetHP = Instance.new("TextLabel")
 
 	ModrenGui.Name = "ModrenGui"
-	ModrenGui.Parent = game.Players.LocalPlayer.PlayerGui
+	ModrenGui.Parent = lplr.PlayerGui
 	ModrenGui.ResetOnSpawn = false
 
 	TargetInfo.Name = "TargetInfo"
@@ -7128,6 +6880,7 @@ runFunction(function()
 	local HudStroke
 	local HealthStroke
 	local UIGradient2
+	local NewRender = {}
 	NewTargetHud = Instance.new("ScreenGui")
     NewRenderHud = Instance.new("Frame")
     HudCorner = Instance.new("UICorner")
@@ -7212,7 +6965,7 @@ runFunction(function()
     HealthBar.BorderColor3 = Color3.fromRGB(0, 0, 0)
     HealthBar.BorderSizePixel = 0
     HealthBar.Position = UDim2.new(0.293607324, 0, 0.684782565, 0)
-    HealthBar.Size = UDim2.new(0, 133, 0, 14)
+    HealthBar.Size = UDim2.new(0, 132, 0, 15)
     
     HealthBarCorner.CornerRadius = UDim.new(0, 7)
     HealthBarCorner.Name = "HealthBarCorner"
@@ -7224,7 +6977,7 @@ runFunction(function()
     HealthBarFull.BorderColor3 = Color3.fromRGB(0, 0, 0)
     HealthBarFull.BorderSizePixel = 0
     HealthBarFull.Position = UDim2.new(0.00336657069, 0, -0.0295039583, 0)
-    HealthBarFull.Size = UDim2.new(0, 132, 0, 14)
+    HealthBarFull.Size = UDim2.new(0, 132, 0, 15)
     
     FullHealthBarCorner.CornerRadius = UDim.new(0, 7)
     FullHealthBarCorner.Name = "FullHealthBarCorner"
@@ -7461,7 +7214,7 @@ runFunction(function()
 			npctarget = true
 		end
 		NewRenderHud.Visible = true
-		tweenService:Create(HealthBarFull, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {Size = UDim2.new(0, (health == maxhealth or npctarget) and 132 or 100 - (bestOffsetX(damage, 100)), 0, 15)}):Play()
+		tweenService:Create(HealthBarFull, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {Size = UDim2.new(0, (health == maxhealth or npctarget) and 132 or 132 - (bestOffsetX(damage, 100)), 0, 15)}):Play()
 		PlayerHealth.Text = ((math.round(health))..'.0%')
 		PlayerProfile.Image = 'rbxthumb://type=AvatarHeadShot&id='..(target.Player.UserId)..'&w=420&h=420'
 		DisPlayName.Text = (target.Player.DisplayName or target.Player.Name or 'Target')
@@ -7478,50 +7231,20 @@ runFunction(function()
 		local damage = (maxhealth - health)
 		local npctarget = false 
 		task.spawn(function()
-			wait(0.3)
+			task.wait(0.3)
 			tweenService:Create(TargetProfile, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {ImageColor3 = Color3.fromRGB(255, 0, 0)}):Play()
-			wait(0.5)
-			tweenService:Create(TargetProfile, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {ImageColor3 = Color3.fromRGB(255,255,255)}):Play()
+			task.wait(0.5)
+			tweenService:Create(TargetProfile, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {ImageColor3 = Color3.fromRGB(255, 255, 255)}):Play()
 		end)
 		if target.Player.UserId == 1443379645 then 
 			npctarget = true 
 		end
 		TargetInfo.Visible = true
 		tweenService:Create(FullHealthBar, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {Size = UDim2.new(0, (health == maxhealth or npctarget) and 216 or 100 - (bestOffsetX(damage, 100)), 0, 15)}):Play()
-		TargetHP.Text = ((math.round(health)))
+		TargetHP.Text = tostring(math.round(health))
 		TargetProfile.Image = 'rbxthumb://type=AvatarHeadShot&id='..(target.Player.UserId)..'&w=420&h=420'
 		TargetName.Text = (target.Player.DisplayName or target.Player.Name or 'Target')
-	end
-	local function updateTargetUI5(target)
-		local trashcheck = 0
-		local targetInfoOldHealth
-		if type(target) ~= 'table' or target.Player == nil then
-			NewVapeTargetHud.Visible = GuiLibrary.MainGui.ScaledGui.ClickGui.Visible
-			targetactive = false
-			return 
-		end
-		local health = (target.Humanoid and target.Humanoid.Health or isAlive(target.Player) and target.Player.Character.Humanoid.Health or 0)
-		local maxhealth = (target.Humanoid and target.Humanoid.MaxHealth or isAlive(target.Player, true) and target.Player.Character.Humanoid.MaxHealth or 100)
-		local damage = (maxhealth - health)
-		local npctarget = false
-		if target.Player.UserId == 1443379645 then 
-			npctarget = true 
-		end
-
-		task.spawn(function()
-			if target.Humanoid.Health < lplr.Humanoid.Health then
-				Status.Text = "Winning"
-				Status.TextColor3 = Color3.fromRGB(57, 181, 0)
-			elseif target.Humanoid.Health > lplr.Humanoid.Health then
-				Status.Text = "Losing"
-				Status.TextColor3 = Color3.fromRGB(226, 0, 4)
-			end
-		end)
-
-		NewVapeTargetHud.Visible = true
-		tweenService:Create(PlayerHPBar, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {Size = UDim2.new(0, (health == maxhealth or npctarget) and 144 or 100 - (bestOffsetX(damage, 100)), 0, 6)}):Play()
-		ImageLabel.Image = 'rbxthumb://type=AvatarHeadShot&id='..(target.Player.UserId)..'&w=420&h=420'
-		plrName.Text = (target.Player.DisplayName or target.Player.Name or 'Target')
+		
 	end
 	local RenderUI = GuiLibrary.CreateCustomWindow({
 		Name = 'OG Render HUD',
@@ -7543,24 +7266,13 @@ runFunction(function()
 		Icon = 'vape/assets/TargetIcon3.png',
 		IconSize = 16
 	})
-	local NewVapeUI = GuiLibrary.CreateCustomWindow({
-		Name = 'Remade Vape HUD',
-		Icon = 'vape/assets/TargetIcon3.png',
-		IconSize = 16
-	})
-	local NewVape = GuiLibrary.ObjectsThatCanBeSaved.TargetHUDWindow.Api.CreateOptionsButton({
-		Name = 'Remade Vape',
-		Function = function(calling)		
-			NewVapeUI.SetVisible(calling)
-		end
-	})
 	local Modren = GuiLibrary.ObjectsThatCanBeSaved.TargetHUDWindow.Api.CreateOptionsButton({
 		Name = 'Modern',
 		Function = function(calling)		
 			ModrenUI.SetVisible(calling)
 		end
 	})
-	local NewRender = GuiLibrary.ObjectsThatCanBeSaved.TargetHUDWindow.Api.CreateOptionsButton({
+	NewRender = GuiLibrary.ObjectsThatCanBeSaved.TargetHUDWindow.Api.CreateOptionsButton({
 		Name = 'Render',
 		Function = function(calling)		
 			NewRenderUI.SetVisible(calling)
@@ -7579,44 +7291,6 @@ runFunction(function()
 		end
 	})
 
-	--[[task.spawn(function()
-		repeat 
-			pcall(function() 
-				local color = Color3.fromHSV(GuiLibrary.ObjectsThatCanBeSaved['Gui ColorSliderColor'].Api.Hue, GuiLibrary.ObjectsThatCanBeSaved['Gui ColorSliderColor'].Api.Sat, GuiLibrary.ObjectsThatCanBeSaved['Gui ColorSliderColor'].Api.Value) 
-				local rgb = {color.R, color.G, color.B}
-				targetui.BackgroundColor3 = Color3.fromRGB(rgb[1] * 60, rgb[2] * 50, rgb[3] * 142)
-				targetstrokeround.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(rgb[1] * 168, rgb[2] * 98, rgb[3] * 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(rgb[1] * 146, rgb[2] * 23, rgb[3] * 254))})
-				targethealthbar.BackgroundColor3 = Color3.fromRGB(rgb[1] * 130, rgb[2] * 21, rgb[3] * 355) 
-				targethealthbarBK.BackgroundColor3 = Color3.fromRGB(rgb[1] * 45, rgb[2] * 7, rgb[3] * 91) 
-			end)
-			task.wait() 
-		until not vapeInjected 
-	end)]]
-
-	local Transparency = {Value = 0.6}
-	NoBackground = NewVape.CreateToggle({
-		Name = 'No Background',
-		Function = function(calling)
-			if calling then
-				shadowHolder.Visible = false
-				MainHud.BackgroundTransparency = 1
-			else
-				shadowHolder.Visible = true
-				MainHud.BackgroundTransparency = Transparency.Value
-			end
-		end
-	})
-
-	local TextColor = {Hue = 143, Sat = 143, Value = 143}
-	TextColor = NewVape.CreateColorSlider({
-		Name = 'TextColor',
-		Function = function(h,s,v)
-			if calling then
-				plrName.TextColor3 = Color3.fromHSV(h,s,v)
-			end
-		end
-	})
-
 	RenderOG.CreateColorSlider({
 		Name = 'Background Color',
 		Function = function(h, s, v)
@@ -7632,11 +7306,11 @@ runFunction(function()
 		end
 	})
 
-	local rendercolor2
+	local rendercolor2 = {Hue = 0, Sat = 0, Value = 0}
 	renderogcolor2 = RenderOG.CreateColorSlider({
 		Name = 'Outline Color 2',
-		Function = function(h, s, v)
-			targetstrokeround.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromHSV(renderogcolor.Hue, renderogcolor.Sat, renderogcolor.Value)), ColorSequenceKeypoint.new(1, Color3.fromHSV(h, s, v))})
+		Function = function()
+			targetstrokeround.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromHSV(renderogcolor.Hue, renderogcolor.Sat, renderogcolor.Value)), ColorSequenceKeypoint.new(1, Color3.fromHSV(renderogcolor2.Hue, renderogcolor2.Sat, renderogcolor2.Value))})
 		end
 	})
 
@@ -7735,14 +7409,12 @@ runFunction(function()
 		pcall(updateTargetUI2, ...)
 		pcall(updateTargetUI3, ...)
 		pcall(updateTargetUI4, ...)
-		pcall(updateTargetUI5, ...)
 	end
 
 	targetui.Parent = RenderUI.GetCustomChildren()
 	targetinfomainframe.Parent = VoidwareUI.GetCustomChildren()
 	NewRenderHud.Parent = NewRenderUI.GetCustomChildren()
 	TargetInfo.Parent = ModrenUI.GetCustomChildren()
-	NewVapeTargetHud.Parent = NewVapeUI.GetCustomChildren()
 	table.insert(vapeConnections, GuiLibrary.MainGui.ScaledGui.ClickGui:GetPropertyChangedSignal('Visible'):Connect(function()
 		if GuiLibrary.MainGui.ScaledGui.ClickGui.Visible then 
 			targetui.Visible = true 
