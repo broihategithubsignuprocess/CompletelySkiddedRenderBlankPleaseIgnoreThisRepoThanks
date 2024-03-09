@@ -10355,3 +10355,70 @@ runFunction(function()
 	BubbleModsTextColor.Object.Visible = false
 	BubbleModsTextSize.Object.Visible = false
 end)
+
+runFunction(function()
+    local AntiFaggot = {}
+	local RemoveFaggot = {}
+	local FaggotFolder = Instance.new("Folder")
+	FaggotFolder.Parent = replicatedStorageService
+	local getPlr = playersService:GetPlayers()
+	local index = math.random(1, #getPlr)
+	local faggot = getPlr[index].Name
+    AntiFaggot = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+        Name = "AntiFaggot",
+        Function = function(callback)
+            if callback then
+				repeat
+					warningNotification("Render", ""..faggot.. " Is a faggot", 10)
+					if RemoveFaggot.Enabled then
+						task.wait(3)
+						warningNotification("Render", "".. faggot.. " Going To Get Removed Now!", 10)
+						faggot.Character.Parent = FaggotFolder
+					end
+					task.wait(60)
+				until (not AntiFaggot.Enabled)
+            else
+				warningNotification("Render", "".. faggot.. " Has Been Revived")
+				faggot.Character.Parent = workspace
+            end
+        end
+    })
+	RemoveFaggot = AntiFaggot.CreateToggle({
+        Name = 'RemoveFaggot',
+        Default = false,
+        Function = function() end
+    })
+end)
+
+runFunction(function()
+    local CustomAmbience = {Enabled = false}
+	local newsky
+	local tint
+    CustomAmbience = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+        Name = "LynoSky",
+		HoverText = "Requested By Lyno",
+        Function = function(callback)
+            if callback then
+                game.Lighting.Ambient = Color3.fromRGB(170, 0, 255)
+                tint = Instance.new("ColorCorrectionEffect", game.Lighting)
+                tint.Name = "ComeOn123"
+                tint.TintColor = Color3.fromRGB(225, 200, 255)
+                newsky = Instance.new("Sky", game.Lighting)
+                newsky.Name = "PurpleFakeSky"
+                newsky.SkyboxBk = "rbxassetid://8539982183"
+                newsky.SkyboxDn = "rbxassetid://8539981943"
+                newsky.SkyboxFt = "rbxassetid://8539981721"
+                newsky.SkyboxLf = "rbxassetid://8539981424"
+                newsky.SkyboxRt = "rbxassetid://8539980766"
+                newsky.SkyboxUp = "rbxassetid://8539981085"
+                newsky.MoonAngularSize = 0
+                newsky.SunAngularSize = 0
+                newsky.StarCount = 3e3
+            else
+                game.Lighting.Ambient = Color3.fromRGB(69, 69, 69)
+                tint:Destroy()
+                newsky:Destroy()
+            end
+        end
+    })
+end)
