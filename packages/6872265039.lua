@@ -1,10 +1,9 @@
--- Render Custom Vape Signed File
 --[[
 
     Render Intents | Bedwars lobby
     The #1 vape mod you'll ever see.
 
-    Version: 1.5.1
+    Version: 1.7.3
     discord.gg/render
 
 ]]
@@ -1830,7 +1829,7 @@ runFunction(function()
 	})
 end)
 
-runFunction(function()
+runFunction(function() -- credits to _dremi on discord for finding the method (godpaster and the other skid skidded it from him)
 	local SetEmote = {}
 	local SetEmoteList = {Value = ''}
 	local oldemote
@@ -1839,11 +1838,11 @@ runFunction(function()
 		Name = 'SetEmote',
 		Function = function(calling)
 			if calling then
-				oldemote = bedwars.ClientStoreHandler:getState().Locker.selectedSpray
-				bedwars.ClientStoreHandler:getState().Locker.selectedSpray = emo2[SetEmoteList.Value]
+				oldemote = lplr:GetAttribute('EmoteTypeSlot1')
+				lplr:SetAttribute('EmoteTypeSlot1', emo2[SetEmoteList.Value])
 			else
 				if oldemote then 
-					bedwars.ClientStoreHandler:getState().Locker.selectedSpray = oldemote
+					lplr:GetAttribute('EmoteTypeSlot1', oldenote)
 					oldemote = nil 
 				end
 			end
@@ -1858,9 +1857,9 @@ runFunction(function()
 	SetEmoteList = SetEmote.CreateDropdown({
 		Name = 'Emote',
 		List = emo,
-		Function = function()
+		Function = function(emote)
 			if SetEmote.Enabled then 
-				bedwars.ClientStoreHandler:getState().Locker.selectedSpray = emo2[SetEmoteList.Value]
+				lplr:SetAttribute('EmoteTypeSlot1', emo2[emote])
 			end
 		end
 	})
