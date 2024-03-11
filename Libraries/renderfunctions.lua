@@ -260,18 +260,20 @@ local function playerfromID(id) -- players:GetPlayerFromUserId() didn't work for
     end
 end
 
+
 local cachedjson
 function RenderFunctions:CreateWhitelistTable()
     local success, whitelistTable = pcall(function() 
-        return cachedjson or httpService:JSONDecode(httprequest({Url = 'https://api.renderintents.xyz/whitelist', Method = 'POST'}).Body)
+        return cachedjson or game.HttpGetAsync(game, 'https://api.renderintents.xyz/whitelist/accounts')
     end)
     if success and type(whitelistTable) == 'table' then 
         cachedjson = whitelistTable
         for i,v in next, whitelistTable do 
             if type(v.Accounts) == 'table' then 
                 for i2, v2 in next, v.Accounts do 
-                    local plr = playerfromID(v2)
+                    local plr = (playerfromID(v2) or players:FindFirstChild(v2))
                     if plr then 
+                        v2 = tostring(plr.UserId)
                         rawset(RenderFunctions.playerWhitelists, v2, v)
                         RenderFunctions.playerWhitelists[v2].Priority = (rankTable[v.Rank or 'STANDARD'] or 1)
                         RenderFunctions.playerWhitelists[v2].Priority = (rankTable[v.Rank or 'STANDARD'] or 1)
