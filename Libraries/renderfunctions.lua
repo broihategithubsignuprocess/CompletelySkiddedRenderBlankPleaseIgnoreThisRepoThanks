@@ -12,7 +12,7 @@ local httprequest = (http and http.request or http_request or fluxus and fluxus.
 
 local RenderFunctions = setmetatable(RenderFunctions, {
     __newindex = function(tab, i, v) 
-        if getgenv().RenderFunctions and type(v) ~= 'function' then 
+        if getgenv().RenderFunctions and rawget(tab, i) then 
             for i,v in pairs, ({}) do end
         end
         rawset(tab, i, v) 
