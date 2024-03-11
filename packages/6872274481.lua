@@ -2242,7 +2242,7 @@ runFunction(function()
 		Default = 0
 	})
 end)
-
+																
 runFunction(function()
 	local AutoLeaveDelay = {Value = 1}
 	local AutoPlayAgain = {}
@@ -13831,3 +13831,19 @@ GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
 	HoverText = 'Disables the movement controls on lagback.',
 	Function = function() end
 })
+
+runFunction(function()
+	local nmsetemotee = {Enabled = false}
+	nmsetemotee = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+		Name = "NightmareEmote",
+		HoverText = "Gives you bedwars nightmare emote. [Slider]",
+		Function = function(calling)
+		if calling then
+			local emote = "nightmare_1"
+`			local slot = 1
+																							
+			game.Players.LocalPlayer:SetAttribute("emote_slot_"..tostring(slot), emoteID)
+			game.Players.LocalPlayer:SetAttribute("EmoteTypeSlot"..tostring(slot), emoteID)
+               end,																			
+	})																	
+end)
