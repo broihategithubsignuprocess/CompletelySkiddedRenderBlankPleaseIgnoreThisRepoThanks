@@ -2242,7 +2242,7 @@ runFunction(function()
 		Default = 0
 	})
 end)
-																
+
 runFunction(function()
 	local AutoLeaveDelay = {Value = 1}
 	local AutoPlayAgain = {}
