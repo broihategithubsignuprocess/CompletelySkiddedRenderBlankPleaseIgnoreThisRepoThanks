@@ -1,4 +1,3 @@
--- Render Custom Vape Signed File
 --[[
 
     Render Intents | Bedwars
@@ -13864,8 +13863,44 @@ runFunction(function() -- credits to _dremi on discord for finding the method (g
 	})
 end)
 
-GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
-	Name = 'LagbackFreezer',
-	HoverText = 'Disables the movement controls on lagback.',
-	Function = function() end
-})
+runFunction(function()
+	local NoEmoteWheel = {}
+	local emoting
+	NoEmoteWheel = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+		Name = 'NoEmoteWheel',
+		HoverText = 'Removes the old emote wheel and uses the first\nemote in your emote slot.',
+		Function = function(calling)
+			if calling then 
+				table.insert(NoEmoteWheel.Connections, lplr.PlayerGui.ChildAdded:Connect(function(v)
+					local anim
+					if tostring(v) == 'RoactTree' and isAlive(lplr, true) and not emoting then 
+						v:WaitForChild('1'):WaitForChild('1')
+						if not v['1']:IsA('ImageButton') then 
+							return 
+						end
+						v['1'].Visible = false
+						emoting = true
+						bedwars.ClientHandler:Get('Emote'):CallServer({emoteType = lplr:GetAttribute('EmoteTypeSlot1')})
+						local oldpos = lplr.Character.HumanoidRootPart.Position 
+						if tostring(lplr:GetAttribute('EmoteTypeSlot1')):lower():find('nightmare') then 
+							anim = Instance.new('Animation')
+							anim.AnimationId = 'rbxassetid://9191822700'
+							anim = lplr.Character.Humanoid.Animator:LoadAnimation(anim)
+							task.spawn(function()
+								repeat 
+									anim:Play()
+									anim.Completed:Wait()
+								until not anim
+							end)
+						end
+						repeat task.wait() until ((lplr.Character.HumanoidRootPart.Position - oldpos).Magnitude >= 0.3 or not isAlive(lplr, true))
+						pcall(function() anim:Stop() end)
+						anim = nil
+						emoting = false
+						bedwars.ClientHandler:Get('EmoteCancelled'):CallServer({emoteType = lplr:GetAttribute('EmoteTypeSlot1')})
+					end
+				end))
+			end
+		end
+	})
+end)
