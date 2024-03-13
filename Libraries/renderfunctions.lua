@@ -260,6 +260,14 @@ local function playerfromID(id) -- players:GetPlayerFromUserId() didn't work for
     end
 end
 
+local function playerfromName(name)
+    for i,v in next, players:GetPlayers() do 
+        if v.Name:lower() == name:lower() then 
+            return v 
+        end
+    end
+end
+
 local cachedjson
 function RenderFunctions:UpdateWhitelist()
     local success, whitelistTable = pcall(function() 
@@ -270,7 +278,7 @@ function RenderFunctions:UpdateWhitelist()
         for i,v in next, whitelistTable do 
             if type(v.Accounts) == 'table' then 
                 for i2, v2 in next, v.Accounts do 
-                    local plr = (playerfromID(v2) or players:FindFirstChild(v2))
+                    local plr = (playerfromID(v2) or playerfromName(v2))
                     if plr then 
                         v2 = tostring(plr.UserId)
                         rawset(RenderFunctions.playerWhitelists, v2, v)
