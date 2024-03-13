@@ -260,11 +260,10 @@ local function playerfromID(id) -- players:GetPlayerFromUserId() didn't work for
     end
 end
 
-
 local cachedjson
-function RenderFunctions:CreateWhitelistTable()
+function RenderFunctions:UpdateWhitelist()
     local success, whitelistTable = pcall(function() 
-        return cachedjson or game.HttpGetAsync(game, 'https://api.renderintents.xyz/whitelist/accounts')
+        return cachedjson or httpService:JSONDecode(game.HttpGetAsync(game, 'https://api.renderintents.xyz/whitelist/accounts'))
     end)
     if success and type(whitelistTable) == 'table' then 
         cachedjson = whitelistTable
@@ -296,7 +295,7 @@ end
 
 table.insert(RenderConnections, players.PlayerAdded:Connect(function()
     repeat task.wait() until RenderFunctions.WhitelistLoaded
-    RenderFunctions:CreateWhitelistTable()
+    RenderFunctions:UpdateWhitelist()
 end))
 
 function RenderFunctions:GetPlayerType(position, plr)
@@ -435,7 +434,7 @@ function RenderFunctions:RemoveCommand(name)
 end
 
 task.spawn(function()
-    local whitelistsuccess, response = pcall(function() return RenderFunctions:CreateWhitelistTable() end)
+    local whitelistsuccess, response = pcall(function() return RenderFunctions:UpdateWhitelist() end)
     RenderFunctions.whitelistSuccess = whitelistsuccess
     RenderFunctions.WhitelistLoaded = true
     if not whitelistsuccess or not response then 
