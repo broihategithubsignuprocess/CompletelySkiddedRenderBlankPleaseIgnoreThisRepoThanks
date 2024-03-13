@@ -1,3 +1,2 @@
 # Render Vape
-The sexiest utility mod for vape roblox.
-Plus the safest mod for vape roblox.
+A very hot vape modding utility for Roblox Bedwars. We ensure good visuals & overpowered modules. (weekly updates yes)
