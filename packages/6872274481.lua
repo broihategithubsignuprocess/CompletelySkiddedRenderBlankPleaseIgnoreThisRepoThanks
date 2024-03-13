@@ -13840,7 +13840,7 @@ runFunction(function() -- credits to _dremi on discord for finding the method (g
 				lplr:SetAttribute('EmoteTypeSlot1', emo2[SetEmoteList.Value])
 			else
 				if oldemote then 
-					lplr:GetAttribute('EmoteTypeSlot1', oldenote)
+					lplr:GetAttribute('EmoteTypeSlot1', oldemote)
 					oldemote = nil 
 				end
 			end
