@@ -288,22 +288,11 @@ local Profiles = GuiLibrary.CreateWindow2({
 	Icon = "vape/assets/ProfilesIcon.png", 
 	IconSize = 19
 })
-local Keybind = GuiLibrary.CreateWindow({
-	Name = "Keybind", 
-	Icon = "vape/assets/TargetIcon2.png", 
-	IconSize = 16
-})
 GUI.CreateDivider()
 GUI.CreateButton({
 	Name = "Combat", 
 	Function = function(callback) Combat.SetVisible(callback) end, 
 	Icon = "vape/assets/CombatIcon.png", 
-	IconSize = 15
-})
-GUI.CreateButton({
-	Name = "Keybind", 
-	Function = function(callback) Keybind.SetVisible(callback) end, 
-	Icon = "vape/assets/TargetIcon2.png", 
 	IconSize = 15
 })
 GUI.CreateButton({
