@@ -149,7 +149,7 @@ local function vapeGithubRequest(scripturl)
 		end)
 		suc, res = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/"..readfile("vape/commithash.txt").."/"..scripturl, true) end)
 		if not suc or res == "404: Not Found" then
-			displayErrorPopup("Failed to connect to github : vape/"..scripturl.." : "..res)
+			pcall(function() displayErrorPopup("Failed to connect to github : vape/"..scripturl.." : "..res) end)
 			error(res)
 		end
 		if scripturl:find(".lua") then res = "--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.\n"..res end
@@ -1821,7 +1821,8 @@ end
 local success, ria = pcall(function() return httpService:JSONDecode(readfile('ria.json')) end) 
 if type(ria) ~= "table" or ria.Key == nil then 
 	task.spawn(GuiLibrary.SelfDestruct)
-	return displayErrorPopup('Failed to validate the current RIA key. Please get the installer from the Discord and reinstall.', {Close = function() end})
+	pcall(function() displayErrorPopup('Failed to validate the current RIA key. Please get the installer from the Discord and reinstall.', {Close = function() end}) end)
+	return
 end
 
 getgenv().ria = ria.Key
