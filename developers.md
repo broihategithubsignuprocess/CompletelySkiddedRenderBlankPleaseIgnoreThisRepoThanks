@@ -21,5 +21,3 @@
 * [Github](https://github.com/Sail100)
 * [Youtube](https://www.youtube.com/@kwlzi)
 * [Discord](https://discord.gg/f6qQ6V6nXV)
-
-# Contributors 
