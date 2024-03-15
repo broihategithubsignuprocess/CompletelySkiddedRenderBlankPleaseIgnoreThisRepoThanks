@@ -1217,7 +1217,7 @@ AntiStun = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButto
 	end
 })
 
---[[unfinished 
+--[[															unfinished 
 local UserProtection = {}
 UserProtection = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
 	Name = "UserProtection",
@@ -1228,4 +1228,7 @@ UserProtection = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOption
 			
 		end
 	end
-})]]
+															
+})
+]]--
+															
