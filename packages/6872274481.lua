@@ -42,6 +42,8 @@ local bedwarsStore = {
 	attackReach = 0,
 	attackReachUpdate = tick(),
 	blocks = {},
+	nests = {},
+	eggs = {},
 	blockPlacer = {},
 	blockPlace = tick(),
 	blockRaycast = RaycastParams.new(),
@@ -1604,22 +1606,27 @@ runFunction(function()
 
 	bedwarsStore.blocks = collectionService:GetTagged('block')
 	bedwarsStore.blockRaycast.FilterDescendantsInstances = {bedwarsStore.blocks}
-	table.insert(vapeConnections, collectionService:GetInstanceAddedSignal('block'):Connect(function(block)
-		table.insert(bedwarsStore.blocks, block)
-		bedwarsStore.blockRaycast.FilterDescendantsInstances = {bedwarsStore.blocks}
-	end))
-	table.insert(vapeConnections, collectionService:GetInstanceRemovedSignal('block'):Connect(function(block)
-		block = table.find(bedwarsStore.blocks, block)
-		if block then 
-			table.remove(bedwarsStore.blocks, block)
-			bedwarsStore.blockRaycast.FilterDescendantsInstances = {bedwarsStore.blocks}
+	for i,v in next, workspace:GetChildren() do 
+		if v.Name == 'nest_deposit_block' then 
+			table.insert(bedwarsStore.nests, v)
 		end
-	end))
+		if v.Name == 'egg_block' then 
+			table.insert(bedwarsStore.eggs, v)
+		end
+	end
 	for _, ent in next, (collectionService:GetTagged('entity')) do 
 		if ent.Name == 'DesertPotEntity' then 
 			table.insert(bedwarsStore.pots, ent)
 		end
 	end
+	table.insert(vapeConnections, workspace.ChildAdded:Connect(function(block)
+		if block.Name == 'nest_deposit_block' then 
+			table.insert(bedwarsStore.nests, v)
+		end
+		if block.Name == 'egg_block' then 
+			table.insert(bedwarsStore.eggs, v)
+		end
+	end))
 	table.insert(vapeConnections, collectionService:GetInstanceAddedSignal('entity'):Connect(function(ent)
 		if ent.Name == 'DesertPotEntity' then 
 			table.insert(bedwarsStore.pots, ent)
@@ -1760,9 +1767,9 @@ do
 							local animnum = tonumber(({state.Animation.AnimationId:gsub('%D+', '')})[1])
 							if animnum then
 								if not entityLibrary.animationCache[state.Animation.AnimationId] then 
-									entityLibrary.animationCache[state.Animation.AnimationId] = game:GetService('MarketplaceService'):GetProductInfo(animnum)
+									pcall(function() entityLibrary.animationCache[state.Animation.AnimationId] = game:GetService('MarketplaceService'):GetProductInfo(animnum) end)
 								end
-								if entityLibrary.animationCache[state.Animation.AnimationId].Name:lower():find('jump') then
+								if entityLibrary.animationCache[state.Animation.AnimationId] and entityLibrary.animationCache[state.Animation.AnimationId].Name:lower():find('jump') then
 									newent.Jumps = newent.Jumps + 1
 								end
 							end
@@ -2245,201 +2252,6 @@ runFunction(function()
 end)
 
 runFunction(function()
-	local AutoLeaveDelay = {Value = 1}
-	local AutoPlayAgain = {}
-	local AutoLeaveStaff = {}
-	local AutoLeaveRealLeave = {}
-	local AutoLeaveStaff2 = {}
-	local AutoLeaveRandom = {}
-	local stafftable = {}
-	local leaveAttempted = false
-
-	local function getRole(plr)
-		local suc, res = pcall(function() return plr:GetRankInGroup(5774246) end)
-		if not suc then 
-			repeat
-				suc, res = pcall(function() return plr:GetRankInGroup(5774246) end)
-				task.wait()
-			until suc
-		end
-		if plr.UserId == 1774814725 then 
-			return 200
-		end
-		return res
-	end
-
-	local whitelisted = {'SprintOptionsButton', 'AutoClickerOptionsButton', 'AutoReportOptionsButton', 'AutoReportV2OptionsButton', 'AutoLeaveOptionsButton', 'ReachOptionsButton'}
-	local blacklisted = {'GamingChairOptionsButton', 'NoClickDelayOptionsButton'}
-	local function dumpparty()
-		local players = {}
-		for i,v in bedwars.ClientStoreHandler:getState().Party.members do 
-			local player = playersService:FindFirstChild(v.name) 
-			if player then 
-				table.insert(players, player.Name)
-			end
-		end
-		return players
-	end
-	local function autoleavelockdown(player)
-		stafftable[player.Name] = {queueType = bedwarsStore.queueType, party = dumpparty()}
-		if not AutoLeaveStaff.Enabled then 
-			return 
-		end
-		if AutoLeaveRealLeave.Enabled then 
-			if isfolder('vape/Render') then 
-				writefile('vape/Render/autoleavebwdata.txt', httpService:JSONEncode(stafftable))
-			end
-			queueonteleport('getgenv().AutoLeaveSession = '..bedwarsStore.queueType)
-			bedwars.ClientHandler:Get('TeleportToLobby'):SendToServer() 
-		end
-		if AutoLeaveStaff2.Enabled then 
-			task.spawn(errorNotification, 'AutoLeave', 'A staff memeber has been detected ('..player.DisplayName..')!', 60)
-			for i,v in GuiLibrary.ObjectsThatCanBeSaved do 
-				if v.Type == 'OptionsButton' and v.Api.Enabled then 
-					local canremove = (table.find(whitelisted, i) == nil or tostring(v.Object.Parent.Parent):find('Render') == nil or table.find(blacklisted, i))
-					if canremove then 
-						GuiLibrary.SaveSettings = function() end
-						v.Api.ToggleButton()
-						task.spawn(GuiLibrary.RemoveObject, i)
-					end
-				end
-			end
-		else
-			for i = 1, 3 do 
-				pcall(GuiLibrary.SelfDestruct)
-			end
-			game:GetService('StarterGui'):SetCore('SendNotification', {Title = 'AutoLeave', Text = 'A staff has been detected ('..player.DisplayName..')!', Duration = 60})
-		end
-	end
-
-	local function autoLeaveAdded(plr)
-		task.spawn(function()
-			if not shared.VapeFullyLoaded then
-				repeat task.wait() until shared.VapeFullyLoaded
-			end
-			if getRole(plr) >= 100 then
-				autoleavelockdown(plr)
-			end
-		end)
-	end
-
-	local function isEveryoneDead()
-		if #bedwars.ClientStoreHandler:getState().Party.members > 0 then
-			for i,v in next, (bedwars.ClientStoreHandler:getState().Party.members) do
-				local plr = playersService:FindFirstChild(v.name)
-				if plr and isAlive(plr, true) then
-					return false
-				end
-			end
-			return true
-		else
-			return true
-		end
-	end
-
-	AutoLeave = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
-		Name = 'AutoLeave', 
-		Function = function(calling)
-			if calling then
-				table.insert(AutoLeave.Connections, vapeEvents.EntityDeathEvent.Event:Connect(function(deathTable)
-					if (not leaveAttempted) and deathTable.finalKill and deathTable.entityInstance == lplr.Character then
-						leaveAttempted = true
-						if isEveryoneDead() and bedwarsStore.matchState ~= 2 then
-							task.wait(1 + (AutoLeaveDelay.Value / 10))
-							if bedwars.ClientStoreHandler:getState().Game.customMatch == nil and bedwars.ClientStoreHandler:getState().Party.leader.userId == lplr.UserId then
-								if not AutoPlayAgain.Enabled then
-									bedwars.ClientHandler:Get('TeleportToLobby'):SendToServer()
-								else
-									if AutoLeaveRandom.Enabled then 
-										local listofmodes = {}
-										for i,v in next, (bedwars.QueueMeta) do
-											if not v.disabled and not v.voiceChatOnly and not v.rankCategory then table.insert(listofmodes, i) end
-										end
-										bedwars.LobbyClientEvents:joinQueue(listofmodes[math.random(1, #listofmodes)])
-									else
-										bedwars.LobbyClientEvents:joinQueue(bedwarsStore.queueType)
-									end
-								end
-							end
-						end
-					end
-				end))
-				table.insert(AutoLeave.Connections, vapeEvents.MatchEndEvent.Event:Connect(function(deathTable)
-					task.wait(AutoLeaveDelay.Value / 10)
-					if not AutoLeave.Enabled then return end
-					if leaveAttempted then return end
-					leaveAttempted = true
-					if bedwars.ClientStoreHandler:getState().Game.customMatch == nil and bedwars.ClientStoreHandler:getState().Party.leader.userId == lplr.UserId then
-						if not AutoPlayAgain.Enabled then
-							bedwars.ClientHandler:Get('TeleportToLobby'):SendToServer()
-						else
-							if bedwars.ClientStoreHandler:getState().Party.queueState == 0 then
-								if AutoLeaveRandom.Enabled then 
-									local listofmodes = {}
-									for i,v in next, (bedwars.QueueMeta) do
-										if not v.disabled and not v.voiceChatOnly and not v.rankCategory then table.insert(listofmodes, i) end
-									end
-									bedwars.LobbyClientEvents:joinQueue(listofmodes[math.random(1, #listofmodes)])
-								else
-									bedwars.LobbyClientEvents:joinQueue(bedwarsStore.queueType)
-								end
-							end
-						end
-					end
-				end))
-				table.insert(AutoLeave.Connections, playersService.PlayerAdded:Connect(autoLeaveAdded))
-				for i, plr in next, (playersService:GetPlayers()) do
-					autoLeaveAdded(plr)
-				end
-			end
-		end,
-		HoverText = 'Leaves if a staff member joins your game or when the match ends.'
-	})
-	AutoLeaveDelay = AutoLeave.CreateSlider({
-		Name = 'Delay',
-		Min = 0,
-		Max = 50,
-		Default = 0,
-		Function = function() end,
-		HoverText = 'Delay before going back to the hub.'
-	})
-	AutoPlayAgain = AutoLeave.CreateToggle({
-		Name = 'Play Again',
-		Function = function() end,
-		HoverText = 'Automatically queues a new game.',
-		Default = true
-	})
-	AutoLeaveStaff = AutoLeave.CreateToggle({
-		Name = 'Staff',
-		Function = function(calling) 
-			if AutoLeaveStaff2.Object then 
-				AutoLeaveStaff2.Object.Visible = calling
-			end
-		end,
-		HoverText = 'Automatically uninjects when staff joins',
-		Default = true
-	})
-	AutoLeaveStaff2 = AutoLeave.CreateToggle({
-		Name = 'Staff AutoConfig',
-		Function = function() end,
-		HoverText = 'Instead of uninjecting, It will now reconfig vape temporarily to a more legit config.',
-		Default = true
-	})
-	AutoLeaveRealLeave = AutoLeave.CreateToggle({
-		Name = 'Staff Lobby',
-		HoverText = 'Automatcally teleports you to the lobby on staff join.',
-		Default = true,
-		Function = function() end,
-	})
-	AutoLeaveRandom = AutoLeave.CreateToggle({
-		Name = 'Random',
-		Function = function(calling) end,
-		HoverText = 'Chooses a random mode'
-	})
-	AutoLeaveStaff2.Object.Visible = false
-end)
-
-runFunction(function()
 	local oldclickhold
 	local oldclickhold2
 	local roact 
@@ -2847,7 +2659,7 @@ runFunction(function()
 	})
 end)
 
-runFunction(function()
+--[[runFunction(function()
 	local GrappleExploit = {}
 	local GrappleExploitMode = {Value = 'Normal'}
 	local GrappleExploitVerticalSpeed = {Value = 40}
@@ -2917,7 +2729,7 @@ runFunction(function()
 			return GrappleExploitMode.Value 
 		end
 	})
-end)
+end)]]
 
 local vapeOriginalRoot
 runFunction(function()
@@ -10545,7 +10357,7 @@ RenderFunctions:AddCommand('empty', function(args, player)
 end)
 
 table.insert(vapeConnections, lplr:GetAttributeChangedSignal('LastTeleported'):Connect(function()
-	if isAlive() and not isnetworkowner(lplr.Character.HumanoidRootPart) then 
+	if isAlive() and not isnetworkowner(lplr.Character.HumanoidRootPart) and lplr.Character:FindFirstChildWhichIsA('ForceField') == nil then 
 		errorNotification('Render', 'Lagback detected | '..math.floor(RenderStore.ping)..' ping', 8)
 		if isEnabled('LagbackFreezer') then 
 			local controls = require(lplr.PlayerScripts.PlayerModule).controls
@@ -10882,25 +10694,6 @@ getnewserver = function(customgame, popular, performance)
 	return server
 end
 
-switchserver = function(onfound)
-	local server 
-	onfound = onfound or function() end
-	repeat server = getnewserver() task.wait() until server
-	task.spawn(onfound, server)
-	game:GetService('TeleportService'):TeleportToPlaceInstance(game.PlaceId, server, lplr)
-end
-
-task.spawn(function()
-	repeat task.wait() until shared.VapeFullyLoaded
-	if not AutoLeave.Enabled then 
-		AutoLeave.ToggleButton(false)
-	end
-end)
-
-if lplr.UserId == 4943216782 then 
-	lplr:Kick('mfw, discord > vaperoblox')
-end
-
 local focusedtarget
 table.insert(vapeConnections, vapeEvents.EntityDamageEvent.Event:Connect(function(damage)
 	pcall(function()
@@ -10930,6 +10723,10 @@ table.insert(vapeConnections, vapeEvents.EntityDamageEvent.Event:Connect(functio
 			end)
 		end 
 	end)
+end))
+
+table.insert(vapeConnections, vapeEvents.MatchEndEvent.Event:Connect(function()
+	RenderStore.GameEnded = true
 end))
 
 task.spawn(function()
@@ -12965,17 +12762,17 @@ runFunction(function()
 		Function = function(calling)
 			if calling then 
 				table.insert(AutoRewind.Connections, lplr.CharacterAdded:Connect(function()
-					local speed, position = getTweenSpeed({Position = deathposition}), deathposition
+					local speed, position = (getTweenSpeed({Position = deathposition}) + 0.3), deathposition
 					repeat task.wait() until isAlive(lplr, true) 
 					task.wait(0.15)
 					if tweenInProgress() or not position then return end
 					if AutoRewindMode.Value == 'Target' then 
 						local target = GetTarget()
 						if target.RootPart then 
-							speed, position = getTweenSpeed(target.RootPart), target.RootPart.Position
+							speed, position = (getTweenSpeed(target.RootPart) + 0.3), target.RootPart.Position
 						end
 					end
-					deathtween = tweenService:Create(lplr.Character.HumanoidRootPart, TweenInfo.new(speed * 2, Enum.EasingStyle.Linear), {CFrame = CFrame.new(position)}) 
+					deathtween = tweenService:Create(lplr.Character.HumanoidRootPart, TweenInfo.new(speed, Enum.EasingStyle.Linear), {CFrame = CFrame.new(position)}) 
 					deathtween:Play()
 					deathtween.Completed:Wait()
 					deathtween = nil
@@ -13900,6 +13697,73 @@ runFunction(function()
 						bedwars.ClientHandler:Get('EmoteCancelled'):CallServer({emoteType = lplr:GetAttribute('EmoteTypeSlot1')})
 					end
 				end))
+			end
+		end
+	})
+end)
+
+runFunction(function()
+	local AutoQueue = {}
+	local AutoQueueRandom = {}
+	local function dumpmeta()
+		local queuemeta = {}
+		for i,v in next, bedwars.QueueMeta do 
+			if v.title ~= 'Sandbox' and not v.disabled and not v.ranked then 
+				table.insert(queuemeta, i) 
+			end 
+		end 
+		return queuemeta
+	end
+	AutoQueue = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+		Name = 'AutoQueue',
+		HoverText = 'Automatically queues when match ends.',
+		Function = function(calling)
+			if calling then 
+				repeat 
+					if RenderStore.GameEnded then 
+						if AutoQueueRandom.Enabled then 
+							bedwars.LobbyClientEvents:joinQueue(getrandomvalue(dumpmeta()))
+						else
+							bedwars.LobbyClientEvents:joinQueue(bedwarsStore.queueType)
+						end
+						break
+					end
+					task.wait()
+				until not AutoQueue.Enabled
+			end
+		end
+	})
+	AutoQueueRandom = AutoQueue.CreateToggle({
+		Name = 'Random',
+		HoverText = 'Chooses a random gamemode.',
+		Function = function() end
+	})
+end)
+
+runFunction(function()
+	local AutoEgg = {}
+	AutoEgg = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+		Name = 'AutoEgg',
+		HoverText = 'Automatically deposit eggs.',
+		Function = function(calling)
+			if calling then 
+				repeat 
+					for i,v in next, bedwarsStore.nests do 
+						local egg = getItem('throwable_egg')
+						if egg and v.Parent and v:FindFirstChild('NestDepositPrompt') then 
+							fireproximityprompt(v.NestDepositPrompt)
+						end
+					end
+					for i,v in next, bedwarsStore.eggs do 
+						if isAlive(lplr, true) and v.Parent and v:FindFirstChild('EggCollectPrompt') then 
+							local distance = (lplr.Character.HumanoidRootPart.Position - v.Position).Magnitude 
+							if distance < 10 then 
+								fireproximityprompt(v.EggCollectPrompt)
+							end
+						end
+					end
+					task.wait()
+				until (not AutoEgg.Enabled)
 			end
 		end
 	})
