@@ -13370,7 +13370,7 @@ runLunar(function()
 	})
 end)
 
-runFunction(function() 
+--[[runFunction(function() 
 	local Invisibility = {}
 	local collideparts = {}
 	local invisvisual = {}
@@ -13444,7 +13444,7 @@ runFunction(function()
 		Function = function() end
 	})
 	visualrootcolor.Object.Visible = false
-end)
+end)]]
 
 runFunction(function()
 	local Autowin = {}
