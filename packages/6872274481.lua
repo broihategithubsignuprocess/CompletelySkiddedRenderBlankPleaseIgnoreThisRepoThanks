@@ -13370,7 +13370,7 @@ runLunar(function()
 	})
 end)
 
---[[runFunction(function() 
+runFunction(function() 
 	local Invisibility = {}
 	local collideparts = {}
 	local invisvisual = {}
@@ -13388,7 +13388,7 @@ end)
 				end
 				task.wait(0.5)
 				local anim = Instance.new('Animation')
-				anim.AnimationId = 'rbxassetid://11335949902'
+				anim.AnimationId = 'rbxassetid://11360825341'
 				local anim2 = lplr.Character.Humanoid.Animator:LoadAnimation(anim) 
 				for i,v in next, lplr.Character:GetDescendants() do 
 					if v:IsA('BasePart') and v.CanCollide and v ~= lplr.Character.HumanoidRootPart then 
@@ -13444,7 +13444,7 @@ end)
 		Function = function() end
 	})
 	visualrootcolor.Object.Visible = false
-end)]]
+end)
 
 runFunction(function()
 	local Autowin = {}
