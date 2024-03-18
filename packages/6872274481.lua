@@ -13778,6 +13778,9 @@ runFunction(function()
 			if calling then 
 				repeat
 					task.wait()
+					if killauraNearPlayer then 
+						continue
+					end
 					local scythe = getItemNear('_scythe')
 					if isAlive(lplr, true) and not scythe then 
 						bedwars.ClientHandler:Get('ForgePurchaseUpgrade'):SendToServer(bedwars.ForgeConstants.SCYTHE)
