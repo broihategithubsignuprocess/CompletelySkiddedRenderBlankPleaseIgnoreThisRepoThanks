@@ -13778,12 +13778,14 @@ runFunction(function()
 			if calling then 
 				repeat
 					task.wait()
-					if isAlive(lplr, true) and not getItemNear('_scythe') then 
+					local scythe = getItemNear('_scythe')
+					if isAlive(lplr, true) and not scythe then 
 						bedwars.ClientHandler:Get('ForgePurchaseUpgrade'):SendToServer(bedwars.ForgeConstants.SCYTHE)
 						continue
 					end
 					if isAlive(lplr, true) then 
 						local move = lplr.Character.HumanoidRootPart.MoveDirection
+						switchItem(scythe.tool)
 						bedwars.ClientHandler:Get('ScytheDash'):SendToServer({direction = move == Vector3.zero and Vector3.new(9e9, 9e9, 9e9) or move * 9e15})
 						bedwarsStore.scythe = (tick() + 1)
 					end
