@@ -477,7 +477,7 @@ local function getSpeed()
 			speed += 90
 		end
 		if bedwarsStore.scythe > tick() then 
-			speed += 65
+			speed += 55
 		end
 		if lplr.Character:GetAttribute('GrimReaperChannel') then 
 			speed += 20
