@@ -188,7 +188,7 @@ function RenderFunctions:Announcement(tab)
 	    pcall(function() announcegui.Parent = (gethui and gethui() or game:GetService('CoreGui')) end) 
 		announceframe.Parent = announcegui
 	end
-	announceframe.Size = UDim2.new(0, 1754, 0, 63)
+	announceframe.Size = UDim2.new(0, 1664, 0, 55)
 	announceframe.Position = UDim2.new(0.035, 0, 0, 0)
 	announceframe.Text = ''
 	announceframe.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -207,7 +207,11 @@ function RenderFunctions:Announcement(tab)
 	announcetext.Position = UDim2.new(0.446, 0, 0.095, 0)
 	announcetext.TextSize = 25
 	announcetext.FontFace = Font.new('rbxasset://fonts/families/GothamSSm.json', Enum.FontWeight.Bold)
-	announcetext.Size = UDim2.new(0, 200, 0, 50)
+	announcetext.Size = UDim2.new(0.502, 0, 0.794, 0)
+    local announcetextconstraint = Instance.new('UITextSizeConstraint', announcetext)
+    announcetextconstraint.MinTextSize = 1
+    announcetextconstraint.MaxTextSize = 25
+    Instance.new('UIAspectRatioConstraint', announceframe).AspectRatio = 27.841
 	Instance.new('UICorner', announceframe).CornerRadius = UDim.new(0, 20) 
 	tweenService:Create(announceframe, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {Position = UDim2.new(0.035, 0, 0.081, 0)}):Play()
 	task.delay(tab.duration or 20, function()
