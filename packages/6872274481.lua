@@ -13783,6 +13783,8 @@ runFunction(function()
 						continue
 					end
 					if isAlive(lplr, true) then 
+						local move = lplr.Character.HumanoidRootPart.MoveDirection
+						bedwars.ClientHandler:Get('ScytheDash'):SendToServer({direction = move == Vector3.zero and Vector3.new(9e9, 9e9, 9e9) or move * 9e15})
 						bedwarsStore.scythe = (tick() + 1)
 					end
 				until (not ScytheDisabler.Enabled)
