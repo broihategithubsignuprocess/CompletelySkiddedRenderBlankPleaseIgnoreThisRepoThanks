@@ -3453,7 +3453,7 @@ runFunction(function()
 				end
                 task.spawn(function()
 					repeat
-						task.wait(0)
+						task.wait()
 						if not Killaura.Enabled then break end
 						vapeTargetInfo.Targets.Killaura = nil
 						local plrs = AllNearPosition(killaurarange.Value, 10, killaurasortmethods[killaurasortmethod.Value], true)
@@ -13769,4 +13769,3 @@ runFunction(function()
 		end
 	})
 end)
-
