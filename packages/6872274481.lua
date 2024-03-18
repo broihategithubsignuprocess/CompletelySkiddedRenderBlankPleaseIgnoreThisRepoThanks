@@ -13779,7 +13779,7 @@ runFunction(function()
 			if calling then 
 				repeat
 					task.wait()
-					if isAlive(lplr, true) not getItemNear('_scythe') then 
+					if isAlive(lplr, true) and not getItemNear('_scythe') then 
 						bedwars.ClientHandler:Get('ForgePurchaseUpgrade'):SendToServer(bedwars.ForgeConstants.SCYTHE)
 						continue
 					end
