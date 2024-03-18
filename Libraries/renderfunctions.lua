@@ -18,7 +18,7 @@ local RenderFunctions = setmetatable(RenderFunctions, {
         rawset(tab, i, v) 
     end,
     __tostring = function(tab) 
-        return 'Core render table object.'
+        return 'Critical render table object.'
     end
 })
 
@@ -174,84 +174,54 @@ function RenderFunctions:GetFile(file, onlineonly, custompath, customrepo)
     return isfile(filepath) and readfile(filepath) or task.wait(9e9)
 end
 
-local announcements = {}
+local announcegui
+local lastannouncement
 function RenderFunctions:Announcement(tab)
-	tab = tab or {}
-	tab.Text = tab.Text or ''
-	tab.Duration = tab.Duration or 20
-	for i,v in next, announcements do 
-        pcall(function() v:Destroy() end) 
-    end
-	table.clear(announcements)
-	local announcemainframe = Instance.new('Frame')
-	announcemainframe.Position = UDim2.new(0.2, 0, -5, 0.1)
-	announcemainframe.Size = UDim2.new(0, 1227, 0, 62)
-	announcemainframe.Parent = (GuiLibrary and GuiLibrary.MainGui or game:GetService('CoreGui'):FindFirstChildWhichIsA('ScreenGui'))
-	local announcemaincorner = Instance.new('UICorner')
-	announcemaincorner.CornerRadius = UDim.new(0, 20)
-	announcemaincorner.Parent = announcemainframe
-	local announceuigradient = Instance.new('UIGradient')
-	announceuigradient.Parent = announcemainframe
-	announceuigradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(234, 0, 0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(153, 0, 0))})
-	announceuigradient.Enabled = true
-	local announceiconframe = Instance.new('Frame')
-	announceiconframe.BackgroundColor3 = Color3.fromRGB(106, 0, 0)
-	announceiconframe.BorderColor3 = Color3.fromRGB(85, 0, 0)
-	announceiconframe.Position = UDim2.new(0.007, 0, 0.097, 0)
-	announceiconframe.Size = UDim2.new(0, 58, 0, 50)
-	announceiconframe.Parent = announcemainframe
-	local annouceiconcorner = Instance.new('UICorner')
-	annouceiconcorner.CornerRadius = UDim.new(0, 20)
-	annouceiconcorner.Parent = announceiconframe
-	local announceRendericon = Instance.new('ImageButton')
-	announceRendericon.Parent = announceiconframe
-	announceRendericon.Image = 'rbxassetid://13391474085'
-	announceRendericon.Position = UDim2.new(-0, 0, 0, 0)
-	announceRendericon.Size = UDim2.new(0, 59, 0, 50)
-	announceRendericon.BackgroundTransparency = 1
-	local announcetextfont = Font.new('rbxasset://fonts/families/Ubuntu.json')
-	announcetextfont.Weight = Enum.FontWeight.Bold
-	local announcemaintext = Instance.new('TextButton')
-	announcemaintext.Text = tab.Text
-	announcemaintext.FontFace = announcetextfont
-	announcemaintext.TextXAlignment = Enum.TextXAlignment.Left
-	announcemaintext.BackgroundTransparency = 1
-	announcemaintext.TextSize = 30
-	announcemaintext.AutoButtonColor = false
-	announcemaintext.Position = UDim2.new(0.063, 0, 0.097, 0)
-	announcemaintext.Size = UDim2.new(0, 1140, 0, 50)
-	announcemaintext.RichText = true
-	announcemaintext.TextColor3 = Color3.fromRGB(255, 255, 255)
-	announcemaintext.Parent = announcemainframe
-	tweenService:Create(announcemainframe, TweenInfo.new(1), {Position = UDim2.new(0.2, 0, 0.042, 0.1)}):Play()
-	local sound = Instance.new('Sound')
-	sound.PlayOnRemove = true
-	sound.SoundId = 'rbxassetid://6732495464'
-	sound.Parent = announcemainframe
-	sound:Destroy()
-	local function announcementdestroy()
-		local sound = Instance.new('Sound')
-		sound.PlayOnRemove = true
-		sound.SoundId = 'rbxassetid://6732690176'
-		sound.Parent = announcemainframe
-		sound:Destroy()
-		announcemainframe:Destroy()
+	if lastannouncement then 
+		lastannouncement:Remove() 
+		lastannouncement = nil 
 	end
-	announcemaintext.MouseButton1Click:Connect(announcementdestroy)
-	announceRendericon.MouseButton1Click:Connect(announcementdestroy)
-	task.delay(tab.Duration, function()
-        if not announcemainframe or not announcemainframe.Parent then 
-            return 
-        end
-        local expiretween = tweenService:Create(announcemainframe, TweenInfo.new(0.20, Enum.EasingStyle.Quad), {Transparency = 1})
-        expiretween:Play()
-        expiretween.Completed:Wait() 
-        announcemainframe:Destroy()
-    end)
-	table.insert(announcements, announcemainframe)
-	return announcemainframe
+	tab = (type(tab) == 'table' and tab or {})
+	local announceframe = Instance.new('TextButton', GuiLibrary and GuiLibrary.MainGui or announcegui)
+	if announceframe.Parent == nil and announcegui == nil then 
+		announcegui = Instance.new('ScreenGui', GuiLibrary and GuiLibrary.MainGui or lplr.PlayerGui)
+	    pcall(function() announcegui.Parent = (gethui and gethui() or game:GetService('CoreGui')) end) 
+		announceframe.Parent = announcegui
+	end
+	announceframe.Size = UDim2.new(0, 1754, 0, 63)
+	announceframe.Position = UDim2.new(0.035, 0, 0, 0)
+	announceframe.Text = ''
+	announceframe.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	local announcegradient = Instance.new('UIGradient', announceframe)
+	local announcestroke = Instance.new('UIStroke', announceframe)
+	local announcestrokgradient = Instance.new('UIGradient', announcestroke)
+	local announcetext = Instance.new('TextLabel', announceframe)
+	announcegradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 127)), ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 176))})
+	announcestroke.Thickness = 2.3
+	announcestroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	announcestroke.Color = Color3.fromRGB(255, 255, 255)
+	announcestrokgradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 14, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(1, 69, 255))})
+	announcetext.Text = (tab.Text or '')
+	announcetext.TextColor3 = Color3.fromRGB(255, 255, 255)
+	announcetext.BackgroundTransparency = 1
+	announcetext.Position = UDim2.new(0.446, 0, 0.095, 0)
+	announcetext.TextSize = 25
+	announcetext.FontFace = Font.new('rbxasset://fonts/families/GothamSSm.json', Enum.FontWeight.Bold)
+	announcetext.Size = UDim2.new(0, 200, 0, 50)
+	Instance.new('UICorner', announceframe).CornerRadius = UDim.new(0, 20) 
+	tweenService:Create(announceframe, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {Position = UDim2.new(0.035, 0, 0.081, 0)}):Play()
+	task.delay(tab.duration or 20, function()
+		announceframe:Remove()
+		lastannouncement = nil
+	end)
+	announceframe.MouseButton1Click:Connect(function()
+		announceframe:Remove()
+		lastannouncement = nil
+	end)
+	return announceframe
 end
 
+RenderFunctions:Announcement({Text = 'hi, just testing new annc system ok', Duration = 5})
 local function playerfromID(id) -- players:GetPlayerFromUserId() didn't work for some reason :bruh:
     for i,v in next, players:GetPlayers() do 
         if v.UserId == tonumber(id) then 
@@ -295,7 +265,7 @@ function RenderFunctions:UpdateWhitelist()
     local selftab = (RenderFunctions.playerWhitelists[lplr] or {Priority = 1})
     for i,v in next, RenderFunctions.playerWhitelists do 
         if selftab.Priority >= v.Priority then 
-            v.Attackable = true
+            rawset(v, 'Attackable', true)
         end 
     end
     return success
