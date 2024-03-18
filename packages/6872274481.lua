@@ -13770,25 +13770,3 @@ runFunction(function()
 	})
 end)
 
-runFunction(function()
-	local ScytheDisabler = {}
-	ScytheDisabler = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
-		Name = 'ScytheDisabler',
-		HoverText = 'Only works in custom matches sorry <3',
-		Function = function(calling)
-			if calling then 
-				repeat
-					task.wait()
-					if isAlive(lplr, true) and not getItemNear('_scythe') then 
-						bedwars.ClientHandler:Get('ForgePurchaseUpgrade'):SendToServer(bedwars.ForgeConstants.SCYTHE)
-						continue
-					end
-					if isAlive(lplr, true) then 
-						bedwarsStore.scythe = (tick() + 1)
-					end
-				until (not ScytheDisabler.Enabled)
-			end
-		end
-	})
-end)
-
