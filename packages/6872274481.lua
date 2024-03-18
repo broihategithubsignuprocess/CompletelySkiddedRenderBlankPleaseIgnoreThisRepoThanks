@@ -3,7 +3,7 @@
     Render Intents | Bedwars
     The #1 vape mod you'll ever see.
 
-    Version: 1.7.1
+    Version: 1.7.3
     discord.gg/render
 
 ]]
@@ -93,7 +93,6 @@ local dumptable = function() return {} end
 local sendmessage = function() end
 local getEnemyBed = function() end 
 local canRespawn = function() end
-local isNeutral = function() return false
 local characterDescendant = function() return nil end
 local playerRaycasted = function() return true end
 local tweenInProgress = function() end
@@ -13389,7 +13388,7 @@ runFunction(function()
 				end
 				task.wait(0.5)
 				local anim = Instance.new('Animation')
-				anim.AnimationId = 'rbxassetid://11335949902'
+				anim.AnimationId = 'rbxassetid://11360825341'
 				local anim2 = lplr.Character.Humanoid.Animator:LoadAnimation(anim) 
 				for i,v in next, lplr.Character:GetDescendants() do 
 					if v:IsA('BasePart') and v.CanCollide and v ~= lplr.Character.HumanoidRootPart then 
