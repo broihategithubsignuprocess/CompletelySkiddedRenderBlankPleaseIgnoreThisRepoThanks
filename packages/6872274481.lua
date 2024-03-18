@@ -13787,7 +13787,9 @@ runFunction(function()
 						local move = lplr.Character.HumanoidRootPart.MoveDirection
 						switchItem(scythe.tool)
 						bedwars.ClientHandler:Get('ScytheDash'):SendToServer({direction = move == Vector3.zero and Vector3.new(9e9, 9e9, 9e9) or move * 9e15})
-						bedwarsStore.scythe = (tick() + 1)
+						if lplr:GetAttribute('ScytheSpinning') then 
+							bedwarsStore.scythe = (tick() + 1) 
+						end
 					end
 				until (not ScytheDisabler.Enabled)
 			end
