@@ -10097,3 +10097,54 @@ runFunction(function()
         end
     })
 end)
+runFunction(function()
+    local CustomAmbience = {Enabled = false}
+	local chatUi = lplr.PlayerGui.Chat.Frame
+				
+	chatUi.Transparency = 0.5
+	chatUi.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 10)
+	corner.Parent = chatUi
+	
+	local chatParentFrame = chatUi:WaitForChild("ChatChannelParentFrame")
+	chatParentFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+	
+	local chatBarParentFrame = chatUi:WaitForChild("ChatBarParentFrame")
+	chatBarParentFrame.BackgroundTransparency = 1
+	
+	local BoxFrame0 = chatBarParentFrame:WaitForChild("Frame")
+	local BoxFrame = BoxFrame0:WaitForChild("BoxFrame")
+	local BoxFrame2 = BoxFrame:WaitForChild("Frame")
+	
+	local plrMessage = chatParentFrame:WaitForChild("Frame_MessageLogDisplay")
+    CustomChat = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+        Name = "CustomChat",
+        Function = function(callback)
+            if callback then		
+				task.spawn(function()
+					repeat
+						chatParentFrame.BackgroundTransparency = 1
+						chatBarParentFrame.BackgroundTransparency = 1
+						plrMessage.Transparency = 1
+						BoxFrame0.Transparency = 1
+				
+						if BoxFrame2:WaitForChild("TextLabel") then
+							BoxFrame2:WaitForChild("TextLabel").TextColor3 = Color3.fromRGB(0, 0, 0)
+							BoxFrame2:WaitForChild("ChatBar").TextColor3 = Color3.fromRGB(0, 0, 0)
+							BoxFrame2:WaitForChild("MessageMode").TextColor3 = Color3.fromRGB(255, 5, 5)
+						end
+				
+						if not BoxFrame:FindFirstChild("UICorner") then
+							local cornerBoxFrame = Instance.new("UICorner")
+							cornerBoxFrame.CornerRadius = UDim.new(0, 7)
+							cornerBoxFrame.Parent = BoxFrame
+						end
+						
+						task.wait()
+					until (not CustomChat.Enabled)
+				end)
+			end
+        end
+    })
+end)
