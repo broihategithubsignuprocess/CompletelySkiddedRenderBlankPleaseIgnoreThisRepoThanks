@@ -3,7 +3,7 @@
     Render Intents | Bedwars
     The #1 vape mod you'll ever see.
 
-    Version: 1.7.3
+    Version: 1.8
     discord.gg/render
 
 ]]
@@ -44,6 +44,7 @@ local bedwarsStore = {
 	blocks = {},
 	nests = {},
 	eggs = {},
+	generatorParts = {},
 	blockPlacer = {},
 	blockPlace = tick(),
 	blockRaycast = RaycastParams.new(),
@@ -563,13 +564,17 @@ local function getOpenApps()
 	return count
 end
 
+local function getServerHand()
+	return lplr.Character and lplr.Character:FindFirstChild('HandInvItem') and lplr.Character.HandInvItem.Value
+end
+
 local function switchItem(tool)
-	if lplr.Character.HandInvItem.Value ~= tool then
+	if getServerHand() ~= tool then 
 		bedwars.ClientHandler:Get(bedwars.EquipItemRemote):CallServerAsync({
 			hand = tool
 		})
 		local started = tick()
-		repeat task.wait() until (tick() - started) > 0.3 or lplr.Character.HandInvItem.Value == tool
+		repeat task.wait() until (tick() - started) > 0.3 or getServerHand() == tool
 	end
 end
 
@@ -1613,6 +1618,9 @@ runFunction(function()
 		if v.Name == 'egg_block' then 
 			table.insert(bedwarsStore.eggs, v)
 		end
+		if v.Name == 'GeneratorAdornee' then
+			table.insert(bedwarsStore.generatorParts, v) 
+		end
 	end
 	for _, ent in next, (collectionService:GetTagged('entity')) do 
 		if ent.Name == 'DesertPotEntity' then 
@@ -1625,6 +1633,9 @@ runFunction(function()
 		end
 		if block.Name == 'egg_block' then 
 			table.insert(bedwarsStore.eggs, v)
+		end
+		if block.Name == 'GeneratorAdornee' then
+			table.insert(bedwarsStore.generatorParts, v) 
 		end
 	end))
 	table.insert(vapeConnections, collectionService:GetInstanceAddedSignal('entity'):Connect(function(ent)
@@ -3337,7 +3348,10 @@ runFunction(function()
 								end)
 							end
 						end
-						task.wait()
+						if killauraNearPlayer and killaurauseitems.Enabled and lplr:GetAttribute('InfectedVariantType') == 'disruptor' then 
+							bedwars.ClientHandler:Get('DisruptorEMPBlast'):SendToServer({blastPosition = lplr.Character.HumanoidRootPart.Position})
+						end
+						task.wait(0)
 					until not Killaura.Enabled
 				end)
 				task.spawn(function()
@@ -3518,6 +3532,8 @@ runFunction(function()
 									bedwarsStore.attackReach = math.floor((selfrootpos - root.Position).magnitude * 100) / 100
 									bedwarsStore.attackReachUpdate = tick() + 1
 									killaurarealremote:FireServer({
+										
+										
 										weapon = sword.tool,
 										chargedAttack = {chargeRatio = swordmeta.sword.chargedAttack and bedwarsStore.queueType ~= 'bridge_duel' and not swordmeta.sword.chargedAttack.disableOnGrounded and 0.999 or 0},
 										entityInstance = plr.Character,
@@ -13720,7 +13736,7 @@ runFunction(function()
 		Function = function(calling)
 			if calling then 
 				repeat 
-					if RenderStore.GameEnded then 
+					if bedwarsStore.matchState == 2 then 
 						if AutoQueueRandom.Enabled then 
 							bedwars.LobbyClientEvents:joinQueue(getrandomvalue(dumpmeta()))
 						else
@@ -13797,5 +13813,71 @@ runFunction(function()
 				until (not ScytheDisabler.Enabled)
 			end
 		end
+	})
+end)
+
+runFunction(function()
+	local RushExploit = {}
+	RushExploit = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+		Name = 'CatExploit',
+		HoverText = 'Allows you to go up to 30-33 speed with cat leap ability.',
+		Function = function(calling)
+			if calling then 
+				repeat 
+					if bedwars.AbilityController:canUseAbility('CAT_POUNCE') then 
+						bedwars.AbilityController:useAbility('CAT_POUNCE')
+					end 
+					task.wait(0)
+				until (not RushExploit.Enabled)
+			end
+		end
+	})
+end)
+
+runFunction(function()
+	local DisruptorTPAura = {}
+	local DisruptorTPAuraDelay = {Value = 0.1}
+	local DisruptorTPAuraAuto = {}
+	DisruptorTPAura = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+		Name = 'TPAura',
+		HoverText = 'Automatically kills nearby players if\nyou\'re a disruptor in infected.',
+		Function = function(calling)
+			if calling then 
+				repeat 
+					local target = GetTarget()
+					if target.RootPart and lplr:GetAttribute('InfectedVariantType') == 'disruptor' then
+						bedwars.ClientHandler:Get('DisruptorEMPBlast'):SendToServer({blastPosition = target.RootPart.Position})
+						local fired = tick()
+						local oldval = DisruptorTPAuraDelay.Value
+						local delayval = (DisruptorTPAuraDelay.Value / 20)
+						repeat task.wait() until (DisruptorTPAura.Value ~= oldval or (tick() - fired) > delayval)
+					end
+					if lplr:GetAttribute('InfectedVariantType') ~= 'disruptor' and DisruptorTPAuraAuto.Enabled then 
+						if isAlive(lplr, true) then 
+							lplr.Character.Humanoid:TakeDamage(lplr.Character.Humanoid.Health)
+							lplr.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Dead)
+							repeat task.wait() until (not DisruptorTPAura.Enabled or not isAlive(lplr, true))
+							repeat task.wait() until (not DisruptorTPAura.Enabled or isAlive(lplr, true))
+							if DisruptorTPAura.Enabled then 
+								bedwars.ClientHandler:Get('InfectedSelectVariant'):SendToServer({variantType = 'disruptor'})
+							end
+						end
+					end
+					task.wait()
+				until (not DisruptorTPAura.Enabled)
+			end
+		end
+	})
+	DisruptorTPAuraAuto = DisruptorTPAura.CreateToggle({
+		Name = 'Auto Choose',
+		HoverText = 'Automatically makes youa disruptor.',
+		Default = true,
+		Function = function() end
+	})
+	DisruptorTPAuraDelay = DisruptorTPAura.CreateSlider({
+		Name = 'Delay',
+		Min = 0, 
+		Max = 100,
+		Function = function() end
 	})
 end)
