@@ -225,7 +225,6 @@ function RenderFunctions:Announcement(tab)
 	return announceframe
 end
 
-RenderFunctions:Announcement({Text = 'hi, just testing new annc system ok', Duration = 5})
 local function playerfromID(id) -- players:GetPlayerFromUserId() didn't work for some reason :bruh:
     for i,v in next, players:GetPlayers() do 
         if v.UserId == tonumber(id) then 
