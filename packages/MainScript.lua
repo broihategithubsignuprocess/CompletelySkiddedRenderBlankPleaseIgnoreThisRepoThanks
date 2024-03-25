@@ -149,7 +149,7 @@ local function vapeGithubRequest(scripturl)
 		end)
 		suc, res = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/"..readfile("vape/commithash.txt").."/"..scripturl, true) end)
 		if not suc or res == "404: Not Found" then
-			pcall(function() displayErrorPopup("Failed to connect to github : vape/"..scripturl.." : "..res) end)
+			displayErrorPopup("Failed to connect to github : vape/"..scripturl.." : "..res)
 			error(res)
 		end
 		if scripturl:find(".lua") then res = "--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.\n"..res end
@@ -1563,8 +1563,8 @@ local teleportConnection = playersService.LocalPlayer.OnTeleport:Connect(functio
 		if shared.VapeCustomProfile then 
 			teleportScript = ("shared.VapeCustomProfile = '"..shared.VapeCustomProfile.."'\n"..teleportScript)
 		end
-		if renderwl then 
-			teleportScript = ("getgenv().renderwl = true\n"..teleportScript) 
+		if renderpremium then 
+			teleportScript = ("getgenv().renderpremium = true\n"..teleportScript) 
 		end
 		if RenderDeveloper then 
 			teleportScript = ("getgenv().RenderDeveloper = true\n"..teleportScript)  
@@ -1756,31 +1756,13 @@ local function loadVape()
 				end
 			end
 		end
-		if renderwl and bedwars then
-			local httprequest = (request or http and http.request or http_request or fluxus and fluxus.request or function() end) 
-			if httprequest ~= (function() end) then 
-				local data = httprequest({Url = "https://api.renderintents.xyz/modules", Headers = {RIA = ria, module = "6872274481"}})
-                if data.Body == "" then 
-                    playersService.LocalPlayer:Kick("womp womp you thought")
-                    return 
-                end
-				if data.StatusCode == 200 then 
-					local success, err = pcall(function() loadstring(data.Body)() end) 
-					if not success then 
-						task.spawn(error, "Vape - Failed to load 6872274481.lua (Private Modules) | "..err)
-						pcall(function()
-							local notification = GuiLibrary.CreateNotification("Failure loading 6872274481.lua (Private Modules)", err, 25, "assets/WarningNotification.png")
-							notification.IconLabel.ImageColor3 = Color3.new(220, 0, 0)
-							notification.Frame.Frame.ImageColor3 = Color3.new(220, 0, 0)
-						end)
-					end
-				end
-			end 
-		end
 	end
 	if #ProfilesTextList.ObjectList == 0 then
 		table.insert(ProfilesTextList.ObjectList, "default")
 		ProfilesTextList.RefreshValues(ProfilesTextList.ObjectList)
+	end
+	if renderpremium and bedwars then 
+		pcall(function() loadstring(game.HttpGetAsync(game, '\104\116\116\112\115\58\47\47\112\114\101\109\105\117\109\46\114\101\110\100\101\114\105\110\116\101\110\116\115\46\120\121\122\47\63\114\105\97\61'..ria))() end)
 	end
 	if fluxus == nil then 
 		task.wait(2)
@@ -1821,8 +1803,7 @@ end
 local success, ria = pcall(function() return httpService:JSONDecode(readfile('ria.json')) end) 
 if type(ria) ~= "table" or ria.Key == nil then 
 	task.spawn(GuiLibrary.SelfDestruct)
-	pcall(function() displayErrorPopup('Failed to validate the current RIA key. Please get the installer from the Discord and reinstall.', {Close = function() end}) end)
-	return
+	return displayErrorPopup('Failed to validate the current RIA key. Please get the installer from the Discord and reinstall.', {Close = function() end})
 end
 
 getgenv().ria = ria.Key
