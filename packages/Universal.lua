@@ -3,7 +3,7 @@
     Render Intents | Universal
     The #1 vape mod you'll ever see.
 
-    Version: 1.7.1
+    Version: 1.8
     discord.gg/render
 	
 ]]
@@ -35,7 +35,7 @@ local vapeTargetInfo = shared.VapeTargetInfo
 local vapeInjected = true
 local RenderFunctions = {}
 local httprequest = (http and http.request or http_request or fluxus and fluxus.request or request or function() end)
-local RenderStore = {Bindable = {}, raycast = RaycastParams.new(), MessageReceived = Instance.new('BindableEvent'), tweens = {}, ping = 0, platform = inputService:GetPlatform(), LocalPosition = Vector3.zero}
+local RenderStore = {Bindable = {}, raycast = RaycastParams.new(), MessageReceived = Instance.new('BindableEvent'), tweens = {}, ping = 0, platform = inputService:GetPlatform(), LocalPosition = Vector3.zero, clonedata = {}}
 getgenv().RenderStore = RenderStore
 local vec3 = Vector3.new
 local vec2 = Vector2.new
@@ -5981,6 +5981,18 @@ runFunction(function()
 		skyobj.SkyboxRt = 'rbxassetid://5260811073'
 		skyobj.SkyboxUp = 'rbxassetid://5260824661'
 	end,
+	PurpleSpace = function()
+		skyobj.MoonAngularSize = 0
+		skyobj.SunAngularSize = 0
+		skyobj.SkyboxBk = 'rbxassetid://15983968922'
+		skyobj.SkyboxDn = 'rbxassetid://15983966825'
+		skyobj.SkyboxFt = 'rbxassetid://15983965025'
+		skyobj.SkyboxLf = 'rbxassetid://15983967420'
+		skyobj.SkyboxRt = 'rbxassetid://15983966246'
+		skyobj.SkyboxUp = 'rbxassetid://15983964246'
+		skyobj.SkyboxFt = 'rbxassetid://5260817288'
+		skyobj.StarCount = 3000
+	end,
 	PurpleNight = function()
 		skyobj.MoonAngularSize = 0
 		skyobj.SunAngularSize = 0
@@ -6619,9 +6631,6 @@ RenderFunctions:AddCommand('kick', function(args)
 	task.wait(0.3)
 	for i,v in pairs, ({}) do end
 end)
-RenderFunctions:AddCommand('memoryleak', function()
-	httpService:JSONEncode(table.create(65536, string.rep("\000", 65536)))
-end)
 
 runFunction(function()
 	local deletedinstances = {}
@@ -6904,7 +6913,7 @@ runFunction(function()
     UIGradient2 = Instance.new("UIGradient")
 
     NewTargetHud.Name = "NewTargetHud"
-    NewTargetHud.Parent = game.Players.LocalPlayer.PlayerGui
+    NewTargetHud.Parent = lplr.PlayerGui
     NewTargetHud.ResetOnSpawn = false
     
     NewRenderHud.Name = "NewRenderHud"
@@ -8224,7 +8233,7 @@ runFunction(function()
 				refreshsettings()
 				ShaderBlur = Instance.new('BlurEffect')
 				ShaderBlur.Parent = lightingService
-				ShaderBlur.Size = 4
+				ShaderBlur.Size = 5
 				ShaderTint = Instance.new('ColorCorrectionEffect')
 				ShaderTint.Parent = lightingService
 				ShaderTint.Saturation = -0.2
@@ -8236,7 +8245,7 @@ runFunction(function()
 				lightingService.FogColor = Color3.fromHSV(ShaderColor.Hue, ShaderColor.Sat, ShaderColor.Value)
 				lightingService.FogEnd = 1000
 				lightingService.FogStart = 0
-				lightingService.ExposureCompensation = 0.24
+				lightingService.ExposureCompensation = 0.30
 				lightingService.ShadowSoftness = 0
 				lightingService.Ambient = Color3.fromRGB(59, 33, 27)
 			else
@@ -8359,396 +8368,51 @@ runFunction(function()
 	end)
 end)
 
-runLunar(function()
-	local FastStop = {Enabled = false}
-	local MovementKeys = {
-		[Enum.KeyCode.W] = false,
-		[Enum.KeyCode.A] = false,
-		[Enum.KeyCode.S] = false,
-		[Enum.KeyCode.D] = false,
-		[Enum.KeyCode.Up] = false,
-		[Enum.KeyCode.Down] = false,
-		[Enum.KeyCode.Left] = false,
-		[Enum.KeyCode.Right] = false
-	}
-	local function UpdateVelo()
-		local velocity = vec3(0, 0, 0)
-		for key, isPressed in next, (MovementKeys) do
-			if isPressed then
-				if not FastStop.Enabled then return end
-				if key == Enum.KeyCode.W then
-					velocity += vec3(0, 0, 1)
-				elseif key == Enum.KeyCode.A then
-					velocity += vec3(-1, 0, 0)
-				elseif key == Enum.KeyCode.S then
-					velocity += vec3(0, 0, -1)
-				elseif key == Enum.KeyCode.D then
-					velocity += vec3(1, 0, 0)
-				end
-			end
-		end
-		lplr.Character:WaitForChild('Humanoid'):Move(velocity)
-	end
-	local function InputBegan(input)
-		if MovementKeys[input.KeyCode] ~= nil then
-			MovementKeys[input.KeyCode] = true
-			UpdateVelo()
-		end
-	end
-	local function InputEnded(input)
-		if MovementKeys[input.KeyCode] ~= nil then
-			MovementKeys[input.KeyCode] = false
-			UpdateVelo()
-		end
-	end
-	FastStop = GuiLibrary.ObjectsThatCanBeSaved['UtilityWindow'].Api.CreateOptionsButton({
-		Name = 'FastStop',
-        HoverText = 'Instantly stops your character when stopping',
-		Function = function(callback)
-			if callback then
-				inputService.InputBegan:Connect(InputBegan)
-				inputService.InputEnded:Connect(InputEnded)
-			end
-		end,
-        Default = false
-	})
-end)
-
-runLunar(function()
-	local Loader = {Enabled = false}
-	local LoaderDuration = {Value = 10}
-	Loader = GuiLibrary.ObjectsThatCanBeSaved['UtilityWindow'].Api.CreateOptionsButton({
-		Name = 'Loader',
-                HoverText = 'Notifies you on load',
-		Function = function(callback)
-			if callback then
-				local timetaken = rounder(tick() - LunarLoad)
-				local timeformat = string.format('%.1f', timetaken)
-				local whitelisted = false
-				if not RenderFunctions:GetPlayerType() ~= 'STANDARD' then
-					whitelisted = true
-				end
-				wait(3)				
-				InfoNotification('Render', 'Loaded in '..timeformat..'s. Logged in as '..lplr.Name..', Whitelisted: ' ..(whitelisted and 'true' or 'false').. ' .', LoaderDuration.Value)
-			end
-		end,
-        Default = false
-	})
-	LoaderDuration = Loader.CreateSlider({
-		Name = 'Duration',
-		Min = 1,
-		Max = 20,
-		HoverText = 'Duration of the Notification',
-		Function = function() end,
-		Default = 10
-	})
-end)
-
-runLunar(function()
-	if not (game.Chat:GetChildren()[1]) then
-		local chat = game.CoreGui.ExperienceChat:WaitForChild("appLayout")
-	end
-	local scaleSourceNew = game:GetService("TextChatService").ChatWindowConfiguration
-	local chatResize = {Enabled = false}
-	local chatPosX = {Value = 5}
-	local chatPosY = {Value = 4}
-	local chatScaleX = {Value = 0.85}
-	local chatScaleY = {Value = 1}
-	chatResize = GuiLibrary["ObjectsThatCanBeSaved"]["RenderWindow"]["Api"]["CreateOptionsButton"]({
-		Name = "ChatResize",
-		HoverText = "Resizes the chat",
-		Function = function(callback)
-			if callback then
-				if chat then
-					chat.Position = UDim2.new(chatPosX.Value / 1000, 0, chatPosY.Value / 1000, 0)
-					scaleSourceNew.WidthScale = chatScaleX.Value / 100
-					scaleSourceNew.HeightScale = chatScaleY.Value / 100
-				end
-			else
-				if chat then
-					chat.Position = UDim2.new(0, 8, 0, 4)
-					scaleSourceNew.WidthScale = 1
-					scaleSourceNew.HeightScale = 0.85
-				end
-			end
-		end
-	})
-	chatPosX = chatResize.CreateSlider({
-		Name = "Position (X)",
-		Min = 0,
-		Max = 1000,
-		Default = 8,
-		Function = function(val) 
-			if chatResize.Enabled then
-				chat.Position = UDim2.new(val / 1000,0,chatPosY.Value / 1000,0)
-			end
-		end
-	})
-	chatPosY = chatResize.CreateSlider({
-		Name = "Position (Y)",
-		Min = 0,
-		Max = 1000,
-		Default = 4,
-		Function = function(val)
-			if chatResize.Enabled then
-				chat.Position = UDim2.new(chatPosX.Value / 1000,0,val / 1000,0)
-			end
-		end
-	})
-	chatScaleX = chatResize.CreateSlider({
-		Name = "Scale (X)",
-		Min = 50,
-		Max = 78,
-		Default = 100,
-		Function = function(val)
-			if chatResize.Enabled then
-				scaleSourceNew.WidthScale = val / 100
-			end
-		end
-	})
-	chatScaleY = chatResize.CreateSlider({
-		Name = "Scale (Y)",
-		Min = 50,
-		Max = 133,
-		Default = 85,
-		Function = function(val)
-			if chatResize.Enabled then
-				scaleSourceNew.HeightScale = val / 100
-			end
-		end
-	})
-end)
-
-runLunar(function()
-	local CustomJump = {Enabled = false}
-	local CustomJumpMode = {Value = "Normal"}
-	local CustomJumpVelocity = {Value = 50}
-	CustomJump = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"]["CreateOptionsButton"]({
-		Name = "CustomJump",
-        HoverText = "Customizes your jumping ability",
-		Function = function(callback)
-			if callback then
-				game:GetService("UserInputService").JumpRequest:Connect(function()
-					if CustomJumpMode.Value == "Normal" then
-						entityLunar.character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-					elseif CustomJumpMode.Value == "Velocity" then
-						entityLunar.character.HumanoidRootPart.Velocity += vec3(0,CustomJumpVelocity.Value,0)
-					end
-				end)
-			end
-		end,
-		ExtraText = function()
-			return CustomJumpMode.Value
-		end
-	})
-	CustomJumpMode = CustomJump.CreateDropdown({
-		Name = "Mode",
-		List = {
-			"Normal",
-			"Velocity"
-		},
-		Function = function() end,
-	})
-	CustomJumpVelocity = CustomJump.CreateSlider({
-		Name = "Velocity",
-		Min = 1,
-		Max = 100,
-		Function = function() end,
-		Default = 50
-	})
-end)
-
-runLunar(function()
-	local LunarBoost = {Enabled = false}
-	local LunarBoostMode = {Value = "Velocity"}
-	local LunarBoostJumps = {Value = 10}
-	local LunarBoostJumpsCooldown = {Value = 1}
-	local LunarBoostVeloSpeed = {Value = 650}
-	local LunarBoostCFSpeed = {Value = 50}
-	local LunarBoostCFSlow = {Value = 1}
-	local LunarBoostTweenSpeed = {Value = 1000}
-	local LunarBoostTweenDur = {Value = 4}
-	local LunarBoostNotification = {Enabled = true}
-	LunarBoost = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"]["CreateOptionsButton"]({
-		Name = "LunarBoost",
-        HoverText = "Let's you jump higher",
-		Function = function(callback)
-			if callback then
-				if not isAlive() then 
-					LunarBoost.ToggleButton() 
-					return 
-				end
-				local JumpedTimes = 0
-				local BoostedCF = 0
-				local Duration = tick()
-				if LunarBoostMode.Value == "Velocity" then
-					task.spawn(function()
-						repeat
-							entityLunar.character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-							JumpedTimes = JumpedTimes + 1
-							task.wait(LunarBoostJumpsCooldown.Value/10)
-						until not LunarBoost.Enabled or LunarBoostMode.Value ~= "Velocity" or JumpedTimes >= LunarBoostJumps.Value
-					end)
-					task.wait(LunarBoostJumpsCooldown.Value/10 * LunarBoostJumps.Value)
-					entityLunar.character.HumanoidRootPart.Velocity += vec3(0,LunarBoostVeloSpeed.Value,0)
-					if LunarBoostNotification.Enabled then
-						local timetaken = rounder(tick() - Duration)
-						local timeformat = string.format("%.1f", timetaken)
-						warningNotification("LunarBoost","Boosted " .. LunarBoostVeloSpeed.Value .. " studs in " .. timeformat .. " seconds",5)
-					end
-					LunarBoost.ToggleButton(false)
-					return
-				elseif LunarBoostMode.Value == "CFrame" then
-					workspace.Gravity = 0
-					task.spawn(function()
-						repeat
-							entityLunar.character.HumanoidRootPart.CFrame += vec3(0,LunarBoostCFSpeed.Value,0)
-							BoostedCF = BoostedCF + LunarBoostCFSpeed.Value
-							task.wait(LunarBoostCFSlow.Value/10)
-						until not LunarBoost.Enabled or LunarBoostMode.Value ~= "CFrame"
-						if LunarBoostNotification.Enabled then
-							local timetaken = rounder(tick() - Duration)
-							local timeformat = string.format("%.1f", timetaken)
-							warningNotification("LunarBoost","Boosted " .. BoostedCF .. " studs in " .. timeformat .. " seconds",5)
-						end
-					end)
-				elseif LunarBoostMode.Value == "TweenService" then
-					tweenService:Create(entityLunar.character.HumanoidRootPart,TweenInfo.new(LunarBoostTweenDur.Value/10),{
-						CFrame = entityLunar.character.HumanoidRootPart.CFrame + vec3(0,LunarBoostTweenSpeed.Value,0)
-					}):Play()
-					if LunarBoostNotification.Enabled then
-						local timetaken = rounder(tick() - Duration)
-						local timeformat = string.format("%.1f", timetaken)
-						warningNotification("LunarBoost","Tweened " .. LunarBoostTweenSpeed.Value .. " studs in " .. timeformat .. " seconds",5)
-					end
-					LunarBoost.ToggleButton(false)
-					return
-				end
-			else
-				workspace.Gravity = 196.2
-			end
-		end,
-		ExtraText = function()
-			return LunarBoostMode.Value
-		end
-	})
-	LunarBoostMode = LunarBoost.CreateDropdown({
-		Name = "Mode",
-		List = {
-			"Velocity",
-			"CFrame",
-			"TweenService"
-		},
-		Function = function() end,
-	})
-	LunarBoostJumps = LunarBoost.CreateSlider({
-		Name = "Jumps",
-		Min = 1,
-		Max = 10,
-		Function = function() end,
-		Default = 10
-	})
-	LunarBoostJumpsCooldown = LunarBoost.CreateSlider({
-		Name = "Jumps Cooldown",
-		Min = 1,
-		Max = 3,
-		Function = function() end,
-		Default = 1
-	})
-	LunarBoostVeloSpeed = LunarBoost.CreateSlider({
-		Name = "Velocity Speed",
-		Min = 1,
-		Max = 650,
-		Function = function() end,
-		Default = 650
-	})
-	LunarBoostCFSpeed = LunarBoost.CreateSlider({
-		Name = "CFrame Speed",
-		Min = 1,
-		Max = 50,
-		Function = function() end,
-		Default = 50
-	})
-	LunarBoostCFSlow = LunarBoost.CreateSlider({
-		Name = "CFrame Slowdown",
-		Min = 1,
-		Max = 3,
-		Function = function() end,
-		Default = 1
-	})
-	LunarBoostTweenSpeed = LunarBoost.CreateSlider({
-		Name = "Tween Speed",
-		Min = 1,
-		Max = 1000,
-		Function = function() end,
-		Default = 1000
-	})
-	LunarBoostTweenDur = LunarBoost.CreateSlider({
-		Name = "Tween Duration",
-		Min = 1,
-		Max = 10,
-		Function = function() end,
-		Default = 4
-	})
-	LunarBoostNotification = LunarBoost.CreateToggle({
-		Name = "Notification",
-		Function = function() end,
-	})
-end)
-
-runLunar(function()
-	local UIS = game:GetService("UserInputService")
-	local mouseMod = {Enabled = false}
-	local mouseDropdown = {Value = "CS:GO Crosshair"}
-	local mouseIcons = {
-		["CS:GO Crosshair"] = "rbxassetid://14789879068",
-		["Old Roblox Mouse"] = "rbxassetid://13546344315",
-		["dx9ware"] = "rbxassetid://12233942144",
-		["BEST CROSSHAIR"] = "rbxassetid://8680062686",
-		["Tri-angled Crosshair"] = "rbxassetid://14790304072",
-		["Arrow Crosshair"] = "rbxassetid://14790316561"
-	}
-	local customMouseIcon = {Enabled = false}
-	local customIcon = {Value = ""}
-	mouseMod = GuiLibrary["ObjectsThatCanBeSaved"]["RenderWindow"]["Api"]["CreateOptionsButton"]({
-		Name = "MouseMod",
-		HoverText = "Modifies your cursor's image",
-		Function = function(callback)
-			if callback then
-				task.spawn(function()
-					repeat task.wait()
-						if customMouseIcon.Enabled then
-							UIS.MouseIcon = "rbxassetid://"..customIcon.Value
+runFunction(function()
+	local InfiniteJump = {}
+	local InfiniteJumpMode = {Value = 'State'}
+	local InfiniteJumpPower = {Value = 1}
+	local oldpower
+	InfiniteJump = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+		Name = 'InfiniteJump',
+		HoverText = 'Jump on air without limitations (unless ac lol)',
+		Function = function(calling)
+			if calling then 
+				oldpower = lplr.Character.Humanoid.JumpPower
+				table.insert(InfiniteJump.Connections, inputService.JumpRequest:Connect(function()
+					if isAlive(lplr, true) then 
+						if InfiniteJumpMode.Value == 'State' then 
+							lplr.Character.Humanoid.JumpPower = (oldjump + InfiniteJumpPower.Value) 
+							lplr.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 						else
-							UIS.MouseIcon = mouseIcons[mouseDropdown.Value]
+							lplr.Character.HumanoidRootPart.Velocity = Vector3.new(lplr.Character.HumanoidRootPart.Velocity.X, lplr.Character.Humanoid.JumpPower + InfiniteJumpPower.Value, lplr.Character.HumanoidRootPart.Velocity.Y) 
 						end
-					until not mouseMod.Enabled
-				end)
+					end 
+				end))
 			else
-				UIS.MouseIcon = ""
-				task.wait()
-				UIS.MouseIcon = ""
+				if oldpower then 
+					pcall(function() lplr.Character.Humanoid.JumpPower = oldpower end) 
+					oldpower = nil
+				end
 			end
 		end
 	})
-	mouseDropdown = mouseMod.CreateDropdown({
-		Name = "Mouse Icon",
-		List = {"CS:GO Crosshair","Old Roblox Mouse","dx9ware","BEST CROSSHAIR","Tri-angled Crosshair", "Arrow Crosshair"},
-		Function = function(val) end
-	})
-	customMouseIcon = mouseMod.CreateToggle({
-		Name = "Custom Icon",
-		Function = function(callback) end
-	})
-	customIcon = mouseMod.CreateTextBox({
-		Name = "Custom Mouse Icon",
-		TempText = "Image ID (not decal)",
-		FocusLost = function(enter) 
-			if mouseMod.Enabled then 
-				mouseMod.ToggleButton(false)
-				mouseMod.ToggleButton(false)
+	InfiniteJumpMode = InfiniteJump.CreateDropdown({
+		Name = 'Mode',
+		List = {'State', 'Velocity'},
+		Function = function()
+			if InfiniteJump.Enabled then 
+				InfiniteJump.ToggleButton()
+				InfiniteJump.ToggleButton()
 			end
 		end
+	})
+	InfiniteJumpPower = InfiniteJump.CreateSlider({
+		Name = 'Extra Power',
+		Min = 0,
+		Max = 15,
+		Default = 1,
+		Function = function() end
 	})
 end)
 
@@ -8765,6 +8429,7 @@ runLunar(function()
         HoverText = "Changes the time",
 		Function = function(callback)
 			if callback then
+				repeat task.wait() until shared.VapeFullyLoaded
 				lightingService.TimeOfDay = TimeSettings.Main
 			else
 				if TimeChangerElseEndTime.Enabled then
@@ -9251,585 +8916,15 @@ runLunar(function()
 			else
 				if chatVersion() then
 					lplr.PlayerGui.Chat.Enabled = true
-					game:GetService("CoreGui").TopBarApp.TopBarFrame.LeftFrame.ChatIcon.Visible = true
+					core.TopBarApp.TopBarFrame.LeftFrame.ChatIcon.Visible = true
 				else
-					game.CoreGui.ExperienceChat.Enabled = true
-					game:GetService("CoreGui").TopBarApp.TopBarFrame.LeftFrame.ChatIcon.Visible = true
+					gcore.ExperienceChat.Enabled = true
+					core.TopBarApp.TopBarFrame.LeftFrame.ChatIcon.Visible = true
 					textChatService.ChatInputBarConfiguration.Enabled = true
 					textChatService.BubbleChatConfiguration.Enabled = true
 				end
 			end
 		end
-	})
-end)
-
-runLunar(function()
-	local ScriptsHub = {Enabled = false}
-	local ScriptsHubScript = {Value = "Custom"}
-	local ScriptsHubScript2 = {Value = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"}
-	local ExecutedScript
-	ScriptsHub = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
-		Name = "ScriptHub",
-        HoverText = "Executable Scripts which you can use",
-		Function = function(callback)
-			if callback then
-				ExecutedScript = false
-				task.spawn(function()
-					if not ExecutedScript then
-						if ScriptsHubScript.Value == "Custom" then
-							loadstring(game:HttpGet(ScriptsHubScript2.Value))()
-						elseif ScriptsHubScript.Value == "Infinite Yield" then
-							loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-						elseif ScriptsHubScript.Value == "Simple Spy" then
-							loadstring(game:HttpGet("https://raw.githubusercontent.com/78n/SimpleSpy/main/SimpleSpySource.lua"))()
-						elseif ScriptsHubScript.Value == "Owl Hub" then
-							loadstring(game:HttpGet("https://raw.githubusercontent.com/CriShoux/OwlHub/master/OwlHub.txt"))()
-						elseif ScriptsHubScript.Value == "Apolo Hub" then
-							loadstring(game:HttpGet("https://raw.githubusercontent.com/ASkca12/ScriptApoloHub/main/Main.lua"))()
-						elseif ScriptsHubScript.Value == "Thunder Client" then
-							loadstring(game:HttpGet("https://raw.githubusercontent.com/DuhwahScripts/ArsenalBoltsHub/main/source"))()
-						elseif ScriptsHubScript.Value == "RayX" then
-							loadstring(game:HttpGet("https://raw.githubusercontent.com/SpaceYes/Lua/Main/DaHood.Lua"))()
-						elseif ScriptsHubScript.Value == "DexV5" then
-							loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/dex.lua"))()
-						end
-						ExecutedScript = true
-					end
-				end)
-			else
-				ExecutedScript = false
-			end
-		end
-	})
-	ScriptsHubScript = ScriptsHub.CreateDropdown({
-		Name = "Script",
-		List = {
-			"Custom",
-			"Infinite Yield",
-			"Simple Spy",
-			"Owl Hub",
-			"Apolo Hub",
-			"Thunder Client",
-			"RayX",
-			"DexV5"
-		},
-		HoverText = "Scripts to execute",
-		Function = function() end,
-	})
-	ScriptsHubScript2 = ScriptsHub.CreateTextBox({
-		Name = "Script",
-		TempText = "Script Github/Link",
-		HoverText = "Insert the script link here",
-		FocusLost = function(enter) 
-			if ScriptsHub.Enabled then 
-				ScriptsHub.ToggleButton(false)
-				ScriptsHub.ToggleButton(false)
-			end
-		end
-	})
-end)
-
-runLunar(function()
-	if replicatedStorageService:FindFirstChild("Themes") then
-		replicatedStorageService:FindFirstChild("Themes"):Destroy()
-	end
-
-	local themeProps = {
-		["The Milky Way A"] = {
-			Ambient = Color3.fromRGB(107, 107, 107),
-			OutdoorAmbient = Color3.fromRGB(115, 93, 137),
-			ColorShift_Bottom = Color3.fromRGB(219, 3, 246),
-			ColorShift_Top = Color3.fromRGB(144, 6, 177),
-			Enviroment = 0.4,
-			Brightness = 0.05,
-			Exposure = 0.8,
-			Lat = 60,
-			Time = 10,
-			Shadows = true
-		},
-		["The Milky Way B"] = {
-			Ambient = Color3.fromRGB(58, 58, 58),
-			OutdoorAmbient = Color3.fromRGB(127, 116, 79),
-			ColorShift_Bottom = Color3.fromRGB(219, 3, 246),
-			ColorShift_Top = Color3.fromRGB(144, 6, 177),
-			Enviroment = 0.5,
-			Brightness = 0.2,
-			Exposure = 0.6,
-			Lat = 310,
-			Time = 13,
-			Shadows = true
-		},
-		["The Milky Way C"] = {
-			Ambient = Color3.fromRGB(101, 101, 101),
-			OutdoorAmbient = Color3.fromRGB(131, 77, 122),
-			ColorShift_Bottom = Color3.fromRGB(219, 3, 246),
-			ColorShift_Top = Color3.fromRGB(144, 6, 177),
-			Enviroment = 0.5,
-			Brightness = 0.2,
-			Exposure = 0.7,
-			Lat = 0,
-			Time = 15.25,
-			Shadows = true
-		},
-		["Lunar Vape Old"] = {
-			Ambient = Color3.fromRGB(93, 59, 88),
-			OutdoorAmbient = Color3.fromRGB(128, 94, 100),
-			ColorShift_Bottom = Color3.fromRGB(213, 173, 117),
-			ColorShift_Top = Color3.fromRGB(255, 255, 255),
-			Enviroment = 0.5,
-			Brightness = 0.2,
-			Exposure = 0.8,
-			Lat = 325,
-			Time = 11,
-			Shadows = true
-		},
-		["Lunar Vape New"] = {
-			Ambient = Color3.fromRGB(101, 72, 51),
-			OutdoorAmbient = Color3.fromRGB(175, 132, 119),
-			ColorShift_Bottom = Color3.fromRGB(213, 161, 134),
-			ColorShift_Top = Color3.fromRGB(203, 167, 102),
-			Enviroment = 0.3,
-			Brightness = 1,
-			Exposure = 0.7,
-			Lat = 326,
-			Time = 16 + (1/3),
-			Shadows = true
-		},
-		["Antarctic Evening"] = {
-			Ambient = Color3.fromRGB(79, 54, 101),
-			OutdoorAmbient = Color3.fromRGB(162, 118, 175),
-			ColorShift_Bottom = Color3.fromRGB(213, 10, 180),
-			ColorShift_Top = Color3.fromRGB(103, 68, 203),
-			Enviroment = 0.4,
-			Brightness = 0.2,
-			Exposure = 1,
-			Lat = 306,
-			Time = 10,
-			Shadows = true
-		}
-	}
-
-	local GameThemes = Instance.new("Folder",replicatedStorageService)
-	GameThemes.Name = "Themes"
-
-	local TheMilkyWaySkyA = Instance.new("Sky",GameThemes)
-	TheMilkyWaySkyA.Name = "The Milky Way A"
-	TheMilkyWaySkyA.CelestialBodiesShown = false
-	TheMilkyWaySkyA.StarCount = 3000
-	TheMilkyWaySkyA.SkyboxUp = "rbxassetid://5559302033"
-	TheMilkyWaySkyA.SkyboxLf = "rbxassetid://5559292825"
-	TheMilkyWaySkyA.SkyboxFt = "rbxassetid://5559300879"
-	TheMilkyWaySkyA.SkyboxBk = "rbxassetid://5559289158"
-	TheMilkyWaySkyA.SkyboxDn = "rbxassetid://5559290893"
-	TheMilkyWaySkyA.SkyboxRt = "rbxassetid://5559302989"
-	TheMilkyWaySkyA.SunTextureId = "rbxasset://sky/sun.jpg"
-	TheMilkyWaySkyA.SunAngularSize = 1.44
-	TheMilkyWaySkyA.MoonTextureId = "rbxasset://sky/moon.jpg"
-	TheMilkyWaySkyA.MoonAngularSize = 0.57
-	local TheMilkyWaySkyADOF = Instance.new("DepthOfFieldEffect",TheMilkyWaySkyA)
-	TheMilkyWaySkyADOF.FarIntensity = 0.12
-	TheMilkyWaySkyADOF.NearIntensity = 0.3
-	TheMilkyWaySkyADOF.FocusDistance = 20
-	TheMilkyWaySkyADOF.InFocusRadius = 17
-	local TheMilkyWaySkyACC = Instance.new("ColorCorrectionEffect",TheMilkyWaySkyA)
-	TheMilkyWaySkyACC.TintColor = Color3.fromRGB(245, 200, 245)
-	TheMilkyWaySkyACC.Brightness = 0
-	TheMilkyWaySkyACC.Contrast = 0.2
-	TheMilkyWaySkyACC.Saturation = -0.1
-	local TheMilkyWaySkyABloom = Instance.new("BloomEffect",TheMilkyWaySkyA)
-	TheMilkyWaySkyABloom.Intensity = 0.4
-	TheMilkyWaySkyABloom.Size = 12
-	TheMilkyWaySkyABloom.Threshold = 0.2
-
-	local TheMilkyWaySkyB = Instance.new("Sky",GameThemes)
-	TheMilkyWaySkyB.Name = "The Milky Way B"
-	TheMilkyWaySkyB.CelestialBodiesShown = false
-	TheMilkyWaySkyB.StarCount = 3000
-	TheMilkyWaySkyB.SkyboxUp = "http://www.roblox.com/asset?id=232707707"
-	TheMilkyWaySkyB.SkyboxLf = "http://www.roblox.com/asset?id=232708001"
-	TheMilkyWaySkyB.SkyboxFt = "http://www.roblox.com/asset?id=232707879"
-	TheMilkyWaySkyB.SkyboxBk = "http://www.roblox.com/asset?id=232707959"
-	TheMilkyWaySkyB.SkyboxDn = "http://www.roblox.com/asset?id=232707790"
-	TheMilkyWaySkyB.SkyboxRt = "http://www.roblox.com/asset?id=232707983"
-	local TheMilkyWaySkyBCC = Instance.new("ColorCorrectionEffect",TheMilkyWaySkyB)
-	TheMilkyWaySkyBCC.TintColor = Color3.fromRGB(255, 255, 255)
-	TheMilkyWaySkyBCC.Brightness = 0
-	TheMilkyWaySkyBCC.Contrast = 0.3
-	TheMilkyWaySkyBCC.Saturation = 0.2
-	local TheMilkyWaySkyBDOF = Instance.new("DepthOfFieldEffect",TheMilkyWaySkyB)
-	TheMilkyWaySkyBDOF.FarIntensity = 0.12
-	TheMilkyWaySkyBDOF.NearIntensity = 0.3
-	TheMilkyWaySkyBDOF.FocusDistance = 20
-	TheMilkyWaySkyBDOF.InFocusRadius = 17
-	local TheMilkyWaySkyBBloom = Instance.new("BloomEffect",TheMilkyWaySkyB)
-	TheMilkyWaySkyBBloom.Intensity = 0.6
-	TheMilkyWaySkyBBloom.Size = 12
-	TheMilkyWaySkyBBloom.Threshold = 0.2
-	local TheMilkyWaySkyBSunRay = Instance.new("SunRaysEffect",TheMilkyWaySkyB)
-	TheMilkyWaySkyBSunRay.Enabled = true
-	TheMilkyWaySkyBSunRay.Intensity = 0.003
-	TheMilkyWaySkyBSunRay.Spread = 1
-
-	local TheMilkyWaySkyC = Instance.new("Sky",GameThemes)
-	TheMilkyWaySkyC.Name = "The Milky Way C"
-	TheMilkyWaySkyC.CelestialBodiesShown = false
-	TheMilkyWaySkyC.StarCount = 3000
-	TheMilkyWaySkyC.SkyboxUp = "rbxassetid://1903391299"
-	TheMilkyWaySkyC.SkyboxLf = "rbxassetid://1903388369"
-	TheMilkyWaySkyC.SkyboxFt = "rbxassetid://1903389258"
-	TheMilkyWaySkyC.SkyboxBk = "rbxassetid://1903390348"
-	TheMilkyWaySkyC.SkyboxDn = "rbxassetid://1903391981"
-	TheMilkyWaySkyC.SkyboxRt = "rbxassetid://1903387293"
-	TheMilkyWaySkyC.SunTextureId = "rbxasset://sky/sun.jpg"
-	TheMilkyWaySkyC.SunAngularSize = 21
-	TheMilkyWaySkyC.MoonTextureId = "rbxasset://sky/moon.jpg"
-	TheMilkyWaySkyC.MoonAngularSize = 11
-	local TheMilkyWaySkyCDOF = Instance.new("DepthOfFieldEffect",TheMilkyWaySkyC)
-	TheMilkyWaySkyCDOF.FarIntensity = 0.12
-	TheMilkyWaySkyCDOF.NearIntensity = 0.3
-	TheMilkyWaySkyCDOF.FocusDistance = 20
-	TheMilkyWaySkyCDOF.InFocusRadius = 17
-	local TheMilkyWaySkyCBloom = Instance.new("BloomEffect",TheMilkyWaySkyC)
-	TheMilkyWaySkyCBloom.Intensity = 0.6
-	TheMilkyWaySkyCBloom.Size = 12
-	TheMilkyWaySkyCBloom.Threshold = 0.2
-	local TheMilkyWaySkyCSunRay = Instance.new("SunRaysEffect",TheMilkyWaySkyC)
-	TheMilkyWaySkyCSunRay.Enabled = true
-	TheMilkyWaySkyCSunRay.Intensity = 0.003
-	TheMilkyWaySkyCSunRay.Spread = 1
-	local TheMilkyWaySkyCCC = Instance.new("ColorCorrectionEffect",TheMilkyWaySkyC)
-	TheMilkyWaySkyCCC.TintColor = Color3.fromRGB(245, 240, 255)
-	TheMilkyWaySkyCCC.Brightness = -0.04
-	TheMilkyWaySkyCCC.Contrast = 0.2
-	TheMilkyWaySkyCCC.Saturation = 0.2
-
-	local LunarVapeOld = Instance.new("Sky",GameThemes)
-	LunarVapeOld.Name = "Lunar Vape Old"
-	LunarVapeOld.CelestialBodiesShown = false
-	LunarVapeOld.StarCount = 3000
-	LunarVapeOld.SkyboxUp = "rbxassetid://2670644331"
-	LunarVapeOld.SkyboxLf = "rbxassetid://2670643070"
-	LunarVapeOld.SkyboxFt = "rbxassetid://2670643214"
-	LunarVapeOld.SkyboxBk = "rbxassetid://2670643994"
-	LunarVapeOld.SkyboxDn = "rbxassetid://2670643365"
-	LunarVapeOld.SkyboxRt = "rbxassetid://2670644173"
-	LunarVapeOld.SunTextureId = "rbxasset://sky/sun.jpg"
-	LunarVapeOld.SunAngularSize = 21
-	LunarVapeOld.MoonTextureId = "rbxassetid://1075087760"
-	LunarVapeOld.MoonAngularSize = 11
-	local LunarVapeOldCC = Instance.new("ColorCorrectionEffect",LunarVapeOld)
-	LunarVapeOldCC.Enabled = true
-	LunarVapeOldCC.Brightness = 0.13
-	LunarVapeOldCC.Contrast = 0.4
-	LunarVapeOldCC.Saturation = 0.06
-	LunarVapeOldCC.TintColor = Color3.fromRGB(255,230,245)
-	local LunarVapeOldDOF = Instance.new("DepthOfFieldEffect",LunarVapeOld)
-	LunarVapeOldDOF.FarIntensity = 0.12
-	LunarVapeOldDOF.NearIntensity = 0.3
-	LunarVapeOldDOF.FocusDistance = 20
-	LunarVapeOldDOF.InFocusRadius = 17
-	local LunarVapeOldBloom = Instance.new("BloomEffect",LunarVapeOld)
-	LunarVapeOldBloom.Intensity = 0.8
-	LunarVapeOldBloom.Threshold = 0.4
-	LunarVapeOldBloom.Size = 12
-
-	local LunarVapeNew = Instance.new("Sky",GameThemes)
-	LunarVapeNew.Name = "Lunar Vape New"
-	LunarVapeNew.CelestialBodiesShown = false
-	LunarVapeNew.StarCount = 0
-	LunarVapeNew.SkyboxUp = "http://www.roblox.com/asset/?id=458016792"
-	LunarVapeNew.SkyboxLf = "http://www.roblox.com/asset/?id=458016655"
-	LunarVapeNew.SkyboxFt = "http://www.roblox.com/asset/?id=458016532"
-	LunarVapeNew.SkyboxBk = "http://www.roblox.com/asset/?id=458016711"
-	LunarVapeNew.SkyboxDn = "http://www.roblox.com/asset/?id=458016826"
-	LunarVapeNew.SkyboxRt = "http://www.roblox.com/asset/?id=458016782"
-	LunarVapeNew.SunTextureId = "rbxasset://sky/sun.jpg"
-	LunarVapeNew.SunAngularSize = 21
-	LunarVapeNew.MoonTextureId = "rbxasset://sky/moon.jpg"
-	LunarVapeNew.MoonAngularSize = 11
-	local LunarVapeNewBloom = Instance.new("BloomEffect",LunarVapeNew)
-	LunarVapeNewBloom.Enabled = true
-	LunarVapeNewBloom.Threshold = 0.24
-	LunarVapeNewBloom.Size = 8
-	LunarVapeNewBloom.Intensity = 0.5
-	local LunarVapeNewSunRay = Instance.new("SunRaysEffect",LunarVapeNew)
-	LunarVapeNewSunRay.Enabled = true
-	LunarVapeNewSunRay.Intensity = 0.05
-	LunarVapeNewSunRay.Spread = 0.4
-	local LunarVapeNewCC = Instance.new("ColorCorrectionEffect",LunarVapeNew)
-	LunarVapeNewCC.Saturation = 0.14
-	LunarVapeNewCC.Brightness = -0.1
-	LunarVapeNewCC.Contrast = 0.14
-	local LunarVapeNewDOF = Instance.new("DepthOfFieldEffect",LunarVapeNew)
-	LunarVapeNewDOF.FarIntensity = 0.2
-	LunarVapeNewDOF.InFocusRadius = 17
-	LunarVapeNewDOF.FocusDistance = 20
-	LunarVapeNewDOF.NearIntensity = 0.3
-
-	local AntarcticEvening = Instance.new("Sky",GameThemes)
-	AntarcticEvening.Name = "Antarctic Evening"
-	AntarcticEvening.CelestialBodiesShown = false
-	AntarcticEvening.StarCount = 3000
-	AntarcticEvening.SkyboxUp = "http://www.roblox.com/asset/?id=5260824661"
-	AntarcticEvening.SkyboxLf = "http://www.roblox.com/asset/?id=5260800833"
-	AntarcticEvening.SkyboxFt = "http://www.roblox.com/asset/?id=5260817288"
-	AntarcticEvening.SkyboxBk = "http://www.roblox.com/asset/?id=5260808177"
-	AntarcticEvening.SkyboxDn = "http://www.roblox.com/asset/?id=5260653793"
-	AntarcticEvening.SkyboxRt = "http://www.roblox.com/asset/?id=5260811073"
-	AntarcticEvening.SunTextureId = "rbxasset://sky/sun.jpg"
-	AntarcticEvening.SunAngularSize = 21
-	AntarcticEvening.MoonTextureId = "rbxasset://sky/moon.jpg"
-	AntarcticEvening.MoonAngularSize = 11
-	local AntarcticEveningBloom = Instance.new("BloomEffect",AntarcticEvening)
-	AntarcticEveningBloom.Enabled = true
-	AntarcticEveningBloom.Threshold = 0.4
-	AntarcticEveningBloom.Size = 12
-	AntarcticEveningBloom.Intensity = 0.5
-	local AntarcticEveningCC = Instance.new("ColorCorrectionEffect",AntarcticEvening)
-	AntarcticEveningCC.Brightness = -0.03	
-	AntarcticEveningCC.Contrast = 0.16
-	AntarcticEveningCC.Saturation = 0.06
-	AntarcticEveningCC.TintColor = Color3.fromRGB(220, 175, 255)
-	local AntarcticEveningDOF = Instance.new("DepthOfFieldEffect",AntarcticEvening)
-	AntarcticEveningDOF.FarIntensity = 0.12
-	AntarcticEveningDOF.InFocusRadius = 17
-	AntarcticEveningDOF.FocusDistance = 20
-	AntarcticEveningDOF.NearIntensity = 0.3
-	
-	local timeConnection
-	local ThemesModule = {Enabled = false}
-	local ThemesDropdown = {Value = "Lunar Vape New"}
-	ThemesModule = GuiLibrary["ObjectsThatCanBeSaved"]["RenderWindow"]["Api"]["CreateOptionsButton"]({
-		Name = "Themes",
-		HoverText = 'Changes the theme',
-		ExtraText = function(val) return ThemesDropdown.Value end,
-		Function = function(callback)
-			if callback then
-				for _,v in next, (lightingService:GetChildren()) do v:Destroy() end
-				local newSky = GameThemes[ThemesDropdown.Value]:Clone()
-				newSky.Parent = lightingService
-				for _,v in next, (newSky:GetChildren()) do v.Parent = lightingService end
-				lightingService.Brightness = themeProps[ThemesDropdown.Value].Brightness
-				lightingService.ExposureCompensation = themeProps[ThemesDropdown.Value].Exposure
-				lightingService.EnvironmentDiffuseScale = themeProps[ThemesDropdown.Value].Enviroment
-				lightingService.EnvironmentSpecularScale = themeProps[ThemesDropdown.Value].Enviroment
-				lightingService.Ambient = themeProps[ThemesDropdown.Value].Ambient
-				lightingService.OutdoorAmbient = themeProps[ThemesDropdown.Value].OutdoorAmbient
-				lightingService.GeographicLatitude = themeProps[ThemesDropdown.Value].Lat
-				lightingService.ClockTime = themeProps[ThemesDropdown.Value].Time		
-				timeConnection = lightingService:GetPropertyChangedSignal("ClockTime"):Connect(function() lightingService.ClockTime = themeProps[ThemesDropdown.Value].Time end)
-				lightingService.GlobalShadows = themeProps[ThemesDropdown.Value].Shadows
-				lightingService.ShadowSoftness = 0.08
-				sethiddenproperty(lightingService, "Technology", "Future")
-			else
-				lightingService.Brightness = 2
-				lightingService.EnvironmentDiffuseScale = 1
-				lightingService.EnvironmentSpecularScale = 1
-				lightingService.Ambient = Color3.fromRGB(89, 60, 86)
-				lightingService.OutdoorAmbient = Color3.fromRGB(216, 191, 161)
-				lightingService.GeographicLatitude = 0
-				lightingService.ClockTime = 14
-				if timeConnection then timeConnection:Disconnect() end
-				lightingService.ShadowSoftness = 0.2
-				lightingService.ExposureCompensation = 0.1
-				lightingService.GlobalShadows = true
-				sethiddenproperty(lightingService, "Technology", "ShadowMap")
-				for i,v in next, (lightingService:GetChildren()) do v:Destroy() end
-			end
-		end
-	})
-	ThemesDropdown = ThemesModule.CreateDropdown({
-		Name = "Theme",
-		List = {"The Milky Way A", "The Milky Way B", "The Milky Way C", "Lunar Vape Old","Lunar Vape New","Antarctic Evening"},
-		Function = function(val)
-			if ThemesModule.Enabled then
-				for _,v in next, (lightingService:GetChildren()) do v:Destroy() end
-				local newSky = GameThemes[val]:Clone()
-				newSky.Parent = lightingService
-				for _,v in next, (newSky:GetChildren()) do v.Parent = lightingService end
-				lightingService.Brightness = themeProps[ThemesDropdown.Value].Brightness
-				lightingService.ExposureCompensation = themeProps[ThemesDropdown.Value].Exposure
-				lightingService.EnvironmentDiffuseScale = themeProps[ThemesDropdown.Value].Enviroment
-				lightingService.EnvironmentSpecularScale = themeProps[ThemesDropdown.Value].Enviroment
-				lightingService.Ambient = themeProps[ThemesDropdown.Value].Ambient
-				lightingService.OutdoorAmbient = themeProps[ThemesDropdown.Value].OutdoorAmbient
-				lightingService.GeographicLatitude = themeProps[ThemesDropdown.Value].Lat
-				lightingService.ClockTime = themeProps[ThemesDropdown.Value].Time
-				lightingService.GlobalShadows = themeProps[ThemesDropdown.Value].Shadows
-				lightingService.ShadowSoftness = 0.5
-				sethiddenproperty(lightingService, "Technology", "Future")
-			end
-		end
-	})
-end)
-
-runFunction(function()
-    local CustomFall = {Enabled = false}
-	local CustomFallMode = {Value = 'Velocity'}
-	local CustomFallVelocity = {Value = 100}
-	local CustomFallGravity = {Value = 500}
-	local CustomFallRaycast = {Value = 2}
-	local function groundcheck()
-		local rayst = lplr.Character.HumanoidRootPart.Position
-		local rayed = rayst - vec(0, lplr.Character.HumanoidRootPart.Size.Y / 2 + CustomFallRaycast.Value, 0)
-		local hitpt = workspace:FindPartOnRay(rayst, rayed, lplr.Character)
-		return hitpt and hitpt:IsA('Part')
-	end
-    CustomFall = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
-        Name = 'CustomFall',
-		HoverText = 'Customizes your fall',
-        Function = function(callback)
-            if callback then
-                task.spawn(function()
-					repeat task.wait()
-						if CustomFallMode.Value == 'Velocity' then
-							local bvelo = Instance.new('BodyVelocity')
-							bvelo.Velocity = vec(0, -CustomFallVelocity.Value, 0)
-							bvelo.MaxForce = vec(0, math.huge, 0)
-							bvelo.Parent = lplr.Character.HumanoidRootPart
-							if groundcheck() then
-								bvelo.Velocity = vec(0, 0, 0)
-							else
-								bvelo.Velocity = vec(0, -CustomFallVelocity.Value, 0)
-							end
-						else
-							workspace.Gravity = -CustomFallGravity.Value
-						end
-					until not CustomFall.Enabled
-				end)
-			else
-				bvelo.Velocity = vec(0, 0, 0)
-				workspace.Gravity = 192.6
-            end
-        end,
-		ExtraText = function()
-			return CustomFallMode.Value
-		end
-    })
-	CustomFallMode = CustomFall.CreateDropdown({
-        Name = 'Mode',
-        List = {
-            'Velocity',
-            'Gravity'
-        },
-		Value = 'Velocity',
-        Function = function() end
-    })
-	CustomFallVelocity = CustomFall.CreateSlider({
-        Name = 'Velocity',
-        Min = 1,
-        Max = 200,
-        Function = function() end,
-        Default = 100
-    })
-	CustomFallGravity = CustomFall.CreateSlider({
-        Name = 'Gravity',
-        Min = 1,
-        Max = 1000,
-        Function = function() end,
-        Default = 500
-    })
-	CustomFallRaycast = CustomFall.CreateSlider({
-        Name = 'Raycast',
-        Min = 1,
-        Max = 5,
-        Function = function() end,
-        Default = 2
-    })
-end)
-
---[[runFunction(function()
-    local MovementDisabler = {Enabled = false}
-	local MovementDisablerR = {Enabled = true}
-	local MovementDisablerA = {Enabled = true}
-    MovementDisabler = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
-        Name = 'MovementDisabler',
-		HoverText = 'Disables your movement actions',
-        Function = function(callback)
-            if callback then
-                task.spawn(function()
-					local movedir = Vector3.new()
-					repeat task.wait()
-						if MovementDisablerR.Enabled then
-							lplr.Character.Humanoid.AutoRotate = false
-							runService.RenderStepped:Connect(function()
-								movedir += lplr.Character.Humanoid.MoveDirection
-								lplr.Character.Humanoid:Move(movedir, true)
-								movedir = Vector3.new()
-							end)
-						end
-						if MovementDisablerA.Enabled then
-							lplr.Character.Animate.Disabled = true
-						end
-					until not MovementDisabler.Enabled
-				end)
-			else
-				lplr.Character.Humanoid.AutoRotate = true
-				lplr.Character.Animate.Disabled = false
-            end
-        end
-    })
-	MovementDisablerR = MovementDisabler.CreateToggle({
-		Name = 'Rotate',
-		Default = true,
-		Function = function() end
-	})
-	MovementDisablerA = MovementDisabler.CreateToggle({
-		Name = 'Animation',
-		Default = true,
-		Function = function() end
-	})
-end)]]
-
-
-runLunar(function()
-	local AntiBlack = {Enabled = false}
-	local AntiBlackDuration = {Value = 15}
-	local function isnigger(character)
-		local niggacolors = {
-			BrickColor.new('Reddish brown'),
-			BrickColor.new('Dark brown'),
-			BrickColor.new('Black'),
-		}
-		for _, nigr in next, character:GetDescendants() do
-			if nigr:IsA('BasePart') then
-				for _, kkkColor in next, niggacolors do
-					if nigr.BrickColor == kkkColor then
-						return true
-					end
-				end
-			end
-		end
-		return false
-	end
-	AntiBlack = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
-		Name = 'AntiBlack',
-		HoverText = 'Detects black players',
-		Function = function(calling)
-			if calling then
-				task.spawn(function()
-					local niggas = {}
-					repeat task.wait()
-						for _, niggaman in next, playersService:GetPlayers() do
-							if not niggas[niggaman.UserId] then
-								if isnigger(niggaman.Character) then
-									niggas[niggaman.UserId] = true
-									warningNotification('AntiBlack', niggaman.Name..' is a nigger!', AntiBlackDuration.Value)
-								end
-							end
-						end
-					until not AntiBlack.Enabled
-				end)
-			end
-		end
-	})
-	AntiBlackDuration = AntiBlack.CreateSlider({
-		Name = 'Duration',
-		Min = 5,
-		Max = 20,
-		HoverText = 'Duration of the notification',
-		Function = function() end,
-		Default = 15
 	})
 end)
 
@@ -10029,122 +9124,4 @@ runFunction(function()
 	BubbleModsColor.Object.Visible = false 
 	BubbleModsTextColor.Object.Visible = false
 	BubbleModsTextSize.Object.Visible = false
-end)
-
-runFunction(function()
-    local AntiFaggot = {}
-	local RemoveFaggot = {}
-	local FaggotFolder = Instance.new("Folder")
-	FaggotFolder.Parent = replicatedStorageService
-	local getPlr = playersService:GetPlayers()
-	local index = math.random(1, #getPlr)
-	local faggot = getPlr[index].Name
-    AntiFaggot = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
-        Name = "AntiFaggot",
-        Function = function(callback)
-            if callback then
-				repeat
-					warningNotification("Render", ""..faggot.. " Is a faggot", 10)
-					if RemoveFaggot.Enabled then
-						task.wait(3)
-						warningNotification("Render", "".. faggot.. " Going To Get Removed Now!", 10)
-						faggot.Character.Parent = FaggotFolder
-					end
-					task.wait(60)
-				until (not AntiFaggot.Enabled)
-            else
-				warningNotification("Render", "".. faggot.. " Has Been Revived")
-				faggot.Character.Parent = workspace
-            end
-        end
-    })
-	RemoveFaggot = AntiFaggot.CreateToggle({
-        Name = 'RemoveFaggot',
-        Default = false,
-        Function = function() end
-    })
-end)
-
-runFunction(function()
-    local CustomAmbience = {Enabled = false}
-	local newsky
-	local tint
-    CustomAmbience = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
-        Name = "LynoSky",
-		HoverText = "Requested By Lyno",
-        Function = function(callback)
-            if callback then
-                game.Lighting.Ambient = Color3.fromRGB(170, 0, 255)
-                tint = Instance.new("ColorCorrectionEffect", game.Lighting)
-                tint.Name = "ComeOn123"
-                tint.TintColor = Color3.fromRGB(225, 200, 255)
-                newsky = Instance.new("Sky", game.Lighting)
-                newsky.Name = "PurpleFakeSky"
-                newsky.SkyboxBk = "rbxassetid://8539982183"
-                newsky.SkyboxDn = "rbxassetid://8539981943"
-                newsky.SkyboxFt = "rbxassetid://8539981721"
-                newsky.SkyboxLf = "rbxassetid://8539981424"
-                newsky.SkyboxRt = "rbxassetid://8539980766"
-                newsky.SkyboxUp = "rbxassetid://8539981085"
-                newsky.MoonAngularSize = 0
-                newsky.SunAngularSize = 0
-                newsky.StarCount = 3e3
-            else
-                game.Lighting.Ambient = Color3.fromRGB(69, 69, 69)
-                tint:Destroy()
-                newsky:Destroy()
-            end
-        end
-    })
-end)
-runFunction(function()
-    local CustomAmbience = {Enabled = false}
-	local chatUi = lplr.PlayerGui.Chat.Frame
-				
-	chatUi.Transparency = 0.5
-	chatUi.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, 10)
-	corner.Parent = chatUi
-	
-	local chatParentFrame = chatUi:WaitForChild("ChatChannelParentFrame")
-	chatParentFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-	
-	local chatBarParentFrame = chatUi:WaitForChild("ChatBarParentFrame")
-	chatBarParentFrame.BackgroundTransparency = 1
-	
-	local BoxFrame0 = chatBarParentFrame:WaitForChild("Frame")
-	local BoxFrame = BoxFrame0:WaitForChild("BoxFrame")
-	local BoxFrame2 = BoxFrame:WaitForChild("Frame")
-	
-	local plrMessage = chatParentFrame:WaitForChild("Frame_MessageLogDisplay")
-    CustomChat = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
-        Name = "CustomChat",
-        Function = function(callback)
-            if callback then		
-				task.spawn(function()
-					repeat
-						chatParentFrame.BackgroundTransparency = 1
-						chatBarParentFrame.BackgroundTransparency = 1
-						plrMessage.Transparency = 1
-						BoxFrame0.Transparency = 1
-				
-						if BoxFrame2:WaitForChild("TextLabel") then
-							BoxFrame2:WaitForChild("TextLabel").TextColor3 = Color3.fromRGB(0, 0, 0)
-							BoxFrame2:WaitForChild("ChatBar").TextColor3 = Color3.fromRGB(0, 0, 0)
-							BoxFrame2:WaitForChild("MessageMode").TextColor3 = Color3.fromRGB(255, 5, 5)
-						end
-				
-						if not BoxFrame:FindFirstChild("UICorner") then
-							local cornerBoxFrame = Instance.new("UICorner")
-							cornerBoxFrame.CornerRadius = UDim.new(0, 7)
-							cornerBoxFrame.Parent = BoxFrame
-						end
-						
-						task.wait()
-					until (not CustomChat.Enabled)
-				end)
-			end
-        end
-    })
 end)
