@@ -71,6 +71,7 @@ if shared.VapeExecuted then
 		["vape/assets/VapeLogo4.png"] = "rbxassetid://13350877564"
 	}
 	local getcustomasset = getsynasset or getcustomasset or function(location) return vapeAssetTable[location] or "" end
+	local executor = (identifyexecutor and identifyexecutor() or getexecutorname and getexecutorname() or 'your executor')
 	local customassetcheck = (getsynasset or getcustomasset) and true
 	local requestfunc = syn and syn.request or http and http.request or http_request or fluxus and fluxus.request or request or function() end 
 	local isfile = isfile or function(file)
@@ -5445,9 +5446,9 @@ if shared.VapeExecuted then
 				sliderapi["SetValue"] = function(val)
 				--	val = math.clamp(val, argstable["Min"], argstable["Max"])
 					sliderapi["Value"] = val
-					slider2.Size = UDim2.new(math.clamp((val / argstable["Max"]), 0.02, 0.97), 0, 1, 0)
+					pcall(function() slider2.Size = UDim2.new(math.clamp((val / argstable["Max"]), 0.02, 0.97), 0, 1, 0) end)
 					local doublecheck = argstable["Double"] and (sliderapi["Value"] / argstable["Double"]) or sliderapi["Value"]
-					text2.Text = doublecheck .. " "..(argstable["Percent"] and "%  " or " ").." "
+					pcall(function() text2.Text = doublecheck .. " "..(argstable["Percent"] and "%  " or " ").." " end)
 					argstable["Function"](val)
 				end
 				slider3.MouseButton1Down:Connect(function()
