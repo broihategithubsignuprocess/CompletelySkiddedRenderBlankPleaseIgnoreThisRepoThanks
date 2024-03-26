@@ -3,7 +3,7 @@
     Render Intents | Bedwars
     The #1 vape mod you'll ever see.
 
-    Version: 1.8.2
+    Version: 1.9
     discord.gg/render
 
 ]]
@@ -486,7 +486,7 @@ local function getSpeed()
 		if lplr.Character:FindFirstChild('elk') then  
 			speed += 19
 		end
-		if bedwarsStore.matchState ~= 0 and isEnabled('Desync') then 
+		if bedwarsStore.desyncActive then 
 			speed += 3.8
 		end
 		local armor = bedwarsStore.localInventory.inventory.armor[3]
@@ -1437,6 +1437,7 @@ runFunction(function()
 		KillEffectController = KnitClient.Controllers.KillEffectController,
 		KnockbackUtil = require(replicatedStorageService.TS.damage['knockback-util']).KnockbackUtil,
 		LobbyClientEvents = KnitClient.Controllers.QueueController,
+		LobbyEvents = replicatedStorageService:FindFirstChild('events-@easy-games/lobby:shared/event/lobby-events@getEvents.Events'),
 		MapController = KnitClient.Controllers.MapController,
 		NetManaged = replicatedStorageService.rbxts_include.node_modules['@rbxts'].net.out._NetManaged,
 		MatchEndScreenController = Flamework.resolveDependency('client/controllers/game/match/match-end-screen-controller@MatchEndScreenController'),
@@ -12775,10 +12776,10 @@ runFunction(function()
 					if AutoRewindMode.Value == 'Target' then 
 						local target = GetTarget()
 						if target.RootPart then 
-							speed, position = (getTweenSpeed(target.RootPart) + 0.3), target.RootPart.Position
+							speed, position = getTweenSpeed(target.RootPart), target.RootPart.Position
 						end
 					end
-					deathtween = tweenService:Create(lplr.Character.HumanoidRootPart, TweenInfo.new(speed, Enum.EasingStyle.Linear), {CFrame = CFrame.new(position)}) 
+					deathtween = tweenService:Create(lplr.Character.HumanoidRootPart, TweenInfo.new(speed + 0.5 % 0.4, Enum.EasingStyle.Linear), {CFrame = CFrame.new(position)}) 
 					deathtween:Play()
 					deathtween.Completed:Wait()
 					deathtween = nil
@@ -13112,160 +13113,6 @@ runLunar(function()
 		Default = false,
 		HoverText = 'Teleports anyways even if you have\na change of getting suffocated',
 		Function = function() end
-	})
-end)
-
-runLunar(function()
-	local function modulescheck()
-		if isEnabled('InfiniteFly') or isEnabled('LunarBoost') or isEnabled('LunarFly') then
-			return true
-		end
-	end
-	local GravityModule = {}
-	local GravityValue = {Value = 100}
-	GravityModule = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
-		Name = "Gravity",
-		HoverText = "Modifies the Gravity",
-		Function = function(callback)
-			if callback then
-				task.spawn(function()
-					repeat task.wait()
-						if modulescheck() == nil then
-							workspace.Gravity = GravityValue.Value
-						end
-					until not GravityModule.Enabled
-				end)
-			else
-				workspace.Gravity = 196.2
-			end
-		end
-	})
-	GravityValue = GravityModule.CreateSlider({
-		Name = "Gravity",
-		Min = 0,
-		Max = 196,
-		Default = 100,
-		Function = function(val) end
-	})
-end)
-
-runLunar(function()	
-	TagEraser = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
-		Name = 'TagEraser',
-        HoverText = 'Removes your nametag',
-		Function = function(callback)
-			if callback then
-				task.spawn(function()
-					repeat task.wait()
-						pcall(function() lplr.Character.Head.Nametag:Destroy() end)
-					until not TagEraser.Enabled
-				end)
-			end
-		end,
-        Default = false
-	})
-end)
-
-pcall(function()
-    local texturepack = {}
-	local packDropdown = {Value = "Melo Pack"}
-
-	local ogpackloader = game:GetObjects("rbxassetid://14027120450")
-	local ogtxtpack = ogpackloader[1]
-	ogtxtpack.Name = "OG Pack"
-	ogtxtpack.Parent = replicatedStorageService
-	task.wait()
-	local melopackloader = game:GetObjects("rbxassetid://14774202839")
-	local melotxtpack = melopackloader[1]
-	melotxtpack.Name = "Melo's Pack"
-	melotxtpack.Parent = replicatedStorageService
-	task.wait()
-	local azzapackloader = game:GetObjects("rbxassetid://14803122185")
-	local azzatxtpack = azzapackloader[1]
-	azzatxtpack.Name = "4zze's Pack"
-	azzatxtpack.Parent = replicatedStorageService
-	local viewmodelCon
-	local textures = {
-		["OG Pack"] = ogtxtpack,
-		["Melo's Pack"] = melotxtpack,
-		["4zze's Pack"] = azzatxtpack
-	}
-
-	local function refreshViewmodel(child)
-		for i,v in next, (textures[packDropdown.Value]:GetChildren()) do
-			if string.lower(v.Name) == child.Name and child.Parent.Name ~= child.Name then
-				-- first person viewmodel check
-				for i1,v1 in next, (child:GetDescendants()) do
-					if v1:IsA("Part") or v1:IsA("MeshPart") then
-						v1.Transparency = 1
-					end
-				end
-				-- third person viewmodel check
-				for i1,v1 in next, (game.Players.LocalPlayer.Character:GetChildren()) do
-					if v1.Name == string.lower(v.Name) then
-						for i2,v2 in next, (v1:GetDescendants()) do
-							if v2.Name ~= child.Name then
-								if v2:IsA("Part") or v2:IsA("MeshPart") then
-									v2.Transparency = 1
-									v2:GetPropertyChangedSignal("Transparency"):Connect(function()
-										v2.Transparency = 1
-									end)
-								end
-							end
-						end
-					end
-				end
-				-- first person txtpack renderer
-				local vmmodel = v:Clone()
-				vmmodel.CFrame = child.Handle.CFrame 
-				vmmodel.CFrame = vmmodel.CFrame * (packDropdown.Value == "OG Pack" and CFrame.new(0, -0.2, 0) or packDropdown.Value == "Melo's Pack" and CFrame.new(0.2, -0.2, 0) or packDropdown.Value == "4zze's Pack" and CFrame.new(0.8,0.1,0.7)) * CFrame.Angles(math.rad(90),math.rad(-130),math.rad(0))
-				if string.lower(child.Name) == "rageblade" then vmmodel.CFrame = vmmodel.CFrame * CFrame.Angles(math.rad(-180),math.rad(100),math.rad(0)) end
-				if string.lower(child.Name):find("pickaxe") then vmmodel.CFrame = vmmodel.CFrame * CFrame.Angles(math.rad(-55),math.rad(-30),math.rad(50)) end
-				if string.lower(child.Name):find("scythe") then vmmodel.CFrame = vmmodel.CFrame * CFrame.Angles(math.rad(-65),math.rad(-80),math.rad(100)) * CFrame.new(-2.8,0.4,-0.8) end
-				if (string.lower(child.Name):find("axe")) and not (string.lower(child.Name):find("pickaxe")) then vmmodel.CFrame = vmmodel.CFrame * CFrame.Angles(math.rad(-55),math.rad(-30),math.rad(50)) * (packDropdown.Value == "Melo's Pack" and CFrame.new(-0.2,0,0.2) or packDropdown.Value == "4zze's Pack" and CFrame.new(-1.5,0,-0.8)) end
-				vmmodel.Parent = child
-				local vmmodelweld = Instance.new("WeldConstraint",vmmodel)
-				vmmodelweld.Part0 = vmmodelweld.Parent
-				vmmodelweld.Part1 = child.Handle
-				-- third person txtpack renderer
-				local charmodel = v:Clone()
-				charmodel.CFrame = game.Players.LocalPlayer.Character[child.Name]:FindFirstChild("Handle").CFrame
-				charmodel.CFrame = charmodel.CFrame * (packDropdown.Value == "OG Pack" and CFrame.new(0, -0.5, 0) or packDropdown.Value == "Melo's Pack" and CFrame.new(0.2, -0.9, 0) or packDropdown.Value == "4zze's Pack" and CFrame.new(0.1,-1.2,0)) * CFrame.Angles(math.rad(90),math.rad(-130),math.rad(0))
-				if string.lower(child.Name) == "rageblade" then charmodel.CFrame = charmodel.CFrame * CFrame.Angles(math.rad(-180),math.rad(100),math.rad(0)) * CFrame.new(0.8,0,-1.1) end
-				if string.lower(child.Name):find("pickaxe") then charmodel.CFrame = charmodel.CFrame * CFrame.Angles(math.rad(-55),math.rad(-30),math.rad(50)) * CFrame.new(-0.8,-0.2,1.1) end
-				if string.lower(child.Name):find("scythe") then charmodel.CFrame = charmodel.CFrame * CFrame.Angles(math.rad(-65),math.rad(-80),math.rad(100)) * CFrame.new(-1.8,-0.5,0) end
-				if (string.lower(child.Name):find("axe")) and not (string.lower(child.Name):find("pickaxe")) then charmodel.CFrame = charmodel.CFrame * CFrame.Angles(math.rad(-55),math.rad(-30),math.rad(50)) * CFrame.new(-1.4,-0.2,0.6) end
-				charmodel.Anchored = false
-				charmodel.CanCollide = false
-				charmodel.Parent = game.Players.LocalPlayer.Character[child.Name]
-				local charmodelweld = Instance.new("WeldConstraint",charmodel)
-				charmodelweld.Part0 = charmodelweld.Parent
-				charmodelweld.Part1 = game.Players.LocalPlayer.Character[child.Name].Handle
-			end
-		end
-	end
-
-	texturepack = GuiLibrary["ObjectsThatCanBeSaved"]["RenderWindow"]["Api"]["CreateOptionsButton"]({
-        Name = "TexturePack",
-        HoverText = "Modifies your renderer",
-        Function = function(callback)
-            if callback then
-				if gameCamera.Viewmodel:FindFirstChildWhichIsA("Accessory") then refreshViewmodel(gameCamera.Viewmodel:FindFirstChildWhichIsA("Accessory")) end
-				viewmodelCon = workspace.Camera.Viewmodel.ChildAdded:Connect(function(child)
-					refreshViewmodel(child)
-				end)
-            else
-                if viewmodelCon then pcall(function() viewmodelCon:Disconnect() end) end
-            end
-        end,
-		ExtraText = function()
-            return packDropdown.Value
-        end
-    })
-	packDropdown = texturepack.CreateDropdown({
-		Name = "Texture",
-		List = {"OG Pack","Melo's Pack","4zze's Pack"},
-		Function = function(val) end
 	})
 end)
 
@@ -13843,4 +13690,143 @@ runFunction(function()
 	})
 end)
 
-
+runFunction(function()
+	local StaffDetector = {}
+	local StaffDetectorMode = {Value = 'Lobby'}
+	local legitgamers = {}
+	local staffconfig = {legitmessages = {}, staffaccounts = {}, legitmodules = {}}
+	local cachedfriends = {}
+	local cachedroles = {}
+	local knownstaff = {}
+	local staffactions = {
+		Uninject = GuiLibrary.SelfDestruct,
+		Lobby = function()
+			teleportService:Teleport(6872265039)
+		end,
+		LegitLobby = function()
+			local messages = getrandomvalue(staffconfig.legitmessages)
+			if messages ~= '' then 
+				for i,v in next, messages do 
+					sendchatmessage(v)
+					if i < #messages then 
+						task.wait(math.random(0.5, 1.2)) 
+					end
+				end
+			end
+			teleportService:Teleport(6872265039)
+		end,
+		Config = function()
+			for i,v in next, GuiLibrary.ObjectsThatCanBeSaved do 
+				if v.Type == 'OptionsButton' and table.find(staffconfig.legitmodules, i:gsub('OptionsButton', '')) == nil then 
+					GuiLibrary.SaveSettings = function() end
+					if v.Api.Enabled then
+						v.Api.ToggleButton()
+					end
+					pcall(GuiLibrary.RemoveObject, i)
+				end
+			end
+		end
+	}
+	local function savestaffConfig(plr, detection)
+		local success, json = pcall(function() 
+			return httpService:JSONDecode(readfile('vape/Render/staffdata.json'))
+		end)
+		if not success then 
+			json = {}
+		end
+		table.insert(json, {Username = plr.Name, DisplayName = plr.DisplayName, Detection = detection, Tick = tick()})
+		if isfolder('vape/Render') then 
+			writefile('vape/Render/staffdata.json', httpService:JSONEncode(json))
+		end
+	end
+	local function GetRobloxFriends(plr)
+		local friends = {}
+		local success, page = pcall(function() return playersService:GetFriendsAsync(plr.UserId) end)
+		if success then
+		   repeat
+			   for i,v in next, page:GetCurrentPage() do
+				   table.insert(friends, v.UserId)
+			   end
+			   if not page.IsFinished then 
+				   page:AdvanceToNextPageAsync()
+			   end
+		   until page.IsFinished
+		end
+		return friends
+	end
+	local function friendActive(friendtab)
+		for i,v in next, friendtab do 
+			local friend = playersService:GetPlayerByUserId(v)
+			if playersService:GetPlayerByUserId(v) then 
+				return friend 
+			end
+		end
+	end
+	local function staffDetectorFunction(player)
+		pcall(function()
+			repeat 
+				local friends = (cachedfriends[player] or GetRobloxFriends(player))
+				cachedfriends[player] = friends
+				if plr:GetAttribute('Spectator') and table.find(legitgamers, player) == nil and friendActive(friends) == nil and bedwars.ClientStoreHandler:getState().Game.customMatch == nil then 
+					savestaffConfig(player, 'illegal_join')
+					bedwars.LobbyEvents.leaveParty:FireServer()
+					errorNotification('StaffDetector', player.DisplayName..' is overwatching you.', 60)
+					return staffactions[StaffDetectorMode.Value]()
+				end
+				if table.find(legitgamers, player) == nil and tostring(plr.Team) ~= 'Neutral' and not plr:GetAttribute('Spectator') then 
+					table.insert(legitgamers, player)
+				end
+				if table.find(staffconfig.staffaccounts, player.UserId) or table.find(knownstaff, player.UserId) then 
+					savestaffConfig(player, 'blacklisted_users')
+					bedwars.LobbyEvents.leaveParty:FireServer()
+					errorNotification('StaffDetector', player.DisplayName..' is cached on staff json.', 60)
+					return staffactions[StaffDetectorMode.Value]()
+				end
+				local success, response = true, cachedroles[player]
+				if response == nil then 
+					success, response = pcall(player.GetRoleInGroup, lplr, 5774246)
+				end
+				cachedroles[player] = response 
+				if tonumber(response) and tonumber(response) >= 100 then 
+					savestaffConfig(player, 'group_rank')
+					bedwars.LobbyEvents.leaveParty:FireServer()
+					errorNotification('StaffDetector', player.DisplayName..' has a high role in the Easy.gg group (GetRoleInGroup() >= 100).', 60)
+					return staffactions[StaffDetectorMode.Value]()
+				end
+				task.wait()
+			until (not StaffDetector.Enabled)
+		end)
+	end
+	StaffDetector = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+		Name = 'StaffDetector',
+		HoverText = 'Detects when bedwars staff are in the server (75% accuracy).',
+		Function = function(calling)
+			if calling then 
+				pcall(function() staffconfig = httpService:JSONDecode(RenderFunctions:GetFile('Libraries/staffconfig.json')) end)
+				pcall(function() knownstaff = httpService:JSONDecode(RenderFunctions:GetFile('Libraries/knownstaff.json')) end)
+				pcall(function() 
+					for i,v in next, httpService:JSONDecode(readfile('vape/Render/staffdata.json')) do 
+						if table.find(knownstaff, v) == nil then 
+							table.insert(knownstaff, v)
+						end
+					end
+				end)
+				repeat task.wait() until (shared.VapeFullyLoaded or not StaffDetector.Enabled)
+				if not StaffDetector.Enabled then 
+					return 
+				end
+				for i,v in next, playersService:GetPlayers() do 
+					if v ~= lplr then
+						task.spawn(staffDetectorFunction)
+					end
+				end
+				table.insert(vapeConnections, playersService.PlayerAdded:Connect(staffDetectorFunction))
+			end
+		end
+	})
+	StaffDetectorMode = StaffDetector.CreateDropdown({
+		Name = 'Action',
+		List = dumptable(staffactions, 1),
+		Function = function() end
+	})
+end)

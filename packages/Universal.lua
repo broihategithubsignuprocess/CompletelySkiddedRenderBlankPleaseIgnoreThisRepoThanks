@@ -3,7 +3,7 @@
     Render Intents | Universal
     The #1 vape mod you'll ever see.
 
-    Version: 1.8
+    Version: 1.9
     discord.gg/render
 	
 ]]
