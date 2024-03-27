@@ -1,4 +1,4 @@
-if not isfoler('vape/Render') then 
+if not isfolder('vape/Render') then 
     return game:GetService('StarterGui'):SetCore('SendNotification', ({
         Title = 'Render', 
         Text = 'No installation detected, not installed.', 
@@ -26,4 +26,4 @@ game:GetService('StarterGui'):SetCore('SendNotification', ({
     Text = 'Successfully uninstalled the render configuration. farewell soldier.', 
     Icon = 'rbxassetid://16498204245',
     Duration = 20
-})) 
+}))
