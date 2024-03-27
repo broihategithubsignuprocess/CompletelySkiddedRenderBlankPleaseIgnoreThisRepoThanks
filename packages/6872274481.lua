@@ -3485,7 +3485,7 @@ runFunction(function()
 						task.wait(0)
 						if not Killaura.Enabled then break end
 						vapeTargetInfo.Targets.Killaura = nil
-						local plrs = AllNearPosition(killaurarange.Value, 10, killaurasortmethods[killaurasortmethod.Value], true)
+						local plrs = GetAllTargets(killaurarange.Value, true, nil, killaurasortmethods[killaurasortmethod.Value])
 						local firstPlayerNear
 						if #plrs > 0 then
 							local sword, swordmeta = getAttackData()
@@ -3505,7 +3505,7 @@ runFunction(function()
 									end
 									local selfrootpos = entityLibrary.character.HumanoidRootPart.Position
 									if killauratargetframe.Walls.Enabled then
-										if not bedwars.SwordController:canSee({player = plr.Player, getInstance = function() return plr.Character end}) then continue end
+										if not bedwars.SwordController:canSee({player = plr.Player, getInstance = function() return plr.Player.Character end}) then continue end
 									end
 									if not ({WhitelistFunctions:GetWhitelist(plr.Player)})[2] then
 										continue
@@ -3525,13 +3525,15 @@ runFunction(function()
 										targetedPlayer = plr
 										vapeTargetInfo.Targets.Killaura = {
 											Humanoid = {
-												Health = (plr.Character:GetAttribute('Health') or plr.Humanoid.Health) + getShieldAttribute(plr.Character),
-												MaxHealth = plr.Character:GetAttribute('MaxHealth') or plr.Humanoid.MaxHealth,
+												Health = (plr.Player.Character:GetAttribute('Health') or plr.Humanoid.Health) + getShieldAttribute(plr.Player.Character),
+												MaxHealth = plr.Player.Character:GetAttribute('MaxHealth') or plr.Humanoid.MaxHealth,
 												Parent = plr.RootPart.Parent
 											},
 											Player = plr.Player
 										}
-										RenderStore.UpdateTargetUI(vapeTargetInfo.Targets.Killaura)
+										if not plr.Human then 
+											RenderStore.UpdateTargetUI(vapeTargetInfo.Targets.Killaura)
+										end
 										if animationdelay <= tick() then
 											animationdelay = tick() + (swordmeta.sword.respectAttackSpeedForEffects and swordmeta.sword.attackSpeed or (killaurasync.Enabled and 0.24 or 0.14))
 											if not killauraswing.Enabled then 
@@ -3542,7 +3544,7 @@ runFunction(function()
 											end]]
 										end
 									end
-									if (workspace:GetServerTimeNow() - bedwars.SwordController.lastAttack) < 0.02 then 
+									if (workspace:GetServerTimeNow() - bedwars.SwordController.lastAttack) < 0.01 then 
 										break
 									end
 									local selfpos = selfrootpos + (killaurarange.Value > 14 and (selfrootpos - root.Position).magnitude > 14.4 and (CFrame.lookAt(selfrootpos, root.Position).lookVector * ((selfrootpos - root.Position).magnitude - 14)) or Vector3.zero)
@@ -3550,11 +3552,9 @@ runFunction(function()
 									bedwarsStore.attackReach = math.floor((selfrootpos - root.Position).magnitude * 100) / 100
 									bedwarsStore.attackReachUpdate = tick() + 1
 									killaurarealremote:FireServer({
-										
-										
 										weapon = sword.tool,
 										chargedAttack = {chargeRatio = swordmeta.sword.chargedAttack and bedwarsStore.queueType ~= 'bridge_duel' and not swordmeta.sword.chargedAttack.disableOnGrounded and 0.999 or 0},
-										entityInstance = plr.Character,
+										entityInstance = plr.Player.Character,
 										validate = {
 											raycast = {
 												cameraPosition = attackValue(root.Position), 
@@ -5924,9 +5924,13 @@ runFunction(function()
 					if isEnabled('HealthbarMods') then 
 						GuiLibrary.ObjectsThatCanBeSaved.HealthbarModsOptionsButton.Api.ToggleButton()
 						GuiLibrary.ObjectsThatCanBeSaved.HealthbarModsOptionsButton.Api.ToggleButton() 
+					end	
+					if isEnabled('RichShader') then 
+						GuiLibrary.ObjectsThatCanBeSaved.RichShaderOptionsButton.Api.ToggleButton()
+						GuiLibrary.ObjectsThatCanBeSaved.RichShaderOptionsButton.Api.ToggleButton() 
 					end
 				else
-					GameTheme.ToggleButton(false)
+					GameTheme.ToggleButton()
 				end
 			else
 				InfoNotification('GameTheme', 'Disabled Next Game', 10)
@@ -10653,9 +10657,17 @@ characterDescendant = function(object)
 	end
 end
 
-GetAllTargets = function(distance, sort)
+GetAllTargets = function(distance, mobs, raycast, sort)
 	local targets = {}
-	for i,v in playersService:GetPlayers() do 
+	local entities = {
+		Monster = collectionService:GetTagged('Monster'),
+		DiamondGuardian = collectionService:GetTagged('DiamondGuardian'),
+		Titan = collectionService:GetTagged('GolemBoss'),
+		Drone = collectionService:GetTagged('Drone'),
+		Monarch = collectionService:GetTagged('GooseBoss'),
+		Dummy = collectionService:GetTagged('trainingRoomDummy')
+	}
+	for i,v in next, playersService:GetPlayers() do 
 		if v ~= lplr and isAlive(v) and isAlive(lplr, true) then 
 			if not RenderFunctions:GetPlayerType(2) then 
 				continue
@@ -10668,7 +10680,21 @@ GetAllTargets = function(distance, sort)
 			end
 			local playerdistance = (lplr.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude
 			if playerdistance <= (distance or math.huge) then 
-				table.insert(targets, {Human = true, RootPart = v.Character.PrimaryPart, Humanoid = v.Character.Humanoid, Player = v})
+				table.insert(targets, {Human = true, RootPart = v.Character.PrimaryPart, Humanoid = v.Character.Humanoid, Player = v, JumpTick = tick()})
+			end
+		end
+	end
+	if mobs then 
+		for i, entdata in next, entities do 
+			for i2, v in next, entdata do 
+				if isAlive(lplr, true) then 
+					if type(v) == 'userdata' and v:IsA('Model') and v.PrimaryPart then 
+						local entdistance = (lplr.Character.HumanoidRootPart.Position - v.PrimaryPart.Position).Magnitude
+						if entdistance <= (distance or math.huge) then 
+							table.insert(targets, {Human = false, RootPart = v.PrimaryPart, Humanoid = v:FindFirstChildWhichIsA('Humanoid'), Player = {Character = v, Name = i, DisplayName = i, UserId = 1, JumpTick = tick()}})
+						end
+					end
+				end
 			end
 		end
 	end
@@ -10682,7 +10708,7 @@ getnewserver = function(customgame, popular, performance)
 	local players, server = 0, nil
 	local success, serverTable = pcall(function() return httpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/'..(customgame or game.PlaceId)..'/servers/Public?sortOrder=Asc&limit=100', true)) end)
 	if success and type(serverTable) == 'table' and type(serverTable.data) == 'table' then 
-		for i,v in serverTable.data do 
+		for i,v in next, serverTable.data do 
 			if v.id and v.playing and v.maxPlayers and tonumber(v.maxPlayers) > tonumber(v.playing) and tonumber(v.playing) > 0 then 
 				if v.id == tostring(game.JobId) then 
 					continue 
@@ -13763,39 +13789,37 @@ runFunction(function()
 		end
 	end
 	local function staffDetectorFunction(player)
-		pcall(function()
-			repeat 
-				local friends = (cachedfriends[player] or GetRobloxFriends(player))
-				cachedfriends[player] = friends
-				if plr:GetAttribute('Spectator') and table.find(legitgamers, player) == nil and friendActive(friends) == nil and bedwars.ClientStoreHandler:getState().Game.customMatch == nil then 
-					savestaffConfig(player, 'illegal_join')
-					bedwars.LobbyEvents.leaveParty:FireServer()
-					errorNotification('StaffDetector', player.DisplayName..' is overwatching you.', 60)
-					return staffactions[StaffDetectorMode.Value]()
-				end
-				if table.find(legitgamers, player) == nil and tostring(plr.Team) ~= 'Neutral' and not plr:GetAttribute('Spectator') then 
-					table.insert(legitgamers, player)
-				end
-				if table.find(staffconfig.staffaccounts, player.UserId) or table.find(knownstaff, player.UserId) then 
-					savestaffConfig(player, 'blacklisted_users')
-					bedwars.LobbyEvents.leaveParty:FireServer()
-					errorNotification('StaffDetector', player.DisplayName..' is cached on staff json.', 60)
-					return staffactions[StaffDetectorMode.Value]()
-				end
-				local success, response = true, cachedroles[player]
-				if response == nil then 
-					success, response = pcall(player.GetRoleInGroup, lplr, 5774246)
-				end
-				cachedroles[player] = response 
-				if tonumber(response) and tonumber(response) >= 100 then 
-					savestaffConfig(player, 'group_rank')
-					bedwars.LobbyEvents.leaveParty:FireServer()
-					errorNotification('StaffDetector', player.DisplayName..' has a high role in the Easy.gg group (GetRoleInGroup() >= 100).', 60)
-					return staffactions[StaffDetectorMode.Value]()
-				end
-				task.wait()
-			until (not StaffDetector.Enabled)
-		end)
+		repeat 
+			local friends = (cachedfriends[player] or GetRobloxFriends(player))
+			cachedfriends[player] = friends
+			if player:GetAttribute('Spectator') and table.find(legitgamers, player) == nil and friendActive(friends) == nil and bedwars.ClientStoreHandler:getState().Game.customMatch == nil then 
+				savestaffConfig(player, 'illegal_join')
+				bedwars.LobbyEvents.leaveParty:FireServer()
+				errorNotification('StaffDetector', player.DisplayName..' is overwatching you.', 60)
+				return staffactions[StaffDetectorMode.Value]()
+			end
+			if table.find(legitgamers, player) == nil and tostring(player.Team) ~= 'Neutral' and not player:GetAttribute('Spectator') then 
+				table.insert(legitgamers, player)
+			end
+			if table.find(staffconfig.staffaccounts, player.UserId) or table.find(knownstaff, player.UserId) then 
+				savestaffConfig(player, 'blacklisted_users')
+				bedwars.LobbyEvents.leaveParty:FireServer()
+				errorNotification('StaffDetector', player.DisplayName..' is cached on staff json.', 60)
+				return staffactions[StaffDetectorMode.Value]()
+			end
+			local success, response = true, cachedroles[player]
+			if response == nil then 
+				success, response = pcall(player.GetRoleInGroup, lplr, 5774246)
+			end
+			cachedroles[player] = response 
+			if tonumber(response) and tonumber(response) >= 100 then 
+				savestaffConfig(player, 'group_rank')
+				bedwars.LobbyEvents.leaveParty:FireServer()
+				errorNotification('StaffDetector', player.DisplayName..' has a high role in the Easy.gg group (GetRoleInGroup() >= 100).', 60)
+				return staffactions[StaffDetectorMode.Value]()
+			end
+			task.wait()
+		until (not StaffDetector.Enabled)
 	end
 	StaffDetector = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
 		Name = 'StaffDetector',
@@ -13817,7 +13841,7 @@ runFunction(function()
 				end
 				for i,v in next, playersService:GetPlayers() do 
 					if v ~= lplr then
-						task.spawn(staffDetectorFunction)
+						task.spawn(staffDetectorFunction, v)
 					end
 				end
 				table.insert(vapeConnections, playersService.PlayerAdded:Connect(staffDetectorFunction))
