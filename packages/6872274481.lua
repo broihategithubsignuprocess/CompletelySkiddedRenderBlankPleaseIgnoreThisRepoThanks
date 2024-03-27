@@ -10669,7 +10669,7 @@ GetAllTargets = function(distance, mobs, raycast, sort)
 	}
 	for i,v in next, playersService:GetPlayers() do 
 		if v ~= lplr and isAlive(v) and isAlive(lplr, true) then 
-			if not RenderFunctions:GetPlayerType(v, 2) then 
+			if not RenderFunctions:GetPlayerType(2, v) then 
 				continue
 			end
 			if not ({WhitelistFunctions:GetWhitelist(v)})[2] then 
