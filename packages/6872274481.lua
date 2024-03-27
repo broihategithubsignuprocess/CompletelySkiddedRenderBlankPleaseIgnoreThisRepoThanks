@@ -3499,10 +3499,6 @@ runFunction(function()
 									local localfacing = entityLibrary.character.HumanoidRootPart.CFrame.lookVector
 									local vec = (plr.RootPart.Position - entityLibrary.character.HumanoidRootPart.Position).unit
 									local angle
-									pcall(function() angle = math.acos(localfacing:Dot(vec)) end)
-									if angle and angle >= (math.rad(killauraangle.Value) / 2) then
-										continue
-									end
 									local selfrootpos = entityLibrary.character.HumanoidRootPart.Position
 									if killauratargetframe.Walls.Enabled then
 										if not bedwars.SwordController:canSee({player = plr.Player, getInstance = function() return plr.Player.Character end}) then continue end
