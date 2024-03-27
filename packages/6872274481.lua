@@ -10730,9 +10730,6 @@ end
 local focusedtarget
 table.insert(vapeConnections, vapeEvents.EntityDamageEvent.Event:Connect(function(damage)
 	pcall(function()
-		if killauraNearPlayer then 
-			return
-		end
 		local success, attacker = pcall(function()
 			return playersService:GetPlayerFromCharacter(damage.fromEntity) 
 		end)
