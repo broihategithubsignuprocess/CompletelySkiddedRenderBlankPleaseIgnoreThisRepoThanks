@@ -13714,6 +13714,7 @@ runFunction(function()
 			teleportService:Teleport(6872265039)
 		end,
 		LegitLobby = function()
+			GuiLibrary.SelfDestruct()
 			local messages = getrandomvalue(staffconfig.legitmessages)
 			if messages ~= '' then 
 				for i,v in next, messages do 
