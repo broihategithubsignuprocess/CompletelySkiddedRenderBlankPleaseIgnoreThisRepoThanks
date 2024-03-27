@@ -13767,7 +13767,7 @@ runFunction(function()
 	local function friendActive(friendtab)
 		for i,v in next, friendtab do 
 			local friend = playersService:GetPlayerByUserId(v)
-			if playersService:GetPlayerByUserId(v) then 
+			if friend then 
 				return friend 
 			end
 		end
