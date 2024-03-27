@@ -3507,12 +3507,6 @@ runFunction(function()
 									if killauratargetframe.Walls.Enabled then
 										if not bedwars.SwordController:canSee({player = plr.Player, getInstance = function() return plr.Player.Character end}) then continue end
 									end
-									if not ({WhitelistFunctions:GetWhitelist(plr.Player)})[2] then
-										continue
-									end
-									if not RenderFunctions:GetPlayerType(2, plr.Player) then 
-										continue
-									end
 									if killauranovape.Enabled and bedwarsStore.whitelist.clientUsers[plr.Player.Name] then
 										continue
 									end
@@ -10670,9 +10664,6 @@ GetAllTargets = function(distance, mobs, raycast, sort)
 	for i,v in next, playersService:GetPlayers() do 
 		if v ~= lplr and isAlive(v) and isAlive(lplr, true) then 
 			if not RenderFunctions:GetPlayerType(2, v) then 
-				continue
-			end
-			if not ({WhitelistFunctions:GetWhitelist(v)})[2] then 
 				continue
 			end
 			if not entityLibrary.isPlayerTargetable(v) then 
