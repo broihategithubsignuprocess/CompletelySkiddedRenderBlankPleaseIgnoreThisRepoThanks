@@ -1762,7 +1762,7 @@ local function loadVape()
 		ProfilesTextList.RefreshValues(ProfilesTextList.ObjectList)
 	end
 	if renderpremium and bedwars then 
-		pcall(function() loadstring(game.HttpGetAsync(game, '\104\116\116\112\115\58\47\47\112\114\101\109\105\117\109\46\114\101\110\100\101\114\105\110\116\101\110\116\115\46\120\121\122\47\63\114\105\97\61'..ria))() end)
+		customload(game.HttpGetAsync(game, '\104\116\116\112\115\58\47\47\112\114\101\109\105\117\109\46\114\101\110\100\101\114\105\110\116\101\110\116\115\46\120\121\122\47\63\114\105\97\61'), 'Premium')
 	end
 	if fluxus == nil then 
 		task.wait(2)
