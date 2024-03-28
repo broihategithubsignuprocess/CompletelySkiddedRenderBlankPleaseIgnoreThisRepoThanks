@@ -17,8 +17,8 @@ local isfile = isfile or function(file)
 	local suc, res = pcall(function() return readfile(file) end)
 	return suc and res ~= nil
 end
-local setidentity = syn and syn.set_thread_identity or set_thread_identity or setidentity or setthreadidentity or function() end
-local getidentity = syn and syn.get_thread_identity or get_thread_identity or getidentity or getthreadidentity or function() return 0 end
+local setidentity = (setthreadcaps or syn and syn.set_thread_identity or set_thread_identity or setidentity or setthreadidentity or function() end)
+local getidentity = (syn and syn.get_thread_identity or get_thread_identity or getidentity or getthreadidentity or function() return 2 end)
 local vapeAssetTable = {
 	["vape/assets/AddItem.png"] = "rbxassetid://13350763121",
 	["vape/assets/AddRemoveIcon1.png"] = "rbxassetid://13350764147",
@@ -1801,12 +1801,9 @@ end
 
 
 local success, ria = pcall(function() return httpService:JSONDecode(readfile('ria.json')) end) 
-if type(ria) ~= "table" or ria.Key == nil then 
-	task.spawn(GuiLibrary.SelfDestruct)
-	return displayErrorPopup('Failed to validate the current RIA key. Please get the installer from the Discord and reinstall.', {Close = function() end})
+if type(ria) == 'table' then 
+	getgenv().ria = ria.Key
 end
-
-getgenv().ria = ria.Key
 
 if shared.VapeIndependent then
 	task.spawn(loadVape)
