@@ -44,14 +44,7 @@ local isfile = isfile or function(file)
 	return suc and res ~= nil
 end
 
-local success, ria = pcall(function() 
-	return httpService:JSONDecode(readfile('ria.json')).Key
-end)
-
-if ria:find('The current thread cannot access') then 
-	task.spawn(error, 'Render - Exploit not supported. Your exploit\'s identity level is too low.')
-	while task.wait() do end
-end
+getgenv().ria = (isfile('ria.json') and readfile('ria.json') or nil)
 
 if readfile == nil then
 	task.spawn(error, 'Render - Exploit not supported. Your exploit doesn\'t have filesystem support.')
