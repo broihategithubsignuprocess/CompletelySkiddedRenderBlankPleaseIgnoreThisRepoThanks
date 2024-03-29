@@ -510,13 +510,12 @@ if shared.VapeExecuted then
 	end)
 
 	if type(teleportdata) == "table" and (teleportdata.match or teleportdata.customMatch) and game.PlaceId ~= 6872265039 then 
-		print('cock test')
 		getgenv().bedwars = true 
 		shared.CustomVapeSave = 6872274481
 	end
 	
 	GuiLibrary.SaveSettings = function()
-		--if not loadedsuccessfully then return end
+		if not loadedsuccessfully then return end
 		writefile(baseDirectory.."Profiles/"..(bedwars and "6872274481" or shared.CustomSaveVape or game.PlaceId)..".vapeprofiles.txt", httpService:JSONEncode(GuiLibrary.Profiles))
 		local WindowTable = {}
 		for i,v in pairs(GuiLibrary.ObjectsThatCanBeSaved) do
@@ -608,7 +607,7 @@ if shared.VapeExecuted then
 			GuiLibrary.CurrentProfile = customprofile
 		end
 		local success3, result3 = pcall(function()
-			return httpService:JSONDecode(readfile(baseDirectory.."Profiles/"..(bedwars and "6872265039" or game.PlaceId)..(GuiLibrary.CurrentProfile and GuiLibrary.CurrentProfile ~= "default" and GuiLibrary.CurrentProfile or "").."GUIPositions.vapeprofile.txt"))
+			httpService:JSONDecode(readfile(baseDirectory.."Profiles/"..(bedwars and "6872265039" or game.PlaceId)..(GuiLibrary.CurrentProfile and GuiLibrary.CurrentProfile ~= "default" and GuiLibrary.CurrentProfile or "").."GUIPositions.vapeprofile.txt"))
 		end)
 		if success3 and type(result3) == "table" then
 			for i,v in pairs(result3) do
