@@ -1799,12 +1799,6 @@ local function loadVape()
 	shared.VapeFullyLoaded = true
 end
 
-
-local success, ria = pcall(function() return httpService:JSONDecode(readfile('ria.json')) end) 
-if type(ria) == 'table' then 
-	getgenv().ria = ria.Key
-end
-
 if shared.VapeIndependent then
 	task.spawn(loadVape)
 	shared.VapeFullyLoaded = true
