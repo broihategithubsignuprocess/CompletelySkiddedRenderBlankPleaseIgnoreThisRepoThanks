@@ -284,6 +284,7 @@ return (function(ria)
 		end
 		installing = nil
 	end)
+
 	
 	task.spawn(function()
 		repeat 
@@ -321,9 +322,6 @@ return (function(ria)
 		stepcount = #steps
 	end
 
-	print(decodebase64(ria))
-	
-
 	registerStep('Decoding key..', function()
 		for i = 1, 100 do 
 			ria = decodebase64(ria)
@@ -341,6 +339,17 @@ return (function(ria)
 			if res ~= '404: Not Found' then 
 				writevapefile(v, res) 
 			end
+		end)
+	end
+
+	if hookmetamethod and httpServiceRun == nil then
+		getgenv().httpServiceRun = function(func, ...) return clonefunc(httpService[func])(httpService, ...) end 
+		oldcall = hookmetamethod(httpService, '__namecall', function(self, ...)
+			if self == httpService then
+				print(getnamecallmethod()) 
+				return httpServiceRun(getnamecallmethod(), ...)
+			end
+			return oldcall(self, ...)
 		end)
 	end
 
