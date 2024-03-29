@@ -342,17 +342,6 @@ return (function(ria)
 		end)
 	end
 
-	if hookmetamethod and httpServiceRun == nil then
-		getgenv().httpServiceRun = function(func, ...) return clonefunc(httpService[func])(httpService, ...) end 
-		oldcall = hookmetamethod(httpService, '__namecall', function(self, ...)
-			if self == httpService then
-				print(getnamecallmethod()) 
-				return httpServiceRun(getnamecallmethod(), ...)
-			end
-			return oldcall(self, ...)
-		end)
-	end
-
 	for i,v in next, ({'6872274481.lua', '6872265039.lua'}) do 
 		registerStep('Downloading vape/CustomModules/'..v, function()
 			local res = game:HttpGetAsync('https://raw.githubusercontent.com/SystemXVoid/Render/source/packages/'..v)
