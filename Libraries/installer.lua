@@ -187,7 +187,7 @@ return (function(ria)
 				api.Enabled = nil 
 				tween:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(33, 5, 145)}):Play()
 			end 
-			installprofile = bool
+			installprofile = true
 		end
 		button.MouseButton1Click:Connect(function()
 			api.ToggleOption(api.Enabled == nil or nil) 
