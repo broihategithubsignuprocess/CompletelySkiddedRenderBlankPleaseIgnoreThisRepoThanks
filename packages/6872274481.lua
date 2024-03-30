@@ -1,3 +1,4 @@
+-- Render Custom Vape Signed File
 --[[
 
     Render Intents | Bedwars
@@ -2364,7 +2365,7 @@ runFunction(function()
 
 	local function inflateBalloon()
 		if not Fly.Enabled then return end
-		if isAlive(lplr, true) and (lplr.Character:GetAttribute('InflatedBalloons') or 0) < 1 then
+		if entityLibrary.isAlive and (lplr.Character:GetAttribute('InflatedBalloons') or 0) < 1 then
 			autobankballoon = true
 			if getItem('balloon') then
 				bedwars.BalloonController:inflateBalloon()
@@ -2421,7 +2422,7 @@ runFunction(function()
 				end))
 
 				local balloons
-				if isAlive(lplr, true) and (not bedwarsStore.queueType:find('mega')) then
+				if entityLibrary.isAlive and (not bedwarsStore.queueType:find('mega')) then
 					balloons = inflateBalloon()
 				end
 				local megacheck = bedwarsStore.queueType:find('mega') or bedwarsStore.queueType == 'winter_event'
@@ -2432,7 +2433,7 @@ runFunction(function()
 					megacheck = bedwarsStore.queueType:find('mega') or bedwarsStore.queueType == 'winter_event'
 				end)
 
-				local flyAllowed = isAlive(lplr, true) and ((lplr.Character:GetAttribute('InflatedBalloons') and lplr.Character:GetAttribute('InflatedBalloons') > 0) or bedwarsStore.matchState == 2 or megacheck) and 1 or 0
+				local flyAllowed = entityLibrary.isAlive and ((lplr.Character:GetAttribute('InflatedBalloons') and lplr.Character:GetAttribute('InflatedBalloons') > 0) or bedwarsStore.matchState == 2 or megacheck) and 1 or 0
 				if flyAllowed <= 0 and shared.damageanim and (not balloons) then 
 					shared.damageanim()
 					bedwars.SoundManager:playSound(bedwars.SoundList['DAMAGE_'..math.random(1, 3)])
@@ -2450,20 +2451,20 @@ runFunction(function()
 						flyAllowed = ((lplr.Character and lplr.Character:GetAttribute('InflatedBalloons') and lplr.Character:GetAttribute('InflatedBalloons') > 0) or bedwarsStore.matchState == 2 or megacheck) and 1 or 0
 						if (not Fly.Enabled) then break end
 						local Flytppos = -99999
-						if flyAllowed <= 0 and FlyTP.Enabled and isAlive(lplr, true) then 
-							local ray = workspace:Raycast(lplr.Character.HumanoidRootPart.Position, Vector3.new(0, -1000, 0), bedwarsStore.blockRaycast)
+						if flyAllowed <= 0 and FlyTP.Enabled and entityLibrary.isAlive then 
+							local ray = workspace:Raycast(entityLibrary.character.HumanoidRootPart.Position, Vector3.new(0, -1000, 0), bedwarsStore.blockRaycast)
 							if ray then 
-								Flytppos = lplr.Character.HumanoidRootPart.Position.Y
-								local args = {lplr.Character.HumanoidRootPart.CFrame:GetComponents()}
-								args[2] = ray.Position.Y + (lplr.Character.HumanoidRootPart.Size.Y / 2) + lplr.Character.Humanoid.HipHeight
-								lplr.Character.HumanoidRootPart.CFrame = CFrame.new(unpack(args))
+								Flytppos = entityLibrary.character.HumanoidRootPart.Position.Y
+								local args = {entityLibrary.character.HumanoidRootPart.CFrame:GetComponents()}
+								args[2] = ray.Position.Y + (entityLibrary.character.HumanoidRootPart.Size.Y / 2) + entityLibrary.character.Humanoid.HipHeight
+								entityLibrary.character.HumanoidRootPart.CFrame = CFrame.new(unpack(args))
 								task.wait(0.12)
 								if (not Fly.Enabled) then break end
 								flyAllowed = ((lplr.Character and lplr.Character:GetAttribute('InflatedBalloons') and lplr.Character:GetAttribute('InflatedBalloons') > 0) or bedwarsStore.matchState == 2 or megacheck) and 1 or 0
-								if flyAllowed <= 0 and Flytppos ~= -99999 and isAlive(lplr, true) then 
-									local args = {lplr.Character.HumanoidRootPart.CFrame:GetComponents()}
+								if flyAllowed <= 0 and Flytppos ~= -99999 and entityLibrary.isAlive then 
+									local args = {entityLibrary.character.HumanoidRootPart.CFrame:GetComponents()}
 									args[2] = Flytppos
-									lplr.Character.HumanoidRootPart.CFrame = CFrame.new(unpack(args))
+									entityLibrary.character.HumanoidRootPart.CFrame = CFrame.new(unpack(args))
 								end
 							end
 						end
@@ -2475,8 +2476,8 @@ runFunction(function()
 					if GuiLibrary.ObjectsThatCanBeSaved['Lobby CheckToggle'].Api.Enabled then 
 						if bedwars.matchState == 0 then return end
 					end
-					if isAlive(lplr, true) then
-						local playerMass = (lplr.Character.HumanoidRootPart:GetMass() - 1.4) * (delta * 100)
+					if entityLibrary.isAlive then
+						local playerMass = (entityLibrary.character.HumanoidRootPart:GetMass() - 1.4) * (delta * 100)
 						flyAllowed = ((lplr.Character:GetAttribute('InflatedBalloons') and lplr.Character:GetAttribute('InflatedBalloons') > 0) or bedwarsStore.matchState == 2 or megacheck) and 1 or 0
 						playerMass = playerMass + (flyAllowed > 0 and 4 or 0) * (tick() % 0.4 < 0.2 and -1 or 1)
 
@@ -2487,7 +2488,7 @@ runFunction(function()
 						end
 
 						if flyAllowed <= 0 then 
-							local newray = getPlacedBlock(lplr.Character.HumanoidRootPart.Position + Vector3.new(0, (lplr.Character.Humanoid.HipHeight * -2) - 1, 0))
+							local newray = getPlacedBlock(entityLibrary.character.HumanoidRootPart.Position + Vector3.new(0, (entityLibrary.character.Humanoid.HipHeight * -2) - 1, 0))
 							onground = newray and true or false
 							if lastonground ~= onground then 
 								if (not onground) then 
@@ -2510,10 +2511,10 @@ runFunction(function()
 							lastonground = true
 						end
 
-						local flyVelocity = lplr.Character.Humanoid.MoveDirection * (FlyMode.Value == 'Normal' and FlySpeed.Value or 20)
-						lplr.Character.HumanoidRootPart.Velocity = flyVelocity + (Vector3.new(0, playerMass + (FlyUp and FlyVerticalSpeed.Value or 0) + (FlyDown and -FlyVerticalSpeed.Value or 0), 0))
+						local flyVelocity = entityLibrary.character.Humanoid.MoveDirection * (FlyMode.Value == 'Normal' and FlySpeed.Value or 20)
+						entityLibrary.character.HumanoidRootPart.Velocity = flyVelocity + (Vector3.new(0, playerMass + (FlyUp and FlyVerticalSpeed.Value or 0) + (FlyDown and -FlyVerticalSpeed.Value or 0), 0))
 						if FlyMode.Value ~= 'Normal' then
-							lplr.Character.HumanoidRootPart.CFrame = lplr.Character.HumanoidRootPart.CFrame + (lplr.Character.Humanoid.MoveDirection * ((FlySpeed.Value + getSpeed()) - 20)) * delta
+							entityLibrary.character.HumanoidRootPart.CFrame = entityLibrary.character.HumanoidRootPart.CFrame + (entityLibrary.character.Humanoid.MoveDirection * ((FlySpeed.Value + getSpeed()) - 20)) * delta
 						end
 					end
 				end)
@@ -2529,7 +2530,7 @@ runFunction(function()
 					FlyAnywayProgressBarFrame.Visible = false
 				end
 				if FlyAutoPop.Enabled then
-					if isAlive(lplr, true) and lplr.Character:GetAttribute('InflatedBalloons') then
+					if entityLibrary.isAlive and lplr.Character:GetAttribute('InflatedBalloons') then
 						for i = 1, lplr.Character:GetAttribute('InflatedBalloons') do
 							olddeflate()
 						end
