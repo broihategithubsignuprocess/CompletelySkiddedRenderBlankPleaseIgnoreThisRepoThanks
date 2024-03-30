@@ -3944,7 +3944,16 @@ if shared.VapeExecuted then
 					bindtext.TextColor3 = Color3.fromRGB(88, 88, 88)
 					bindimg.ImageColor3 = Color3.fromRGB(88, 88, 88)
 				end
-				task.spawn(argstablemain.Function, buttonapi.Enabled)
+				task.spawn(function()
+					local success, exception = pcall(argstablemain.Function, buttonapi.Enabled)
+					if RenderDebug and not success then 
+						pcall(function()
+							local notification = GuiLibrary.CreateNotification(argstablemain.Name, 'Callback Error | '..exception, 10, 'assets/WarningNotification.png')
+							notification.IconLabel.ImageColor3 = Color3.new(220, 0, 0)
+							notification.Frame.Frame.ImageColor3 = Color3.new(220, 0, 0)
+						end)
+					end
+				end)
 				GuiLibrary["UpdateHudEvent"]:Fire()
 			end
 
@@ -4385,7 +4394,16 @@ if shared.VapeExecuted then
 							end
 							toggleframe2:TweenPosition(UDim2.new(0, 2, 0, 2), Enum.EasingDirection.InOut, Enum.EasingStyle.Linear, 0.1, true)
 						end
-						task.spawn(argstable.Function, buttonapi.Enabled)
+						task.spawn(function()
+							local success, exception = pcall(argstable.Function, buttonapi.Enabled)
+							if RenderDebug and not success then 
+								pcall(function()
+									local notification = GuiLibrary.CreateNotification(argstable.Name, 'Callback Error | '..exception, 10, 'assets/WarningNotification.png')
+									notification.IconLabel.ImageColor3 = Color3.new(220, 0, 0)
+									notification.Frame.Frame.ImageColor3 = Color3.new(220, 0, 0)
+								end)
+							end
+						end)
 					end
 					if argstable["Default"] then
 						buttonapi["ToggleButton"](argstable["Default"], true)
