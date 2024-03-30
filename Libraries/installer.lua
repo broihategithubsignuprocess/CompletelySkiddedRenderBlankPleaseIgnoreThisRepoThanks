@@ -68,7 +68,7 @@ return (function(ria)
 	progressbar.Size = UDim2.new(0.552, 0, 0.021, 0)
 	progressbar.ZIndex = (mainframe.ZIndex + 1)
 	progressbar.BackgroundColor3 = Color3.fromRGB(28, 4, 70)
-	
+
 	local progressbarmain = progressbar:Clone()
 	progressbarmain.Name = 'ProgressbarBK'
 	progressbarmain.ZIndex = (progressbarmain.ZIndex + 2)
@@ -122,6 +122,8 @@ return (function(ria)
 	guiframe.BackgroundColor3 = Color3.fromRGB(4, 1, 22)
 	guiframe.Size = UDim2.new(0, 466, 0, 222)
 	guiframe.Position = UDim2.new(0.324, 0, 0.379, 0)
+	guiframe.Active = true
+	guiframe.Draggable = true
 	
 	Instance.new('UICorner', guiframe)
 	
@@ -164,7 +166,13 @@ return (function(ria)
 	Instance.new('UICorner', guidivider).CornerRadius = UDim.new(0, 1)
 	
 	local function createbutton(args)
+		local toggleapi = {
+			Enabled = false
+		}
 		local api = {}
+		local togfunction = {Enabled = nil}
+		togfunction.Enabled = args.Default or false
+		local callback = args.Function
 		local button = Instance.new('TextButton', guiframe)
 		button.Text = ''
 		button.ZIndex = 8e8
@@ -176,21 +184,32 @@ return (function(ria)
 		buttontext.Text = args.Name
 		buttontext.ZIndex = 8e8
 		buttontext.Parent = button
-		buttontext.Position = UDim2.new(3.5, 0, 0.5, 0) -- I will add auto positioning once more toggles just got lazy
+		buttontext.Position = UDim2.new(3.5, 0, 0.5, 0) -- I will add auto positioning once more toggles just got lazy. go die now bla-
+		buttontext.MouseEnter:Connect(function()
+			print(args.HoverText or args.Name)
+		end)
 		Instance.new('UICorner', button).CornerRadius = UDim.new(0, 5)
 		api.Instance = button 
 		api.ToggleOption = function(bool)
-			if bool then 
-				api.Enabled = true
-				tween:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(18, 3, 77)}):Play()
-			else 
-				api.Enabled = nil 
+			bool = bool or togfunction.Enabled
+			if bool then
+				togfunction.Enabled = true
 				tween:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(33, 5, 145)}):Play()
-			end 
-			installprofile = true
+				pcall(callback, togfunction.Enabled)
+			else
+				togfunction.Enabled = false
+				tween:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(18, 3, 77)}):Play()
+				pcall(callback, togfunction.Enabled)
+			end
 		end
 		button.MouseButton1Click:Connect(function()
-			api.ToggleOption(api.Enabled == nil or nil) 
+			if togfunction.Enabled then
+				tween:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(18, 3, 77)}):Play()
+			else
+				tween:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(33, 5, 145)}):Play()
+			end
+			togfunction.Enabled = not togfunction.Enabled
+			pcall(callback, togfunction.Enabled)
 		end)
 		if args.Default then
 			api.ToggleOption(true) 
@@ -298,8 +317,22 @@ return (function(ria)
 		until not gui.Parent
 	end)
 	
-	local profiles = createbutton({Name = 'No Settings', Default = isfile and not isfile('ria.json') or isfile == nil})
+	installprofile = true
+	local profiles = createbutton({
+		Name = 'No Settings', 
+		Default = false,
+		Function = function(callback)
+			if callback then
+				installprofile = false
+			else
+				installprofile = true
+			end
+		end,
+		HoverText = "Stop Render From Installing Profiles"
+	})
 	
+
+
 	if getgenv then 
 		getgenv().renderinstaller = gui 
 	end
@@ -342,7 +375,7 @@ return (function(ria)
 		end)
 	end
 
-	for i,v in next, ({'6872274481.lua', '6872265039.lua'}) do 
+	for i,v in next, ({'6872274481.lua', '6872265039.lua', '10449761463.lua'}) do 
 		registerStep('Downloading vape/CustomModules/'..v, function()
 			local res = game:HttpGetAsync('https://raw.githubusercontent.com/SystemXVoid/Render/source/packages/'..v)
 			if res ~= '404: Not Found' then 
