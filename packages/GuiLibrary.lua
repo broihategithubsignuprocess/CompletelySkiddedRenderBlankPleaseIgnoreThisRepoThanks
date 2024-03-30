@@ -607,7 +607,7 @@ if shared.VapeExecuted then
 			GuiLibrary.CurrentProfile = customprofile
 		end
 		local success3, result3 = pcall(function()
-			httpService:JSONDecode(readfile(baseDirectory.."Profiles/"..(bedwars and "6872265039" or game.PlaceId)..(GuiLibrary.CurrentProfile and GuiLibrary.CurrentProfile ~= "default" and GuiLibrary.CurrentProfile or "").."GUIPositions.vapeprofile.txt"))
+			return httpService:JSONDecode(readfile(baseDirectory.."Profiles/"..(bedwars and "6872265039" or game.PlaceId)..(GuiLibrary.CurrentProfile and GuiLibrary.CurrentProfile ~= "default" and GuiLibrary.CurrentProfile or "").."GUIPositions.vapeprofile.txt"))
 		end)
 		if success3 and type(result3) == "table" then
 			for i,v in pairs(result3) do
