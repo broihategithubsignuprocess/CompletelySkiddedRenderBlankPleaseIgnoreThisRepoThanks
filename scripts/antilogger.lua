@@ -24,7 +24,6 @@ local whitelistonly = scriptsettings.whitelistonly
 getgenv().antiloggersettings = nil
 
 local function whitelistedurl(url)
-	print(url)
 	url = tostring(url):lower()
 	for i,v in next, whitelist do 
 		if find(url, v:lower()) then
