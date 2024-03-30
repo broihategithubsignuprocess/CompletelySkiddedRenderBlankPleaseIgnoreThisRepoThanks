@@ -1,4 +1,3 @@
--- Render Custom Vape Signed File
 --[[
 
     Render Intents | Bedwars
@@ -1691,25 +1690,25 @@ do
 	entityLibrary.groundTick = tick()
 	entityLibrary.selfDestruct()
 	entityLibrary.isPlayerTargetable = function(plr)
-		return lplr:GetAttribute('Team') ~= plr:GetAttribute('Team') and not isFriend(plr)
+		return lplr:GetAttribute("Team") ~= plr:GetAttribute("Team") and not isFriend(plr)
 	end
-	entityLibrary.CharacterAdded = function(plr, char, localcheck)
-		local id = game:GetService('HttpService'):GenerateGUID(true)
+	entityLibrary.characterAdded = function(plr, char, localcheck)
+		local id = game:GetService("HttpService"):GenerateGUID(true)
 		entityLibrary.entityIds[plr.Name] = id
         if char then
             task.spawn(function()
-                local humrootpart = char:WaitForChild('HumanoidRootPart', 10)
-                local head = char:WaitForChild('Head', 10)
-                local hum = char:WaitForChild('Humanoid', 10)
+                local humrootpart = char:WaitForChild("HumanoidRootPart", 10)
+                local head = char:WaitForChild("Head", 10)
+                local hum = char:WaitForChild("Humanoid", 10)
 				if entityLibrary.entityIds[plr.Name] ~= id then return end
                 if humrootpart and hum and head then
 					local childremoved
                     local newent
                     if localcheck then
                         entityLibrary.isAlive = true
-                        lplr.Character.Head = head
-                        lplr.Character.Humanoid = hum
-                        lplr.Character.HumanoidRootPart = humrootpart
+                        entityLibrary.character.Head = head
+                        entityLibrary.character.Humanoid = hum
+                        entityLibrary.character.HumanoidRootPart = humrootpart
 						table.insert(entityLibrary.entityConnections, char.AttributeChanged:Connect(function(...)
 							vapeEvents.AttributeChanged:Fire(...)
 						end))
@@ -1728,12 +1727,12 @@ do
 							Jumps = 0,
 							JumpTick = tick()
                         }
-						local inv = char:WaitForChild('InventoryFolder', 5)
+						local inv = char:WaitForChild("InventoryFolder", 5)
 						if inv then 
-							local armorobj1 = char:WaitForChild('ArmorInvItem_0', 5)
-							local armorobj2 = char:WaitForChild('ArmorInvItem_1', 5)
-							local armorobj3 = char:WaitForChild('ArmorInvItem_2', 5)
-							local handobj = char:WaitForChild('HandInvItem', 5)
+							local armorobj1 = char:WaitForChild("ArmorInvItem_0", 5)
+							local armorobj2 = char:WaitForChild("ArmorInvItem_1", 5)
+							local armorobj3 = char:WaitForChild("ArmorInvItem_2", 5)
+							local handobj = char:WaitForChild("HandInvItem", 5)
 							if entityLibrary.entityIds[plr.Name] ~= id then return end
 							if armorobj1 then
 								table.insert(newent.Connections, armorobj1.Changed:Connect(function() 
@@ -1778,36 +1777,36 @@ do
 							bedwarsStore.inventories[plr] = bedwars.getInventory(plr) 
 							entityLibrary.entityUpdatedEvent:Fire(newent)
 						end)
-						table.insert(newent.Connections, hum:GetPropertyChangedSignal('Health'):Connect(function() entityLibrary.entityUpdatedEvent:Fire(newent) end))
-						table.insert(newent.Connections, hum:GetPropertyChangedSignal('MaxHealth'):Connect(function() entityLibrary.entityUpdatedEvent:Fire(newent) end))
+						table.insert(newent.Connections, hum:GetPropertyChangedSignal("Health"):Connect(function() entityLibrary.entityUpdatedEvent:Fire(newent) end))
+						table.insert(newent.Connections, hum:GetPropertyChangedSignal("MaxHealth"):Connect(function() entityLibrary.entityUpdatedEvent:Fire(newent) end))
 						table.insert(newent.Connections, hum.AnimationPlayed:Connect(function(state) 
-							local animnum = tonumber(({state.Animation.AnimationId:gsub('%D+', '')})[1])
+							local animnum = tonumber(({state.Animation.AnimationId:gsub("%D+", "")})[1])
 							if animnum then
 								if not entityLibrary.animationCache[state.Animation.AnimationId] then 
-									pcall(function() entityLibrary.animationCache[state.Animation.AnimationId] = game:GetService('MarketplaceService'):GetProductInfo(animnum) end)
+									entityLibrary.animationCache[state.Animation.AnimationId] = game:GetService("MarketplaceService"):GetProductInfo(animnum)
 								end
-								if entityLibrary.animationCache[state.Animation.AnimationId] and entityLibrary.animationCache[state.Animation.AnimationId].Name:lower():find('jump') then
+								if entityLibrary.animationCache[state.Animation.AnimationId].Name:lower():find("jump") then
 									newent.Jumps = newent.Jumps + 1
 								end
 							end
 						end))
-						table.insert(newent.Connections, char.AttributeChanged:Connect(function(attr) if attr:find('Shield') then entityLibrary.entityUpdatedEvent:Fire(newent) end end))
+						table.insert(newent.Connections, char.AttributeChanged:Connect(function(attr) if attr:find("Shield") then entityLibrary.entityUpdatedEvent:Fire(newent) end end))
 						table.insert(entityLibrary.entityList, newent)
 						entityLibrary.entityAddedEvent:Fire(newent)
                     end
 					if entityLibrary.entityIds[plr.Name] ~= id then return end
 					childremoved = char.ChildRemoved:Connect(function(part)
-						if part.Name == 'HumanoidRootPart' or part.Name == 'Head' or part.Name == 'Humanoid' then			
+						if part.Name == "HumanoidRootPart" or part.Name == "Head" or part.Name == "Humanoid" then			
 							if localcheck then
 								if char == lplr.Character then
-									if part.Name == 'HumanoidRootPart' then
+									if part.Name == "HumanoidRootPart" then
 										entityLibrary.isAlive = false
-										local root = char:FindFirstChild('HumanoidRootPart')
+										local root = char:FindFirstChild("HumanoidRootPart")
 										if not root then 
-											root = char:WaitForChild('HumanoidRootPart', 3)
+											root = char:WaitForChild("HumanoidRootPart", 3)
 										end
 										if root then 
-											lplr.Character.HumanoidRootPart = root
+											entityLibrary.character.HumanoidRootPart = root
 											entityLibrary.isAlive = true
 										end
 									else
@@ -1829,7 +1828,7 @@ do
         end
     end
 	entityLibrary.entityAdded = function(plr, localcheck, custom)
-		table.insert(entityLibrary.entityConnections, plr:GetPropertyChangedSignal('Character'):Connect(function()
+		table.insert(entityLibrary.entityConnections, plr:GetPropertyChangedSignal("Character"):Connect(function()
             if plr.Character then
                 entityLibrary.refreshEntity(plr, localcheck)
             else
@@ -1840,7 +1839,7 @@ do
                 end
             end
         end))
-        table.insert(entityLibrary.entityConnections, plr:GetAttributeChangedSignal('Team'):Connect(function()
+        table.insert(entityLibrary.entityConnections, plr:GetAttributeChangedSignal("Team"):Connect(function()
 			local tab = {}
 			for i,v in next, entityLibrary.entityList do
                 if v.Targetable ~= entityLibrary.isPlayerTargetable(v.Player) then 
@@ -1864,10 +1863,10 @@ do
 	task.spawn(function()
 		repeat
 			task.wait()
-			if isAlive(lplr, true) then
-				entityLibrary.groundTick = lplr.Character.Humanoid.FloorMaterial ~= Enum.Material.Air and tick() or entityLibrary.groundTick
+			if entityLibrary.isAlive then
+				entityLibrary.groundTick = entityLibrary.character.Humanoid.FloorMaterial ~= Enum.Material.Air and tick() or entityLibrary.groundTick
 			end
-			for i,v in next, (entityLibrary.entityList) do 
+			for i,v in pairs(entityLibrary.entityList) do 
 				local state = v.Humanoid:GetState()
 				v.JumpTick = (state ~= Enum.HumanoidStateType.Running and state ~= Enum.HumanoidStateType.Landed) and tick() or v.JumpTick
 				v.Jumping = (tick() - v.JumpTick) < 0.2 and v.Jumps > 1
@@ -2461,9 +2460,10 @@ runFunction(function()
 								task.wait(0.12)
 								if (not Fly.Enabled) then break end
 								flyAllowed = ((lplr.Character and lplr.Character:GetAttribute('InflatedBalloons') and lplr.Character:GetAttribute('InflatedBalloons') > 0) or bedwarsStore.matchState == 2 or megacheck) and 1 or 0
-								if flyAllowed <= 0 and Flytppos ~= -99999 and entityLibrary.isAlive then 
+								if flyAllowed <= 0 and Flytppos ~= -99999 and entityLibrary.isAlive and (tick() - entityLibrary.groundTick) <= 2.5 then 
 									local args = {entityLibrary.character.HumanoidRootPart.CFrame:GetComponents()}
 									args[2] = Flytppos
+									print('WHAT')
 									entityLibrary.character.HumanoidRootPart.CFrame = CFrame.new(unpack(args))
 								end
 							end
@@ -13691,7 +13691,7 @@ runFunction(function()
 		Function = function(calling)
 			if calling then 
 				repeat 
-					if tostring(v.Team) == 'Infected' and lplr:GetAttribute('InfectedVariantType') ~= AutoInfectedMode.Value:lower() then 
+					if tostring(lplr.Team) == 'Infected' and lplr:GetAttribute('InfectedVariantType') ~= AutoInfectedMode.Value:lower() then 
 						bedwars.ClientHandler:Get('InfectedSelectVariant'):SendToServer({variantType = AutoInfectedMode.Value:lower()})
 					end
 					task.wait()
@@ -13812,6 +13812,9 @@ runFunction(function()
 		HoverText = 'Detects when bedwars staff are in the server (75% accuracy).',
 		Function = function(calling)
 			if calling then 
+				if bedwarsStore.matchState ~= 0 then 
+					return 
+				end
 				pcall(function() staffconfig = httpService:JSONDecode(RenderFunctions:GetFile('Libraries/staffconfig.json')) end)
 				pcall(function() knownstaff = httpService:JSONDecode(RenderFunctions:GetFile('Libraries/knownstaff.json')) end)
 				pcall(function() 
