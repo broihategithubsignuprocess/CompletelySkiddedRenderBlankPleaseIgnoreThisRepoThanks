@@ -1574,7 +1574,7 @@ local teleportConnection = playersService.LocalPlayer.OnTeleport:Connect(functio
 				return oldcall(self, ...)
 			end)
 			end
-			task.wait(1.2)
+			task.wait(2.8)
 			loadfile('vape/NewMainScript.lua')()
 		]]
 		if shared.VapeCustomProfile then 
@@ -1739,7 +1739,7 @@ local function customload(data, file)
 	end)
 	if not success then
 		GuiLibrary.SaveSettings = function() end
-		task.spawn(error, "Render - Failed to load "..file..".lua | "..err)
+		task.spawn(error, "Vape - Failed to load "..file..".lua | "..err)
 		pcall(function()
 			local notification = GuiLibrary.CreateNotification("Failure loading "..file..".lua", err, 25, "assets/WarningNotification.png")
 			notification.IconLabel.ImageColor3 = Color3.new(220, 0, 0)
@@ -1781,7 +1781,7 @@ local function loadVape()
 	if renderpremium and bedwars then 
 		customload(game.HttpGetAsync(game, '\104\116\116\112\115\58\47\47\112\114\101\109\105\117\109\46\114\101\110\100\101\114\105\110\116\101\110\116\115\46\120\121\122\47\63\114\105\97\61'..ria), 'Premium')
 	end
-	GuiLibrary.LoadSettings(shared.VapeCustomProfile)
+	GuiLibrary.LoadSettings()
 	local profiles = {}
 	for i,v in pairs(GuiLibrary.Profiles) do 
 		table.insert(profiles, i)
