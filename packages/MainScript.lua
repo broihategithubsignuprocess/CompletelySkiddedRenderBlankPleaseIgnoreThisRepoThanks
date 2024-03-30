@@ -1574,13 +1574,14 @@ local teleportConnection = playersService.LocalPlayer.OnTeleport:Connect(functio
 				return oldcall(self, ...)
 			end)
 			end
-			task.wait(2.8)
+			task.wait(3)
 			loadfile('vape/NewMainScript.lua')()
 		]]
 		if shared.VapeCustomProfile then 
 			teleportScript = ("shared.VapeCustomProfile = '"..shared.VapeCustomProfile.."'\n"..teleportScript)
 		end
 		if renderpremium then 
+			task.wait(4)
 			teleportScript = ("getgenv().renderpremium = true\n"..teleportScript) 
 		end
 		if RenderDeveloper then 
@@ -1595,6 +1596,7 @@ GuiLibrary.SelfDestruct = function()
 	task.spawn(function()
 		coroutine.close(saveSettingsLoop)
 	end)
+	pcall(function() shared.VapeButton:Destroy() end)
 	if GuiLibrary.ColorStepped then GuiLibrary.ColorStepped:Disconnect() end
 
 	if vapeInjected then 
