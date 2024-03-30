@@ -7,6 +7,7 @@ local clonefunc = (clonefunction or clonefunc or function(func) return func end)
 if (isfunctionhooked or function() end)(clonefunc) and restorefunction then 
 	restorefunction(clonefunc)
 end 
+local checkcaller = clonefunc(checkcaller or function() return true end)
 local saferequest = clonefunc(#requestfunctions > 0 and requestfunctions[math.random(1, #requestfunctions)] or function() end)
 local tablefind = clonefunc(table.find)
 local type = clonefunc(type)
@@ -23,6 +24,7 @@ local whitelistonly = scriptsettings.whitelistonly
 getgenv().antiloggersettings = nil
 
 local function whitelistedurl(url)
+	print(url)
 	url = tostring(url):lower()
 	for i,v in next, whitelist do 
 		if find(url, v:lower()) then
@@ -78,7 +80,7 @@ oldmethod = hookmetamethod(game, '__namecall', newcclosure(function(self, ...)
 	end
 	local method = getnamecallmethod()
 	if method == 'PostAsync' or method == 'CallAsync' or method == 'GetAsync' or method == 'HttpGetAsync' or method == 'HttpGet' then 
-		if whitelistedurl(self) == nil then
+		if checkcaller() and whitelistedurl(self) == nil then
 			return blank(self, true)
 		end
 		if method == 'RequestAsync' and whitelistedurl(rawget(self, 'Url')) == nil then  
@@ -88,13 +90,13 @@ oldmethod = hookmetamethod(game, '__namecall', newcclosure(function(self, ...)
 	return oldmethod(self, ...)
 end))
 
-for i,v in next, ({'GetAsync', 'HttpGetAsync'}) do 
+for i,v in next, ({'GetAsync'}) do 
 	if not scriptsettings.HTTPService then 
 		continue 
 	end
 	local oldrequest
 	oldrequest = hookfunction(httpService[v], newcclosure(function(self, url, ...)
-		if whitelistedurl(url) == nil then
+		 if checkcaller() and whitelistedurl(url) == nil then
 			return blank(url, true)
 		end 
 		return oldrequest(self, url, ...)
@@ -103,7 +105,7 @@ end
 
 local oldrequest 
 oldrequest = hookfunction(httpService.RequestAsync, newcclosure(function(self, tab, ...)
-	if whitelistedurl(rawget(tab, 'Url')) == nil then 
+	if checkcaller() and whitelistedurl(rawget(tab, 'Url')) == nil then 
 		return blank(tab, true) 
 	end
 	return oldrequest(self, tab, ...)
@@ -114,7 +116,15 @@ oldrequest2 = hookfunction(game.HttpGet, newcclosure(function(self, url, ...)
 	if whitelistedurl(url) == nil then
 		return blank(url, true)
 	end 
-	return oldrequest2(self, url, ...) 
+	return oldreques2(self, url, ...) 
+end))
+
+local oldrequest3
+oldrequest3 = hookfunction(game.HttpGetAsync, newcclosure(function(self, url, ...)
+	if checkcaller() and whitelistedurl(url) == nil then
+		return blank(url, true)
+	end 
+	return oldrequest3(self, url, ...) 
 end))
 
 if getgenv().hookfunction == nil and getgenv().hookfunc == nil then 
