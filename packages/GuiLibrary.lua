@@ -78,6 +78,7 @@ if shared.VapeExecuted then
 		local suc, res = pcall(function() return readfile(file) end)
 		return suc and res ~= nil
 	end
+	local lplr = game.Players.LocalPlayer
 	local loadedsuccessfully = false
 	local GuiLibrary = {
 		Settings = {},
@@ -105,6 +106,9 @@ if shared.VapeExecuted then
 	local gethui = gethui or function()
 		return game:GetService("CoreGui")
 	end
+	local customChild = Instance.new("ScreenGui")
+	customChild.Name = "Render"
+	customChild.Parent = gethui()
 	local translations = shared.VapeTranslation or {}
 	local translatedlogo = false
 
@@ -6868,7 +6872,7 @@ if shared.VapeExecuted then
 		icon2.ImageTransparency = 0.5
 		icon2.Parent = icon
 		local textlabel1 = Instance.new("TextLabel")
-		textlabel1.Font = Enum.Font.Arial
+		textlabel1.Font = Enum.Font.Gotham
 		textlabel1.TextSize = 14
 		textlabel1.RichText = true
 		textlabel1.TextTransparency = 0.1
@@ -6881,7 +6885,7 @@ if shared.VapeExecuted then
 		textlabel1.Parent = frame
 		local textlabel2 = textlabel1:Clone()
 		textlabel2.Position = UDim2.new(0, 46, 0, 44)
-		textlabel2.Font = Enum.Font.Arial
+		textlabel2.Font = Enum.Font.Gotham
 		textlabel2.TextTransparency = 0
 		textlabel2.TextColor3 = Color3.fromRGB(170, 170, 170)
 		textlabel2.RichText = true
@@ -6889,12 +6893,12 @@ if shared.VapeExecuted then
 		textlabel2.Parent = frame
 		task.spawn(function()
 			pcall(function()
-				bettertween2(frame, UDim2.new(1, -(size - 4), 1, -(150 + 80 * offset)), Enum.EasingDirection.In, Enum.EasingStyle.Sine, 0.15, true)
-				task.wait(0.15)
-				frame2:TweenSize(UDim2.new(0, 0, 0, 2), Enum.EasingDirection.In, Enum.EasingStyle.Linear, duration, true)
+				bettertween2(frame, UDim2.new(1, -(size - 4), 1, -(150 + 80 * offset)), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.23, true)
+				task.wait(0.23)
+				frame2:TweenSize(UDim2.new(0, 0, 0, 2), Enum.EasingDirection.In, Enum.EasingStyle.Quad, duration, true)
 				task.wait(duration)
-				bettertween2(frame, UDim2.new(1, 0, 1, frame.Position.Y.Offset), Enum.EasingDirection.In, Enum.EasingStyle.Sine, 0.15, true)
-				task.wait(0.15)
+				bettertween2(frame, UDim2.new(1, 0, 1, frame.Position.Y.Offset), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.23, true)
+				task.wait(0.231)
 				frame:Remove()
 			end)
 		end)
@@ -6911,8 +6915,7 @@ if shared.VapeExecuted then
 
 	local holdingalt = false
 	local uninjected = false
-
-	if inputService.TouchEnabled or inputService:GetPlatform() == Enum.Platform.UWP then 
+		--[[
 		local button = Instance.new("TextButton")
 		button.Position = UDim2.new(1, -30, 0, 0)
 		button.Text = "Vape"
@@ -6939,7 +6942,39 @@ if shared.VapeExecuted then
 				end
 			end
 		end)
-		shared.VapeButton = button
+		]]
+	if inputService.TouchEnabled or inputService:GetPlatform() == Enum.Platform.UWP then 
+		local renderbutton = Instance.new("ImageButton", game.CoreGui.TopBarApp.TopBarFrame.RightFrame)
+		renderbutton.Name = "renderbutton"
+		renderbutton.Image = "rbxasset://textures/ui/TopBar/iconBase.png"
+		renderbutton.BackgroundColor3 = Color3.fromRGB(163, 162, 165)
+		renderbutton.BackgroundTransparency = 1
+		renderbutton.Size = UDim2.new(0, 32, 0, 32)
+		renderbutton.Position = UDim2.new(0, 0, 1, 0)
+		renderbutton.ImageColor3 = Color3.fromRGB(163, 162, 165)
+		renderbutton.MouseButton1Click:Connect(function()
+			clickgui.Visible = not clickgui.Visible
+			legitgui.Visible = not clickgui.Visible
+			inputService.OverrideMouseIconBehavior = (clickgui.Visible and Enum.OverrideMouseIconBehavior.ForceShow or game:GetService("VRService").VREnabled and Enum.OverrideMouseIconBehavior.ForceHide or Enum.OverrideMouseIconBehavior.None)
+			pcall(function() game:GetService("RunService"):SetRobloxGuiFocused(clickgui.Visible and GuiLibrary["MainBlur"].Size ~= 0 or guiService:GetErrorType() ~= Enum.ConnectionError.OK) end)
+			for _, mobileButton in pairs(GuiLibrary.MobileButtons) do mobileButton.Visible = not clickgui.Visible end	
+			if OnlineProfilesBigFrame.Visible then
+				OnlineProfilesBigFrame.Visible = false
+			end
+			if LegitModulesBigFrame.Visible then
+				LegitModulesBigFrame.Visible = false
+				legitgui.Visible = not clickgui.Visible
+				for i, v in pairs(legitgui:GetChildren()) do 
+					if v:IsA("Frame") then v.BackgroundTransparency = legitgui.Visible and 0.8 or 1 end
+				end
+			end
+		end)
+		local icon = Instance.new("ImageLabel", renderbutton)
+		icon.ImageTransparency = 1
+		icon.BackgroundTransparency = 1
+		icon.Image = 'rbxassetid://15688086520'
+		icon.Size = UDim2.new(0, 24, 0, 24)
+		shared.VapeButton = renderbutton
 	end
 
 	GuiLibrary["KeyInputHandler"] = inputService.InputBegan:Connect(function(input1)
