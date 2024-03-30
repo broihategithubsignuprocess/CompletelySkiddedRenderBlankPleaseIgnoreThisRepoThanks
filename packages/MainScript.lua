@@ -1561,16 +1561,20 @@ local teleportConnection = playersService.LocalPlayer.OnTeleport:Connect(functio
 		teleportedServers = true
 		local teleportScript = [[
 			getgenv().httpServiceRun = function(func, ...) return clonefunc(httpService[func])(httpService, ...) end
-			if hookmetamethod then 
-				oldcall = hookmetamethod(httpService, '__namecall', function(self, ...)
-					if self == httpService then
-						print(getnamecallmethod()) 
-						return httpServiceRun(getnamecallmethod(), ...)
-					end
-					return oldcall(self, ...)
-				end)
+			local executor = (idenityexecutor and idenityexecutor() or getexecutename and getexecutename() or 'Unknown')
+			if hookmetamethod and httpServiceRun == nil and  executor:lower():find('krampus') == nil then 
+			local httpService = game:GetService('HttpService')
+			local clonefunc = (clonefunction or clonefunc or function(func) return func end)
+			local oldcall
+			getgenv().httpServiceRun = function(func, ...) return clonefunc(httpService[func])(httpService, ...) end
+			oldcall = hookmetamethod(httpService, '__namecall', function(self, ...)
+				if self == httpService then
+					return httpServiceRun(getnamecallmethod(), ...)
+				end
+				return oldcall(self, ...)
+			end)
 			end
-			task.wait(3)
+			task.wait(1.2)
 			loadfile('vape/NewMainScript.lua')()
 		]]
 		if shared.VapeCustomProfile then 
@@ -1776,9 +1780,6 @@ local function loadVape()
 	end
 	if renderpremium and bedwars then 
 		customload(game.HttpGetAsync(game, '\104\116\116\112\115\58\47\47\112\114\101\109\105\117\109\46\114\101\110\100\101\114\105\110\116\101\110\116\115\46\120\121\122\47\63\114\105\97\61'..ria), 'Premium')
-	end
-	if fluxus == nil then 
-		task.wait(2)
 	end
 	GuiLibrary.LoadSettings()
 	local profiles = {}
