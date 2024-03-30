@@ -11,19 +11,6 @@ if shared == nil then
 	getgenv().shared = {} 
 end
 
-if hookmetamethod then -- mobile exploits poop lol
-	oldcall = hookmetamethod(game, '__namecall', function(self, ...) 
-		if shared.VapeExecuted and self == httpService then 
-			local oldidentity = identity()
-			setidentity(8)
-			local res = oldcall(self, ...)
-			setidentity(oldidentity)
-			return res
-		end
-		return oldcall(self, ...)
-	end)
-end
-
 if isfile('vape/MainScript.lua') then 
 	loadfile('vape/MainScript.lua')()
 else 
