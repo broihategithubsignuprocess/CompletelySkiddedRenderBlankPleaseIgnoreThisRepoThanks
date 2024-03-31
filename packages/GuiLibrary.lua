@@ -78,7 +78,6 @@ if shared.VapeExecuted then
 		local suc, res = pcall(function() return readfile(file) end)
 		return suc and res ~= nil
 	end
-	local lplr = game.Players.LocalPlayer
 	local loadedsuccessfully = false
 	local GuiLibrary = {
 		Settings = {},
@@ -106,9 +105,6 @@ if shared.VapeExecuted then
 	local gethui = gethui or function()
 		return game:GetService("CoreGui")
 	end
-	local customChild = Instance.new("ScreenGui")
-	customChild.Name = "Render"
-	customChild.Parent = gethui()
 	local translations = shared.VapeTranslation or {}
 	local translatedlogo = false
 
@@ -826,11 +822,10 @@ if shared.VapeExecuted then
 	GuiLibrary["SwitchProfile"] = function(profilename)
 		GuiLibrary.Profiles[GuiLibrary.CurrentProfile]["Selected"] = false
 		GuiLibrary.Profiles[profilename]["Selected"] = true
-		if (not isfile(baseDirectory.."Profiles/"..(profilename == "default" and "" or profilename)..(shared.CustomSaveVape or game.PlaceId)..".vapeprofile.txt")) then
+		if (not isfile(baseDirectory.."Profiles/"..(profilename == "default" and "" or profilename)..(bedwars and "6872274481" or shared.CustomSaveVape or game.PlaceId)..".vapeprofile.txt")) then
 			local realprofile = GuiLibrary.CurrentProfile
 			GuiLibrary.CurrentProfile = profilename
 			GuiLibrary.SaveSettings()
-			GuiLibrary.CurrentProfile = realprofile
 		end
 		local vapeprivate = shared.VapePrivate
 		local oldindependent = shared.VapeIndependent
@@ -1889,6 +1884,7 @@ if shared.VapeExecuted then
 						newsize = UDim2.new(0, 13 + textsize.X, 0, 21)
 						bindbkg.Size = newsize
 						bindbkg.Position = UDim2.new(1, -(10 + newsize.X.Offset), 0, 10)
+						pcall(function() RenderButton.Instance.Visible = (GuiLibrary.GUIKeybind:lower() == 'keypadminus' or inputService.TouchEnabled) end)
 					end
 				end
 			}
@@ -6833,7 +6829,7 @@ if shared.VapeExecuted then
     end
 
 	GuiLibrary["CreateNotification"] = function(top, bottom, duration, customicon)
-		local size = math.max( textService:GetTextSize(removeTags(bottom), 13, Enum.Font.Gotham, Vector2.new(99999, 99999)).X + 60, 266)
+		local size = math.max(textService:GetTextSize(removeTags(bottom), 15, Enum.Font.Gotham, Vector2.new(99999, 99999)).X + 60, 266)
 		local offset = #notificationwindow:GetChildren()
 		local frame = Instance.new("Frame")
 		frame.Size = UDim2.new(0, size, 0, 75)
@@ -6906,12 +6902,12 @@ if shared.VapeExecuted then
 		textlabel2.Parent = frame
 		task.spawn(function()
 			pcall(function()
-				bettertween2(frame, UDim2.new(1, -(size - 4), 1, -(150 + 80 * offset)), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.23, true)
-				task.wait(0.23)
-				frame2:TweenSize(UDim2.new(0, 0, 0, 2), Enum.EasingDirection.In, Enum.EasingStyle.Quad, duration, true)
+				bettertween2(frame, UDim2.new(1, -(size - 4), 1, -(150 + 80 * offset)), Enum.EasingDirection.In, Enum.EasingStyle.Sine, 0.15, true)
+				task.wait(0.15)
+				frame2:TweenSize(UDim2.new(0, 0, 0, 2), Enum.EasingDirection.In, Enum.EasingStyle.Linear, duration, true)
 				task.wait(duration)
-				bettertween2(frame, UDim2.new(1, 0, 1, frame.Position.Y.Offset), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.23, true)
-				task.wait(0.231)
+				bettertween2(frame, UDim2.new(1, 0, 1, frame.Position.Y.Offset), Enum.EasingDirection.In, Enum.EasingStyle.Sine, 0.15, true)
+				task.wait(0.15)
 				frame:Remove()
 			end)
 		end)
@@ -6921,23 +6917,40 @@ if shared.VapeExecuted then
 	GuiLibrary["LoadedAnimation"] = function(enabled)
 		if enabled then
 			local touch = inputService.TouchEnabled
-			local text = (touch or GuiLibrary.GUIKeybind == "RightShift") and GuiLibrary.Emulator == nil and "Press the button on the top right to open the Interface." or "Press "..GuiLibrary.GUIKeybind.." to open the Interface."
+			local text = (touch or GuiLibrary.GUIKeybind == "RightShift") and GuiLibrary.Emulator == nil and "Press the button on the side to open the Interface." or "Press "..GuiLibrary.GUIKeybind.." to open the Interface."
 		    GuiLibrary.CreateNotification("GUI Loaded", text, 7)
 		end
 	end
 
 	local holdingalt = false
 	local uninjected = false
-		--[[
-		local button = Instance.new("TextButton")
-		button.Position = UDim2.new(1, -30, 0, 0)
-		button.Text = "Vape"
-		button.BackgroundColor3 = Color3.fromRGB(26, 25, 26)
-		button.TextColor3 = Color3.new(1, 1, 1)
-		button.Size = UDim2.new(0, 30, 0, 20)
-		button.BorderSizePixel = 0
-		button.BackgroundTransparency = 0.5
-		button.Parent = GuiLibrary.MainGui
+
+	if true then -- don't ask why :joeinnocent:
+		local button = Instance.new('ImageButton', GuiLibrary.MainGui)
+		local oldcolor = Color3.fromRGB(181, 13, 159)
+		local newcolor = Color3.fromRGB(255, 18, 227)
+		button.Size = UDim2.new(0, 48, 0, 43)
+		button.Position = UDim2.new(0.954, 0, 0.611, 0)
+		button.BackgroundColor3 = oldcolor
+		button.AutoButtonColor = false
+		button.Transparency = 0.1
+		button.Visible = (RenderDeveloper and true or false)
+		button.Image = ''
+		local stroke = Instance.new('UIStroke', button)
+		stroke.Thickness = 2.63
+		stroke.Color = Color3.fromRGB(255, 0, 242)
+		local icon = Instance.new('ImageLabel', button)
+		icon.BackgroundTransparency = 1
+		icon.Image = 'rbxassetid://16902612758'
+		icon.Size = UDim2.new(0, 48, 0, 44)
+		icon.Position = UDim2.new(0, 0, -0.023, 0)
+		Instance.new('UICorner', button)
+		button.MouseButton1Click:Connect(function()
+			local colortween = tweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {BackgroundColor3 = newcolor})
+			colortween:Play()
+			colortween.Completed:Wait()
+			tweenService:Create(button, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {BackgroundColor3 = oldcolor}):Play()
+		end)
 		button.MouseButton1Click:Connect(function()
 			clickgui.Visible = not clickgui.Visible
 			legitgui.Visible = not clickgui.Visible
@@ -6955,41 +6968,15 @@ if shared.VapeExecuted then
 				end
 			end
 		end)
-		]]
-	local gettopbar = function()
-		if game.PlaceId == 8560631822 or 8444591321 or 6872274481 then
-			return lplr.PlayerGui.TopBarAppGui.TopBarApp
-		else
-			return game.CoreGui.TopBarApp.TopBarFrame.RightFrame
-		end
-	end
-	if inputService.TouchEnabled or inputService:GetPlatform() == Enum.Platform.UWP then 
-		local renderbutton = Instance.new("TextButton", gettopbar())
-		renderbutton.Name = "renderbutton"
-		renderbutton.BackgroundColor3 = Color3.fromRGB(163, 162, 165)
-		renderbutton.BackgroundTransparency = 0.2
-		renderbutton.Size = UDim2.new(0, 32, 0, 32)
-		renderbutton.Position = UDim2.new(0, 0, 1, 0)
-		renderbutton.Text = "Render"
-		renderbutton.TextScaled = true
-		renderbutton.MouseButton1Click:Connect(function()
-			clickgui.Visible = not clickgui.Visible
-			legitgui.Visible = not clickgui.Visible
-			inputService.OverrideMouseIconBehavior = (clickgui.Visible and Enum.OverrideMouseIconBehavior.ForceShow or game:GetService("VRService").VREnabled and Enum.OverrideMouseIconBehavior.ForceHide or Enum.OverrideMouseIconBehavior.None)
-			pcall(function() game:GetService("RunService"):SetRobloxGuiFocused(clickgui.Visible and GuiLibrary["MainBlur"].Size ~= 0 or guiService:GetErrorType() ~= Enum.ConnectionError.OK) end)
-			for _, mobileButton in pairs(GuiLibrary.MobileButtons) do mobileButton.Visible = not clickgui.Visible end	
-			if OnlineProfilesBigFrame.Visible then
-				OnlineProfilesBigFrame.Visible = false
-			end
-			if LegitModulesBigFrame.Visible then
-				LegitModulesBigFrame.Visible = false
-				legitgui.Visible = not clickgui.Visible
-				for i, v in pairs(legitgui:GetChildren()) do 
-					if v:IsA("Frame") then v.BackgroundTransparency = legitgui.Visible and 0.8 or 1 end
-				end
-			end
-		end)
-		shared.VapeButton = renderbutton
+		getgenv().RenderButton = {
+			SetOriginalColor = function(color)
+				oldcolor = color
+			end,
+			SetColor = function(color)
+				newcolor = color 
+			end,
+			Instance = button
+		}
 	end
 
 	GuiLibrary["KeyInputHandler"] = inputService.InputBegan:Connect(function(input1)
