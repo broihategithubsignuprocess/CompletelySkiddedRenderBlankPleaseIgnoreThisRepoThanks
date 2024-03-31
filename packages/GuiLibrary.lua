@@ -1884,7 +1884,7 @@ if shared.VapeExecuted then
 						newsize = UDim2.new(0, 13 + textsize.X, 0, 21)
 						bindbkg.Size = newsize
 						bindbkg.Position = UDim2.new(1, -(10 + newsize.X.Offset), 0, 10)
-						pcall(function() RenderButton.Instance.Visible = (GuiLibrary.GUIbind:lower() == 'keypadminus' or inputService.TouchEnabled) end)
+						pcall(function() RenderButton.Instance.Visible = (GuiLibrary.GUIKeybind:lower() == 'keypadminus' or inputService.TouchEnabled) end)
 					end
 				end
 			}
