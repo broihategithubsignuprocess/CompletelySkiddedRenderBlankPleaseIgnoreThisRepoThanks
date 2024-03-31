@@ -2347,8 +2347,8 @@ end)
 
 local autobankballoon = false
 local FlySpeed
+local Fly = {}
 runFunction(function()
-	local Fly = {}
 	local FlyMode = {Value = 'CFrame'}
 	local FlyVerticalSpeed = {Value = 40}
 	local FlyVertical = {}
@@ -2468,7 +2468,6 @@ runFunction(function()
 								if flyAllowed <= 0 and Flytppos ~= -99999 and entityLibrary.isAlive and (tick() - entityLibrary.groundTick) <= 2.5 then 
 									local args = {entityLibrary.character.HumanoidRootPart.CFrame:GetComponents()}
 									args[2] = Flytppos
-									warningNotification('Render', 'WHAT', 6)
 									entityLibrary.character.HumanoidRootPart.CFrame = CFrame.new(unpack(args))
 								end
 							end
@@ -6617,77 +6616,6 @@ runFunction(function()
 		Default = 5
 	})
 end)
-
---[[runFunction(function()
-	local performed = false
-	GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
-		Name = 'UICleanup',
-		Function = function(calling)
-			if calling and not performed and executor:lower():find('fluxus') == nil then 
-				performed = true
-				task.spawn(function()
-					local hotbar = require(lplr.PlayerScripts.TS.controllers.global.hotbar.ui['hotbar-app']).HotbarApp
-					local hotbaropeninv = require(lplr.PlayerScripts.TS.controllers.global.hotbar.ui['hotbar-open-inventory']).HotbarOpenInventory
-					local topbarbutton = require(replicatedStorageService['rbxts_include']['node_modules']['@easy-games']['game-core'].out).TopBarButton
-					local gametheme = require(replicatedStorageService['rbxts_include']['node_modules']['@easy-games']['game-core'].out.shared.ui['game-theme']).GameTheme
-					bedwars.AppController:closeApp('TopBarApp')
-					local oldrender = topbarbutton.render
-					topbarbutton.render = function(self) 
-						local res = oldrender(self)
-						if not self.props.Text then
-							return bedwars.Roact.createElement('TextButton', {Visible = false}, {})
-						end
-						return res
-					end
-					hotbaropeninv.render = function(self) 
-						return bedwars.Roact.createElement('TextButton', {Visible = false}, {})
-					end
-					pcall(function()
-						debug.setconstant(hotbar.render, 52, 0.9975)
-						debug.setconstant(hotbar.render, 73, 100)
-						debug.setconstant(hotbar.render, 89, 1)
-						debug.setconstant(hotbar.render, 90, 0.04)
-						debug.setconstant(hotbar.render, 91, -0.03)
-						debug.setconstant(hotbar.render, 109, 1.35)
-						debug.setconstant(hotbar.render, 110, 0)
-						debug.setconstant(debug.getupvalue(hotbar.render, 11).render, 30, 1)
-						debug.setconstant(debug.getupvalue(hotbar.render, 11).render, 31, 0.175)
-						debug.setconstant(debug.getupvalue(hotbar.render, 11).render, 33, -0.101)
-						debug.setconstant(debug.getupvalue(hotbar.render, 18).render, 71, 0)
-						debug.setconstant(debug.getupvalue(hotbar.render, 18).tweenPosition, 16, 0) 
-					end)
-					gametheme.topBarBGTransparency = 0.5
-					bedwars.TopBarController:mountHud()
-					game:GetService('StarterGui'):SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, true)
-					bedwars.AbilityUIController.abilityButtonsScreenGui.Visible = false
-					bedwars.MatchEndScreenController.waitUntilDisplay = function() return false end
-					task.spawn(function()
-						repeat
-							task.wait()
-							local gui = lplr.PlayerGui:FindFirstChild('StatusEffectHudScreen')
-							if gui then gui.Enabled = false break end
-						until false
-					end)
-					task.spawn(function()
-						repeat task.wait() until bedwarsStore.matchState ~= 0
-						if bedwars.ClientStoreHandler:getState().Game.customMatch == nil then 
-							debug.setconstant(bedwars.QueueCard.render, 9, 0.1)
-						end
-					end)
-					local slot = bedwars.ClientStoreHandler:getState().Inventory.observedInventory.hotbarSlot
-					bedwars.ClientStoreHandler:dispatch({
-						type = 'InventorySelectHotbarSlot',
-						slot = slot + 1 % 8
-					})
-					bedwars.ClientStoreHandler:dispatch({
-						type = 'InventorySelectHotbarSlot',
-						slot = slot
-					})
-				end)
-			end
-		end
-	})
-end)]]
 
 runFunction(function()
 	local AntiAFK = {}
@@ -13296,22 +13224,11 @@ runFunction(function()
 					hotbaropeninv.render = function(self) 
 						return bedwars.Roact.createElement("TextButton", {Visible = false}, {})
 					end
-					--[[debug.setconstant(hotbar.render, 52, 0.9975)
-					debug.setconstant(hotbar.render, 73, 100)
-					debug.setconstant(hotbar.render, 89, 1)
-					debug.setconstant(hotbar.render, 90, 0.04)
-					debug.setconstant(hotbar.render, 91, -0.03)
-					debug.setconstant(hotbar.render, 109, 1.35)
-					debug.setconstant(hotbar.render, 110, 0)
-					debug.setconstant(debug.getupvalue(hotbar.render, 11).render, 30, 1)
-					debug.setconstant(debug.getupvalue(hotbar.render, 11).render, 31, 0.175)
-					debug.setconstant(debug.getupvalue(hotbar.render, 11).render, 33, -0.101)
-					debug.setconstant(debug.getupvalue(hotbar.render, 18).render, 71, 0)
-					debug.setconstant(debug.getupvalue(hotbar.render, 18).tweenPosition, 16, 0)]]
 					gametheme.topBarBGTransparency = 0.5
 					bedwars.TopBarController:mountHud()
 					game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, true)
 					bedwars.AbilityUIController.abilityButtonsScreenGui.Visible = false
+					pcall(function() end)
 					bedwars.MatchEndScreenController.waitUntilDisplay = function() return false end
 					task.spawn(function()
 						repeat
@@ -13512,6 +13429,26 @@ runFunction(function()
 						end
 					end
 				until (not ScytheDisabler.Enabled)
+			end
+		end
+	})
+end)
+
+runFunction(function()
+	local Disabler = {}
+	Disabler = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+		Name = 'FloatCheck Disabler',
+		HoverText = 'FloatCheck Died',
+		Function = function(calling)
+			if calling then
+				lplr.Character.HumanoidRootPart.CFrame = CFrame.new(lplr.Character.HumanoidRootPart.Position + Vector3.new(0, 5, 0))
+				Fly.ToggleButton(true)
+				repeat 
+					if bedwars.AbilityController:canUseAbility('QUEEN_BEE_GLIDE') then 
+						bedwars.AbilityController:useAbility('QUEEN_BEE_GLIDE')
+					end 
+					task.wait(0)
+				until (not Disabler.Enabled)
 			end
 		end
 	})
