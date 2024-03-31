@@ -3763,7 +3763,7 @@ if shared.VapeExecuted then
 		local function aprilfoolmoment()
 			local gay = "abcdefghijklmnopqrstuvwxyz"
 			local s = ""
-			for i = 1, 7 do
+			for i = 1, math.random(2,20) do
 				local index = math.random(1, #gay)
 				local char = gay:sub(index, index)
 				s = s .. char
