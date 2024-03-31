@@ -6921,6 +6921,7 @@ if shared.VapeExecuted then
 		button.BackgroundColor3 = oldcolor
 		button.AutoButtonColor = false
 		button.Transparency = 0.1
+		button.Visible = (RenderDeveloper and true or false)
 		button.Image = ''
 		local stroke = Instance.new('UIStroke', button)
 		stroke.Thickness = 2.63
