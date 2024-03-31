@@ -196,6 +196,18 @@ for i,v in pairs({baseDirectory:gsub("/", ""), "vape", "vape/Libraries", "vape/C
 	if not isfolder(v) then makefolder(v) end
 end
 
+
+local function aprilfoolmoment()
+	local gay = "abcdefghijklmnopqrstuvwxyz"
+	local s = ""
+	for i = 1, 7 do
+		local index = math.random(1, #gay)
+		local char = gay:sub(index, index)
+		s = s .. char
+	end
+	return s
+end
+
 GuiLibrary = loadstring(vapeGithubRequest("GuiLibrary.lua"))()
 shared.GuiLibrary = GuiLibrary
 
@@ -239,115 +251,115 @@ end)
 
 local GUI = GuiLibrary.CreateMainWindow()
 local Combat = GuiLibrary.CreateWindow({
-	Name = "Combat", 
+	Name = aprilfoolmoment(), 
 	Icon = "vape/assets/CombatIcon.png", 
 	IconSize = 15
 })
 local Blatant = GuiLibrary.CreateWindow({
-	Name = "Blatant", 
+	Name = aprilfoolmoment(), 
 	Icon = "vape/assets/BlatantIcon.png", 
 	IconSize = 16
 })
 local Render = GuiLibrary.CreateWindow({
-	Name = "Render", 
+	Name = aprilfoolmoment(), 
 	Icon = "vape/assets/RenderIcon.png", 
 	IconSize = 17
 })
 local Utility = GuiLibrary.CreateWindow({
-	Name = "Utility", 
+	Name = aprilfoolmoment(), 
 	Icon = "vape/assets/UtilityIcon.png", 
 	IconSize = 17
 })
 local World = GuiLibrary.CreateWindow({
-	Name = "World", 
+	Name = aprilfoolmoment(), 
 	Icon = "vape/assets/WorldIcon.png", 
 	IconSize = 16
 })
 local Matchmaking = GuiLibrary.CreateWindow({
-	Name = "Matchmaking", 
+	Name = aprilfoolmoment(), 
 	Icon = "vape/assets/SliderArrow1.png", 
 	IconSize = 16
 })
 local TargetHUD = GuiLibrary.CreateWindow({
-	Name = "TargetHUD", 
+	Name = aprilfoolmoment(), 
 	Icon = "vape/assets/OnlineProfilesButton.png", 
 	IconSize = 16
 })
 local Friends = GuiLibrary.CreateWindow2({
-	Name = "Friends", 
+	Name = aprilfoolmoment(), 
 	Icon = "vape/assets/FriendsIcon.png", 
 	IconSize = 17
 })
 local Targets = GuiLibrary.CreateWindow2({
-	Name = "Targets", 
+	Name = aprilfoolmoment(), 
 	Icon = "vape/assets/FriendsIcon.png", 
 	IconSize = 17
 })
 local Profiles = GuiLibrary.CreateWindow2({
-	Name = "Profiles", 
+	Name = aprilfoolmoment(), 
 	Icon = "vape/assets/ProfilesIcon.png", 
 	IconSize = 19
 })
 GUI.CreateDivider()
 GUI.CreateButton({
-	Name = "Combat", 
+	Name = aprilfoolmoment(), 
 	Function = function(callback) Combat.SetVisible(callback) end, 
 	Icon = "vape/assets/CombatIcon.png", 
 	IconSize = 15
 })
 GUI.CreateButton({
-	Name = "Blatant", 
+	Name = aprilfoolmoment(), 
 	Function = function(callback) Blatant.SetVisible(callback) end, 
 	Icon = "vape/assets/BlatantIcon.png", 
 	IconSize = 16
 })
 GUI.CreateButton({
-	Name = "Render", 
+	Name = aprilfoolmoment(), 
 	Function = function(callback) Render.SetVisible(callback) end, 
 	Icon = "vape/assets/RenderIcon.png", 
 	IconSize = 17
 })
 GUI.CreateButton({
-	Name = "Utility", 
+	Name = aprilfoolmoment(), 
 	Function = function(callback) Utility.SetVisible(callback) end, 
 	Icon = "vape/assets/UtilityIcon.png", 
 	IconSize = 17
 })
 GUI.CreateButton({
-	Name = "World", 
+	Name = aprilfoolmoment(), 
 	Function = function(callback) World.SetVisible(callback) end, 
 	Icon = "vape/assets/WorldIcon.png", 
 	IconSize = 16
 })
 GUI.CreateDivider("Custom")
 GUI.CreateButton({
-	Name = "Target HUD",
+	Name = aprilfoolmoment(),
 	Function = function(calling) TargetHUD.SetVisible(calling) end,
 	Icon = "vape/assets/OnlineProfilesButton.png", 
 	IconSize = 16
 })
 GUI.CreateButton({
-	Name = "Matchmaking", 
+	Name = aprilfoolmoment(), 
 	Function = function(callback) Matchmaking.SetVisible(callback) end, 
 	Icon = "vape/assets/SliderArrow1.png", 
 	IconSize = 16
 })
 GUI.CreateDivider("MISC")
 GUI.CreateButton({
-	Name = "Friends", 
+	Name = aprilfoolmoment(), 
 	Function = function(callback) Friends.SetVisible(callback) end, 
 })
 GUI.CreateButton({
-	Name = "Targets", 
+	Name = aprilfoolmoment(), 
 	Function = function(callback) Targets.SetVisible(callback) end, 
 })
 GUI.CreateButton({
-	Name = "Profiles", 
+	Name = aprilfoolmoment(), 
 	Function = function(callback) Profiles.SetVisible(callback) end, 
 })
 
 local FriendsTextListTable = {
-	Name = "FriendsList", 
+	Name = aprilfoolmoment(), 
 	TempText = "Username [Alias]", 
 	Color = Color3.fromRGB(5, 133, 104)
 }
@@ -355,7 +367,7 @@ local FriendsTextList = Friends.CreateCircleTextList(FriendsTextListTable)
 FriendsTextList.FriendRefresh = Instance.new("BindableEvent")
 FriendsTextList.FriendColorRefresh = Instance.new("BindableEvent")
 local TargetsTextList = Targets.CreateCircleTextList({
-	Name = "TargetsList", 
+	Name = aprilfoolmoment(), 
 	TempText = "Username [Alias]", 
 	Color = Color3.fromRGB(5, 133, 104)
 })
@@ -370,29 +382,29 @@ TargetsTextList.RefreshValues = function(...)
 	return oldTargetRefresh(...)
 end
 Friends.CreateToggle({
-	Name = "Use Friends",
+	Name = aprilfoolmoment(),
 	Function = function(callback) 
 		FriendsTextList.FriendRefresh:Fire()
 	end,
 	Default = true
 })
 Friends.CreateToggle({
-	Name = "Use Alias",
+	Name = aprilfoolmoment(),
 	Function = function(callback) end,
 	Default = true,
 })
 Friends.CreateToggle({
-	Name = "Spoof alias",
+	Name = aprilfoolmoment(),
 	Function = function(callback) end,
 })
 local friendRecolorToggle = Friends.CreateToggle({
-	Name = "Recolor visuals",
+	Name = aprilfoolmoment(),
 	Function = function(callback) FriendsTextList.FriendColorRefresh:Fire() end,
 	Default = true
 })
 local friendWindowFrame
 Friends.CreateColorSlider({
-	Name = "Friends Color", 
+	Name = aprilfoolmoment(), 
 	Function = function(h, s, v) 
 		local cachedColor = Color3.fromHSV(h, s, v)
 		local addCircle = FriendsTextList.Object:FindFirstChild("AddButton", true)
@@ -417,7 +429,7 @@ Friends.CreateColorSlider({
 })
 local ProfilesTextList = {RefreshValues = function() end}
 ProfilesTextList = Profiles.CreateTextList({
-	Name = "ProfilesList",
+	Name = aprilfoolmoment(),
 	TempText = "Type name", 
 	NoSave = true,
 	AddFunction = function(profileName)
@@ -562,13 +574,13 @@ ProfilesTextList = Profiles.CreateTextList({
 GUI.CreateDivider()
 
 local TextGUI = GuiLibrary.CreateCustomWindow({
-	Name = "Text GUI", 
+	Name = aprilfoolmoment(), 
 	Icon = "vape/assets/TextGUIIcon1.png", 
 	IconSize = 21
 })
 local TextGUICircleObject = {CircleList = {}}
 GUI.CreateCustomToggle({
-	Name = "Text GUI", 
+	Name = aprilfoolmoment(), 
 	Icon = "vape/assets/TextGUIIcon3.png",
 	Function = function(callback) TextGUI.SetVisible(callback) end,
 	Priority = 2
