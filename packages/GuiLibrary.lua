@@ -822,11 +822,10 @@ if shared.VapeExecuted then
 	GuiLibrary["SwitchProfile"] = function(profilename)
 		GuiLibrary.Profiles[GuiLibrary.CurrentProfile]["Selected"] = false
 		GuiLibrary.Profiles[profilename]["Selected"] = true
-		if (not isfile(baseDirectory.."Profiles/"..(profilename == "default" and "" or profilename)..(shared.CustomSaveVape or game.PlaceId)..".vapeprofile.txt")) then
+		if (not isfile(baseDirectory.."Profiles/"..(profilename == "default" and "" or profilename)..(bedwars and "6872274481" or shared.CustomSaveVape or game.PlaceId)..".vapeprofile.txt")) then
 			local realprofile = GuiLibrary.CurrentProfile
 			GuiLibrary.CurrentProfile = profilename
 			GuiLibrary.SaveSettings()
-			GuiLibrary.CurrentProfile = realprofile
 		end
 		local vapeprivate = shared.VapePrivate
 		local oldindependent = shared.VapeIndependent
