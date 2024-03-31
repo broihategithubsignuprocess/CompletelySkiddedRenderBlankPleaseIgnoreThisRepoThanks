@@ -6957,7 +6957,8 @@ if shared.VapeExecuted then
 		renderbutton.BackgroundTransparency = 0.2
 		renderbutton.Size = UDim2.new(0, 32, 0, 32)
 		renderbutton.Position = UDim2.new(0, 0, 1, 0)
-		renderbutton.ImageColor3 = Color3.fromRGB(163, 162, 165)
+		renderbutton.Text = "Render"
+		renderbutton.TextScaled = true
 		renderbutton.MouseButton1Click:Connect(function()
 			clickgui.Visible = not clickgui.Visible
 			legitgui.Visible = not clickgui.Visible
