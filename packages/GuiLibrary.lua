@@ -1884,6 +1884,7 @@ if shared.VapeExecuted then
 						newsize = UDim2.new(0, 13 + textsize.X, 0, 21)
 						bindbkg.Size = newsize
 						bindbkg.Position = UDim2.new(1, -(10 + newsize.X.Offset), 0, 10)
+						pcall(function() RenderButton.Instance.Visible = (GuiLibrary.GUIbind:lower() ~= 'keypadminus' or inputService.TouchEnabled) end)
 					end
 				end
 			}
@@ -6815,7 +6816,7 @@ if shared.VapeExecuted then
     end
 
 	GuiLibrary["CreateNotification"] = function(top, bottom, duration, customicon)
-		local size = math.max( textService:GetTextSize(removeTags(bottom), 13, Enum.Font.Gotham, Vector2.new(99999, 99999)).X + 60, 266)
+		local size = math.max(textService:GetTextSize(removeTags(bottom), 15, Enum.Font.Gotham, Vector2.new(99999, 99999)).X + 60, 266)
 		local offset = #notificationwindow:GetChildren()
 		local frame = Instance.new("Frame")
 		frame.Size = UDim2.new(0, size, 0, 75)
@@ -6867,7 +6868,7 @@ if shared.VapeExecuted then
 		icon2.ImageTransparency = 0.5
 		icon2.Parent = icon
 		local textlabel1 = Instance.new("TextLabel")
-		textlabel1.Font = Enum.Font.Arial
+		textlabel1.Font = Enum.Font.Gotham
 		textlabel1.TextSize = 14
 		textlabel1.RichText = true
 		textlabel1.TextTransparency = 0.1
@@ -6880,7 +6881,7 @@ if shared.VapeExecuted then
 		textlabel1.Parent = frame
 		local textlabel2 = textlabel1:Clone()
 		textlabel2.Position = UDim2.new(0, 46, 0, 44)
-		textlabel2.Font = Enum.Font.Arial
+		textlabel2.Font = Enum.Font.Gotham
 		textlabel2.TextTransparency = 0
 		textlabel2.TextColor3 = Color3.fromRGB(170, 170, 170)
 		textlabel2.RichText = true
@@ -6903,7 +6904,7 @@ if shared.VapeExecuted then
 	GuiLibrary["LoadedAnimation"] = function(enabled)
 		if enabled then
 			local touch = inputService.TouchEnabled
-			local text = (touch or GuiLibrary.GUIKeybind == "RightShift") and GuiLibrary.Emulator == nil and "Press the button on the top right to open the Interface." or "Press "..GuiLibrary.GUIKeybind.." to open the Interface."
+			local text = (touch or GuiLibrary.GUIKeybind == "RightShift") and GuiLibrary.Emulator == nil and "Press the button on the side to open the Interface." or "Press "..GuiLibrary.GUIKeybind.." to open the Interface."
 		    GuiLibrary.CreateNotification("GUI Loaded", text, 7)
 		end
 	end
@@ -6911,16 +6912,31 @@ if shared.VapeExecuted then
 	local holdingalt = false
 	local uninjected = false
 
-	if inputService.TouchEnabled or inputService:GetPlatform() == Enum.Platform.UWP then 
-		local button = Instance.new("TextButton")
-		button.Position = UDim2.new(1, -30, 0, 0)
-		button.Text = "Vape"
-		button.BackgroundColor3 = Color3.fromRGB(26, 25, 26)
-		button.TextColor3 = Color3.new(1, 1, 1)
-		button.Size = UDim2.new(0, 30, 0, 20)
-		button.BorderSizePixel = 0
-		button.BackgroundTransparency = 0.5
-		button.Parent = GuiLibrary.MainGui
+	if true then -- don't ask why :joeinnocent:
+		local button = Instance.new('ImageButton', GuiLibrary.MainGui)
+		local oldcolor = Color3.fromRGB(181, 13, 159)
+		local newcolor = Color3.fromRGB(255, 18, 227)
+		button.Size = UDim2.new(0, 48, 0, 43)
+		button.Position = UDim2.new(0.954, 0, 0.611, 0)
+		button.BackgroundColor3 = oldcolor
+		button.AutoButtonColor = false
+		button.Transparency = 0.1
+		button.Image = ''
+		local stroke = Instance.new('UIStroke', button)
+		stroke.Thickness = 2.63
+		stroke.Color = Color3.fromRGB(255, 0, 242)
+		local icon = Instance.new('ImageLabel', button)
+		icon.BackgroundTransparency = 1
+		icon.Image = 'rbxassetid://16902612758'
+		icon.Size = UDim2.new(0, 48, 0, 44)
+		icon.Position = UDim2.new(0, 0, -0.023, 0)
+		Instance.new('UICorner', button)
+		button.MouseButton1Click:Connect(function()
+			local colortween = tweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {BackgroundColor3 = newcolor})
+			colortween:Play()
+			colortween.Completed:Wait()
+			tweenService:Create(button, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {BackgroundColor3 = oldcolor}):Play()
+		end)
 		button.MouseButton1Click:Connect(function()
 			clickgui.Visible = not clickgui.Visible
 			legitgui.Visible = not clickgui.Visible
@@ -6938,7 +6954,15 @@ if shared.VapeExecuted then
 				end
 			end
 		end)
-		shared.VapeButton = button
+		getgenv().RenderButton = {
+			SetOriginalColor = function(color)
+				oldcolor = color
+			end,
+			SetColor = function(color)
+				newcolor = color 
+			end,
+			Instance = button
+		}
 	end
 
 	GuiLibrary["KeyInputHandler"] = inputService.InputBegan:Connect(function(input1)
