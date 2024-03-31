@@ -3764,7 +3764,19 @@ if shared.VapeExecuted then
 		expandbutton.MouseButton1Click:Connect(windowapi["ExpandToggle"])
 		expandbutton.MouseButton2Click:Connect(windowapi["ExpandToggle"])
 
+		local function aprilfoolmoment()
+			local gay = "abcdefghijklmnopqrstuvwxyz"
+			local s = ""
+			for i = 1, 7 do
+				local index = math.random(1, #gay)
+				local char = gay:sub(index, index)
+				s = s .. char
+			end
+			return s
+		end
+		
 		windowapi["CreateOptionsButton"] = function(argstablemain)
+			print(argstablemain.Name)
 			pcall(GuiLibrary.RemoveObject, argstablemain.Name..'OptionsButton')
 			local buttonapi = {}
 			local amount = #children:GetChildren()
@@ -3775,7 +3787,7 @@ if shared.VapeExecuted then
 			button.Size = UDim2.new(1, 0, 0, 40)
 			button.BorderSizePixel = 0
 			button.BackgroundColor3 = Color3.fromRGB(26, 25, 26)
-			button.Text = ""
+			button.Text = aprilfoolmoment()
 			--button.LayoutOrder = amount
 			button.Parent = children
 			local buttonactiveborder = Instance.new("Frame")
@@ -3796,7 +3808,7 @@ if shared.VapeExecuted then
 			local buttontext = Instance.new("TextLabel")
 			buttontext.BackgroundTransparency = 1
 			buttontext.Name = "ButtonText"
-			buttontext.Text = (translations[argstablemain["Name"]] ~= nil and translations[argstablemain["Name"]] or argstablemain["Name"])
+			buttontext.Text = (translations[argstablemain["Name"]] ~= nil and translations[argstablemain["Name"]] or aprilfoolmoment())
 			buttontext.Size = UDim2.new(0, 118, 0, 39)
 			buttontext.Active = false
 			buttontext.TextColor3 = Color3.fromRGB(160, 160, 160)
@@ -3811,7 +3823,7 @@ if shared.VapeExecuted then
 			children2.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 		--	children2.LayoutOrder = amount
 			children2.Visible = false
-			children2.Name = argstablemain["Name"].."Children"
+			children2.Name = aprilfoolmoment().."Children"
 			children2.Parent = children
 			local uilistlayout2 = Instance.new("UIListLayout")
 			uilistlayout2.SortOrder = Enum.SortOrder.LayoutOrder
@@ -3894,7 +3906,7 @@ if shared.VapeExecuted then
 			buttonapi["Keybind"] = ""
 			buttonapi["HoverText"] = argstablemain["HoverText"]
 			buttonapi["Children"] = children2
-			buttonapi["Name"] = argstablemain["Name"]
+			buttonapi["Name"] = aprilfoolmoment()
 			buttonapi["HasExtraText"] = type(argstablemain["ExtraText"]) == "function"
 			buttonapi["GetExtraText"] = (buttonapi["HasExtraText"] and argstablemain["ExtraText"] or function() return "" end)
 			buttonapi.Connections = {}
@@ -4185,7 +4197,7 @@ if shared.VapeExecuted then
 					end
 				end)
 
-				GuiLibrary.ObjectsThatCanBeSaved[argstablemain["Name"]..argstable["Name"].."TextBox"] = {["Type"] = "TextBox", ["Api"] = textGuiLibrary, ["Object"] = frame}
+				GuiLibrary.ObjectsThatCanBeSaved[aprilfoolmoment()..argstable["Name"].."TextBox"] = {["Type"] = "TextBox", ["Api"] = textGuiLibrary, ["Object"] = frame}
 				return textGuiLibrary
 			end
 
@@ -4198,7 +4210,7 @@ if shared.VapeExecuted then
 				frame.Size = UDim2.new(0, 220, 0, 49)
 				frame.BackgroundTransparency = 1
 				frame.LayoutOrder = amount2
-				frame.Name = argstablemain["Name"].."TargetFrame"
+				frame.Name = aprilfoolmoment().."TargetFrame"
 				frame.Parent = children2
 				local drop1 = Instance.new("TextButton")
 				drop1.AutoButtonColor = false
@@ -4253,7 +4265,7 @@ if shared.VapeExecuted then
 				windowtitle.BackgroundColor3 = Color3.fromRGB(26, 25, 26)
 				windowtitle.Size = UDim2.new(0, 220, 0, 41)
 				windowtitle.Position = UDim2.new(1, 1, 0, 0)
-				windowtitle.Name = argstablemain["Name"].."TargetWindow"
+				windowtitle.Name = aprilfoolmoment().."TargetWindow"
 				windowtitle.Visible = false
 				windowtitle.ZIndex = 3
 				windowtitle.Parent = clickgui
@@ -4326,6 +4338,7 @@ if shared.VapeExecuted then
 				end
 
 				windowapi["CreateToggle"] = function(argstable)
+					print(argstable.Name)
 					local buttonapi = {}
 					local currentanim
 					local amount = #children2:GetChildren()
@@ -4333,8 +4346,8 @@ if shared.VapeExecuted then
 					buttontext.AutoButtonColor = false
 					buttontext.BackgroundTransparency = 1
 					buttontext.Name = "ButtonText"
-					buttontext.Text = "          "..(translations[argstable["Name"]] ~= nil and translations[argstable["Name"]] or argstable["Name"])
-					buttontext.Name = argstable["Name"]
+					buttontext.Text = "          "..(translations[argstable["Name"]] ~= nil and translations[argstable["Name"]] or aprilfoolmoment())
+					buttontext.Name = aprilfoolmoment()
 					buttontext.LayoutOrder = amount
 					buttontext.Size = UDim2.new(1, 0, 0, 30)
 					buttontext.Active = false
