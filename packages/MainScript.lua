@@ -346,7 +346,6 @@ GUI.CreateButton({
 	Function = function(callback) Profiles.SetVisible(callback) end, 
 })
 
-
 local FriendsTextListTable = {
 	Name = "FriendsList", 
 	TempText = "Username [Alias]", 
@@ -443,7 +442,7 @@ ProfilesTextList = Profiles.CreateTextList({
 		if GuiLibrary.Profiles[profileName] == nil then
 			GuiLibrary.Profiles[profileName] = {Keybind = ""}
 		end
-		profileObject.MouseButton1Click:Connect(function()
+		profileObject.MouseButton1Down:Connect(function()
 			GuiLibrary.SwitchProfile(profileName)
 		end)
 		local newsize = UDim2.new(0, 20, 0, 21)

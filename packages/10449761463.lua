@@ -3,7 +3,7 @@
     Render Intents | The Strongest Battleground
     The #1 vape mod you'll ever see.
 
-    Version: 1.8
+    Version: 1.8 (Outdated)
     discord.gg/render
 ]]
 
