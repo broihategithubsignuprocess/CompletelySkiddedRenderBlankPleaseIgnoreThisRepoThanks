@@ -2092,10 +2092,8 @@ runFunction(function()
 						autoclickermousedown = true
 						clickAction()
 					elseif input.UserInputType == Enum.UserInputType.Touch then
-						lplr.PlayerGui.MobileUI["2"].MouseButton1Down:Connect(function()
-							autoclickermousedown = true
-							clickAction()
-						end)
+						autoclickermousedown = true
+						clickAction()
 					end
 				end))
 
@@ -2107,10 +2105,8 @@ runFunction(function()
 
 				table.insert(autoclicker.Connections, inputService.TouchStarted:Connect(function(touch, gameProcessed)
 					if touch.UserInputType == Enum.UserInputType.Touch then
-						lplr.PlayerGui.MobileUI["2"].MouseButton1Down:Connect(function()
-							autoclickermousedown = true
-							clickAction()
-						end)
+						autoclickermousedown = true
+						clickAction()
 					end
 				end))
 
@@ -2202,7 +2198,7 @@ runFunction(function()
 		Function = function(calling)
 			if calling then
 				if inputService.TouchEnabled then
-					pcall(function() lplr.PlayerGui.MobileUI['4'].Visible = false end)
+					pcall(function() lplr.PlayerGui.MobileUI['2'].Visible = false end)
 				end
 				oldSprintFunction = bedwars.SprintController.stopSprinting
 				bedwars.SprintController.stopSprinting = function(...)
@@ -2346,9 +2342,8 @@ runFunction(function()
 end)
 
 local autobankballoon = false
-local FlySpeed
-local Fly = {}
 runFunction(function()
+	local Fly = {}
 	local FlyMode = {Value = 'CFrame'}
 	local FlyVerticalSpeed = {Value = 40}
 	local FlyVertical = {}
@@ -2468,6 +2463,7 @@ runFunction(function()
 								if flyAllowed <= 0 and Flytppos ~= -99999 and entityLibrary.isAlive and (tick() - entityLibrary.groundTick) <= 2.5 then 
 									local args = {entityLibrary.character.HumanoidRootPart.CFrame:GetComponents()}
 									args[2] = Flytppos
+									print('WHAT')
 									entityLibrary.character.HumanoidRootPart.CFrame = CFrame.new(unpack(args))
 								end
 							end
@@ -3534,14 +3530,11 @@ runFunction(function()
 											if not killauraswing.Enabled then 
 												bedwars.SwordController:playSwordEffect(swordmeta, false)
 											end
-											if swordmeta.displayName:find('Scythe') then 
+											--[[if swordmeta.displayName:find('Scythe') then 
 												bedwars.ScytheController:playLocalAnimation()
-											end
+											end]]
 										end
 									end
-									--if isEnabled('Desync') and killauraNearPlayer then 
-										--tweenService:Create(lplr.Character.HumanoidRootPart.CFrame, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {CFrame = root.Position}):Play()
-									--end
 									if (workspace:GetServerTimeNow() - bedwars.SwordController.lastAttack) < 0.01 then 
 										break
 									end
@@ -3752,14 +3745,14 @@ runFunction(function()
 				local killaurabox
 				if calling then 
 					killaurabox = Instance.new('Highlight')
-					killaurabox.FillTransparency = 0.42
+					killaurabox.FillTransparency = 0.39
 					killaurabox.FillColor = Color3.fromHSV(killauracolor.Hue, killauracolor.Sat, killauracolor.Value)
 					killaurabox.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
 					killaurabox.OutlineTransparency = 1
 					killaurabox.Parent = GuiLibrary.MainGui
 				else
 					killaurabox = Instance.new('BoxHandleAdornment')
-					killaurabox.Transparency = 0.42
+					killaurabox.Transparency = 0.39
 					killaurabox.Color3 = Color3.fromHSV(killauracolor.Hue, killauracolor.Sat, killauracolor.Value)
 					killaurabox.Adornee = nil
 					killaurabox.AlwaysOnTop = true
@@ -4353,7 +4346,7 @@ runFunction(function()
 	PhaseStudLimit = Phase.CreateSlider({
 		Name = 'Blocks',
 		Min = 1,
-		Max = 5,
+		Max = 3,
 		Function = function() end
 	})
 end)
@@ -4652,10 +4645,10 @@ end)
 
 local antivoidvelo
 local damagetick = tick()
-local SpeedValue = {Value = 1}
 runFunction(function()
 	local Speed = {}
 	local SpeedMode = {Value = 'CFrame'}
+	local SpeedValue = {Value = 1}
 	local SpeedValueLarge = {Value = 1}
 	local SpeedDamageBoost = {}
 	local SpeedJump = {}
@@ -4669,6 +4662,56 @@ runFunction(function()
 	local root
 	local lastmove = tick()
 	local clonehip
+	local function cloneFunction()
+		--[[if not isAlive(lplr, true) then 
+			repeat task.wait() until isAlive(lplr, true) 
+			task.wait(1.5)
+		end
+		root = lplr.Character.HumanoidRootPart
+		lplr.Character.Parent = game
+		newroot = root:Clone()
+		newroot.Parent = lplr.Character
+		root.Parent = gameCamera
+		bedwars.QueryUtil:setQueryIgnored(root, true)
+		newroot.CFrame = root.CFrame
+		lplr.Character.PrimaryPart = newroot
+		lplr.Character.Parent = workspace
+		root.Transparency = 0.7 
+		for i,v in next, lplr.Character:GetDescendants() do 
+			if v:IsA('Weld') or v:IsA('Motor6D') then 
+				if v.Part0 == root then v.Part0 = newroot end
+				if v.Part1 == root then v.Part1 = newroot end
+			end
+			if v:IsA('BodyVelocity') then 
+				v:Destroy()
+			end
+		end
+		for i,v in next, root:GetChildren() do 
+			if v:IsA('BodyVelocity') then 
+				v:Destroy()
+			end
+		end
+		if clonehip then 
+			lplr.Character.Humanoid.HipHeight = clonehip
+		end
+		clonehip = lplr.Character.Humanoid.HipHeight
+		local bodyvelo = Instance.new('BodyVelocity') 
+		bodyvelo.MaxForce = Vector3.new(0, 9e9, 0)
+		bodyvelo.Velocity = Vector3.zero
+		bodyvelo.Parent = newroot
+		task.spawn(function()
+			repeat
+				bodyvelo.Velocity = Vector3.zero
+				if tick() > lastmove then 
+					newroot.CFrame = root.CFrame
+					lastmove = tick() + math.random(0.8, 0.25)
+				end
+				task.wait()
+			until not newroot.Parent
+		end)
+		lplr.Character.HumanoidRootPart = newroot]]
+	end
+
 	local alternatelist = {'Normal', 'AntiCheat A', 'AntiCheat B'}
 	Speed = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = 'Speed',
@@ -4868,9 +4911,9 @@ runFunction(function()
 	SpiderSpeed = Spider.CreateSlider({
 		Name = 'Speed',
 		Min = 0,
-		Max = 100,
+		Max = 40,
 		Function = function() end,
-		Default = 60
+		Default = 40
 	})
 end)
 
@@ -4878,10 +4921,8 @@ runFunction(function()
 	local TargetStrafe = {}
 	local TargetStrafeRange = {Value = 18}
 	local oldmove
-	local clone
 	local controlmodule
 	local block
-	local plr
 	TargetStrafe = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = 'TargetStrafe',
 		Function = function(calling)
@@ -4900,7 +4941,6 @@ runFunction(function()
 					block.Parent = gameCamera
 					controlmodule.moveFunction = function(Self, vec, facecam, ...)
 						if isAlive(lplr, true) then
-							pcall(function() lplr.Character = clone end)
 							local plr = AllNearPosition(TargetStrafeRange.Value + 5, 10)[1]
 							plr = plr and (not workspace:Raycast(lplr.Character.HumanoidRootPart.Position, (plr.RootPart.Position - lplr.Character.HumanoidRootPart.Position), bedwarsStore.blockRaycast)) and workspace:Raycast(plr.RootPart.Position, Vector3.new(0, -70, 0), bedwarsStore.blockRaycast) and plr or nil
 							if plr ~= oldplr then
@@ -4932,7 +4972,6 @@ runFunction(function()
 				end)
 			else
 				block:Destroy()
-				clone:Destroy()
 				controlmodule.moveFunction = oldmove
 			end
 		end
@@ -6616,6 +6655,77 @@ runFunction(function()
 		Default = 5
 	})
 end)
+
+--[[runFunction(function()
+	local performed = false
+	GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+		Name = 'UICleanup',
+		Function = function(calling)
+			if calling and not performed and executor:lower():find('fluxus') == nil then 
+				performed = true
+				task.spawn(function()
+					local hotbar = require(lplr.PlayerScripts.TS.controllers.global.hotbar.ui['hotbar-app']).HotbarApp
+					local hotbaropeninv = require(lplr.PlayerScripts.TS.controllers.global.hotbar.ui['hotbar-open-inventory']).HotbarOpenInventory
+					local topbarbutton = require(replicatedStorageService['rbxts_include']['node_modules']['@easy-games']['game-core'].out).TopBarButton
+					local gametheme = require(replicatedStorageService['rbxts_include']['node_modules']['@easy-games']['game-core'].out.shared.ui['game-theme']).GameTheme
+					bedwars.AppController:closeApp('TopBarApp')
+					local oldrender = topbarbutton.render
+					topbarbutton.render = function(self) 
+						local res = oldrender(self)
+						if not self.props.Text then
+							return bedwars.Roact.createElement('TextButton', {Visible = false}, {})
+						end
+						return res
+					end
+					hotbaropeninv.render = function(self) 
+						return bedwars.Roact.createElement('TextButton', {Visible = false}, {})
+					end
+					pcall(function()
+						debug.setconstant(hotbar.render, 52, 0.9975)
+						debug.setconstant(hotbar.render, 73, 100)
+						debug.setconstant(hotbar.render, 89, 1)
+						debug.setconstant(hotbar.render, 90, 0.04)
+						debug.setconstant(hotbar.render, 91, -0.03)
+						debug.setconstant(hotbar.render, 109, 1.35)
+						debug.setconstant(hotbar.render, 110, 0)
+						debug.setconstant(debug.getupvalue(hotbar.render, 11).render, 30, 1)
+						debug.setconstant(debug.getupvalue(hotbar.render, 11).render, 31, 0.175)
+						debug.setconstant(debug.getupvalue(hotbar.render, 11).render, 33, -0.101)
+						debug.setconstant(debug.getupvalue(hotbar.render, 18).render, 71, 0)
+						debug.setconstant(debug.getupvalue(hotbar.render, 18).tweenPosition, 16, 0) 
+					end)
+					gametheme.topBarBGTransparency = 0.5
+					bedwars.TopBarController:mountHud()
+					game:GetService('StarterGui'):SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, true)
+					bedwars.AbilityUIController.abilityButtonsScreenGui.Visible = false
+					bedwars.MatchEndScreenController.waitUntilDisplay = function() return false end
+					task.spawn(function()
+						repeat
+							task.wait()
+							local gui = lplr.PlayerGui:FindFirstChild('StatusEffectHudScreen')
+							if gui then gui.Enabled = false break end
+						until false
+					end)
+					task.spawn(function()
+						repeat task.wait() until bedwarsStore.matchState ~= 0
+						if bedwars.ClientStoreHandler:getState().Game.customMatch == nil then 
+							debug.setconstant(bedwars.QueueCard.render, 9, 0.1)
+						end
+					end)
+					local slot = bedwars.ClientStoreHandler:getState().Inventory.observedInventory.hotbarSlot
+					bedwars.ClientStoreHandler:dispatch({
+						type = 'InventorySelectHotbarSlot',
+						slot = slot + 1 % 8
+					})
+					bedwars.ClientStoreHandler:dispatch({
+						type = 'InventorySelectHotbarSlot',
+						slot = slot
+					})
+				end)
+			end
+		end
+	})
+end)]]
 
 runFunction(function()
 	local AntiAFK = {}
@@ -13224,11 +13334,22 @@ runFunction(function()
 					hotbaropeninv.render = function(self) 
 						return bedwars.Roact.createElement("TextButton", {Visible = false}, {})
 					end
+					--[[debug.setconstant(hotbar.render, 52, 0.9975)
+					debug.setconstant(hotbar.render, 73, 100)
+					debug.setconstant(hotbar.render, 89, 1)
+					debug.setconstant(hotbar.render, 90, 0.04)
+					debug.setconstant(hotbar.render, 91, -0.03)
+					debug.setconstant(hotbar.render, 109, 1.35)
+					debug.setconstant(hotbar.render, 110, 0)
+					debug.setconstant(debug.getupvalue(hotbar.render, 11).render, 30, 1)
+					debug.setconstant(debug.getupvalue(hotbar.render, 11).render, 31, 0.175)
+					debug.setconstant(debug.getupvalue(hotbar.render, 11).render, 33, -0.101)
+					debug.setconstant(debug.getupvalue(hotbar.render, 18).render, 71, 0)
+					debug.setconstant(debug.getupvalue(hotbar.render, 18).tweenPosition, 16, 0)]]
 					gametheme.topBarBGTransparency = 0.5
 					bedwars.TopBarController:mountHud()
 					game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, true)
 					bedwars.AbilityUIController.abilityButtonsScreenGui.Visible = false
-					pcall(function() end)
 					bedwars.MatchEndScreenController.waitUntilDisplay = function() return false end
 					task.spawn(function()
 						repeat
@@ -13435,26 +13556,6 @@ runFunction(function()
 end)
 
 runFunction(function()
-	local Disabler = {}
-	Disabler = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
-		Name = 'FloatCheck Disabler',
-		HoverText = 'FloatCheck Died',
-		Function = function(calling)
-			if calling then
-				lplr.Character.HumanoidRootPart.CFrame = CFrame.new(lplr.Character.HumanoidRootPart.Position + Vector3.new(0, 5, 0))
-				Fly.ToggleButton(true)
-				repeat 
-					if bedwars.AbilityController:canUseAbility('QUEEN_BEE_GLIDE') then 
-						bedwars.AbilityController:useAbility('QUEEN_BEE_GLIDE')
-					end 
-					task.wait(0)
-				until (not Disabler.Enabled)
-			end
-		end
-	})
-end)
-
-runFunction(function()
 	local RushExploit = {}
 	RushExploit = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = 'CatExploit',
@@ -13464,11 +13565,6 @@ runFunction(function()
 				repeat 
 					if bedwars.AbilityController:canUseAbility('CAT_POUNCE') then 
 						bedwars.AbilityController:useAbility('CAT_POUNCE')
-						SpeedValue.Value = 31
-						FlySpeed.Value = 31
-					else
-						SpeedValue.Value = 23
-						FlySpeed.Value = 23
 					end 
 					task.wait(0)
 				until (not RushExploit.Enabled)
@@ -13507,7 +13603,6 @@ runFunction(function()
 	local staffactions = {
 		Uninject = GuiLibrary.SelfDestruct,
 		Lobby = function()
-			GuiLibrary.SelfDestruct()
 			teleportService:Teleport(6872265039)
 		end,
 		LegitLobby = function()
