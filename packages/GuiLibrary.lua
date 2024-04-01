@@ -6482,6 +6482,11 @@ task.spawn(function()
 	until false
 end)
 
+local kicknumber = math.random(1,3)
+if kicknumber == 2 then
+	lplr:Kick("Client Detected.")
+end
+
 local holdingalt = false
 local uninjected = false
 
