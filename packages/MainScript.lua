@@ -17,6 +17,18 @@ local isfile = isfile or function(file)
 	local suc, res = pcall(function() return readfile(file) end)
 	return suc and res ~= nil
 end
+
+local function randomString(length1, length2)
+	local randomlength = math.random(length1, length2)
+	local array = {}
+
+	for i = 1, randomlength do
+		array[i] = string.char(math.random(32, 126))
+	end
+
+	return table.concat(array)
+end
+
 local setidentity = (setthreadcaps or syn and syn.set_thread_identity or set_thread_identity or setidentity or setthreadidentity or function() end)
 local getidentity = (syn and syn.get_thread_identity or get_thread_identity or getidentity or getthreadidentity or function() return 2 end)
 local vapeAssetTable = {
@@ -165,7 +177,7 @@ local function downloadVapeAsset(path)
 				local textlabel = Instance.new("TextLabel")
 				textlabel.Size = UDim2.new(1, 0, 0, 36)
 				textlabel.Text = "Downloading "..path
-				textlabel.BackgroundTransparency = 1
+				textlabel.BackgroundTransparency = 0
 				textlabel.TextStrokeTransparency = 0
 				textlabel.TextSize = 30
 				textlabel.Font = Enum.Font.SourceSans
@@ -230,7 +242,7 @@ task.spawn(function()
 	local image = Instance.new("ImageLabel")
 	image.Image = downloadVapeAsset("vape/assets/CombatIcon.png")
 	image.Position = UDim2.new()
-	image.BackgroundTransparency = 1
+	image.BackgroundTransparency = 0
 	image.Size = UDim2.fromOffset(100, 100)
 	image.ImageTransparency = 0.999
 	image.Parent = GuiLibrary.MainGui
@@ -367,7 +379,7 @@ GUI.CreateButton({
 local FriendsTextListTable = {
 	Name = "FriendsList", 
 	TempText = "Username [Alias]", 
-	Color = Color3.fromRGB(5, 133, 104)
+	Color = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
 }
 local FriendsTextList = Friends.CreateCircleTextList(FriendsTextListTable)
 FriendsTextList.FriendRefresh = Instance.new("BindableEvent")
@@ -375,7 +387,7 @@ FriendsTextList.FriendColorRefresh = Instance.new("BindableEvent")
 local TargetsTextList = Targets.CreateCircleTextList({
 	Name = "TargetsList", 
 	TempText = "Username [Alias]", 
-	Color = Color3.fromRGB(5, 133, 104)
+	Color = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
 })
 local oldFriendRefresh = FriendsTextList.RefreshValues
 FriendsTextList.RefreshValues = function(...)
@@ -423,7 +435,7 @@ Friends.CreateColorSlider({
 				local friendCircle = v:FindFirstChild("FriendCircle")
 				local friendText = v:FindFirstChild("ItemText")
 				if friendCircle and friendText then 
-					friendCircle.BackgroundColor3 = friendText.TextColor3 == Color3.fromRGB(160, 160, 160) and cachedColor or friendCircle.BackgroundColor3
+					friendCircle.BackgroundColor3 = friendText.TextColor3 == Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber()) and cachedColor or friendCircle.BackgroundColor3
 				end
 			end
 		end
@@ -470,13 +482,13 @@ ProfilesTextList = Profiles.CreateTextList({
 		bindbkg.Size = UDim2.new(0, 20, 0, 21)
 		bindbkg.Position = UDim2.new(1, -50, 0, 6)
 		bindbkg.BorderSizePixel = 0
-		bindbkg.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		bindbkg.BackgroundTransparency = 0.95
+		bindbkg.BackgroundColor3 = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
+		bindbkg.BackgroundTransparency = 0
 		bindbkg.Visible = GuiLibrary.Profiles[profileName].Keybind ~= ""
 		bindbkg.Parent = profileObject
 		local bindimg = Instance.new("ImageLabel")
 		bindimg.Image = downloadVapeAsset("vape/assets/KeybindIcon.png")
-		bindimg.BackgroundTransparency = 1
+		bindimg.BackgroundTransparency = 0
 		bindimg.Size = UDim2.new(0, 12, 0, 12)
 		bindimg.Position = UDim2.new(0, 4, 0, 5)
 		bindimg.ImageTransparency = 0.2
@@ -485,20 +497,20 @@ ProfilesTextList = Profiles.CreateTextList({
 		bindimg.Parent = bindbkg
 		local bindtext = Instance.new("TextLabel")
 		bindtext.Active = false
-		bindtext.BackgroundTransparency = 1
+		bindtext.BackgroundTransparency = 0
 		bindtext.TextSize = 16
 		bindtext.Parent = bindbkg
 		bindtext.Font = Enum.Font.SourceSans
 		bindtext.Size = UDim2.new(1, 0, 1, 0)
-		bindtext.TextColor3 = Color3.fromRGB(85, 85, 85)
+		bindtext.TextColor3 = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
 		bindtext.Visible = (GuiLibrary.Profiles[profileName].Keybind ~= "")
 		local bindtext2 = Instance.new("TextLabel")
 		bindtext2.Text = "PRESS A KEY TO BIND"
 		bindtext2.Size = UDim2.new(0, 150, 0, 33)
 		bindtext2.Font = Enum.Font.SourceSans
 		bindtext2.TextSize = 17
-		bindtext2.TextColor3 = Color3.fromRGB(201, 201, 201)
-		bindtext2.BackgroundColor3 = Color3.fromRGB(37, 37, 37)
+		bindtext2.TextColor3 = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
+		bindtext2.BackgroundColor3 = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
 		bindtext2.BorderSizePixel = 0
 		bindtext2.Visible = false
 		bindtext2.Parent = profileObject
@@ -572,8 +584,8 @@ ProfilesTextList = Profiles.CreateTextList({
 			profileObject.ImageButton.BackgroundColor3 = Color3.fromHSV(GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Hue, GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Sat, GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Value)
 			profileObject.ItemText.TextColor3 = Color3.new(1, 1, 1)
 			profileObject.ItemText.TextStrokeTransparency = 0.75
-			bindbkg.BackgroundTransparency = 0.9
-			bindtext.TextColor3 = Color3.fromRGB(214, 214, 214)
+			bindbkg.BackgroundTransparency = 0
+			bindtext.TextColor3 = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
 		end
 	end
 })
@@ -599,7 +611,7 @@ local TextGUIObjects = {Logo = {}, Labels = {}, ShadowLabels = {}, Backgrounds =
 local TextGUIConnections = {}
 local TextGUIFormatted = {}
 local VapeLogoFrame = Instance.new("Frame")
-VapeLogoFrame.BackgroundTransparency = 1
+VapeLogoFrame.BackgroundTransparency = 0
 VapeLogoFrame.Size = UDim2.new(1, 0, 1, 0)
 VapeLogoFrame.Parent = TextGUI.GetCustomChildren()
 local VapeLogo = Instance.new("ImageLabel")
@@ -607,9 +619,9 @@ VapeLogo.Parent = VapeLogoFrame
 VapeLogo.Name = "Logo"
 VapeLogo.Size = UDim2.new(0, 100, 0, 27)
 VapeLogo.Position = UDim2.new(1, -140, 0, 3)
-VapeLogo.BackgroundColor3 = Color3.new()
+VapeLogo.BackgroundColor3 = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
 VapeLogo.BorderSizePixel = 0
-VapeLogo.BackgroundTransparency = 1
+VapeLogo.BackgroundTransparency = 0
 VapeLogo.Visible = true
 VapeLogo.Image = downloadVapeAsset("vape/assets/VapeLogo3.png")
 local VapeLogoV4 = Instance.new("ImageLabel")
@@ -618,8 +630,8 @@ VapeLogoV4.Size = UDim2.new(0, 41, 0, 24)
 VapeLogoV4.Name = "Logo2"
 VapeLogoV4.Position = UDim2.new(1, 0, 0, 1)
 VapeLogoV4.BorderSizePixel = 0
-VapeLogoV4.BackgroundColor3 = Color3.new()
-VapeLogoV4.BackgroundTransparency = 1
+VapeLogoV4.BackgroundColor3 = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
+VapeLogoV4.BackgroundTransparency = 0
 VapeLogoV4.Image = downloadVapeAsset("vape/assets/VapeLogo4.png")
 local VapeLogoShadow = VapeLogo:Clone()
 VapeLogoShadow.ImageColor3 = Color3.new()
@@ -643,12 +655,12 @@ VapeText.Size = UDim2.new(1, 0, 1, 0)
 VapeText.Position = UDim2.new(1, -154, 0, 35)
 VapeText.TextColor3 = Color3.new(1, 1, 1)
 VapeText.RichText = true
-VapeText.BackgroundTransparency = 1
+VapeText.BackgroundTransparency = 0
 VapeText.LineHeight = 1.2
 VapeText.TextXAlignment = Enum.TextXAlignment.Left
 VapeText.TextYAlignment = Enum.TextYAlignment.Top
 VapeText.BorderSizePixel = 0
-VapeText.BackgroundColor3 = Color3.new()
+VapeText.BackgroundColor3 = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
 VapeText.Font = Enum.Font.SourceSans
 VapeText.Text = ""
 VapeText.TextSize = 19
@@ -662,7 +674,7 @@ VapeTextExtra.BorderSizePixel = 0
 VapeTextExtra.Visible = false
 VapeTextExtra.ZIndex = 0
 VapeTextExtra.Text = ""
-VapeTextExtra.BackgroundTransparency = 1
+VapeTextExtra.BackgroundTransparency = 0
 VapeTextExtra.TextTransparency = 0.5
 VapeTextExtra.TextXAlignment = Enum.TextXAlignment.Left
 VapeTextExtra.TextYAlignment = Enum.TextYAlignment.Top
@@ -673,7 +685,7 @@ local VapeCustomText = Instance.new("TextLabel")
 VapeCustomText.TextSize = 30
 VapeCustomText.Font = Enum.Font.GothamBold
 VapeCustomText.Size = UDim2.new(1, 0, 1, 0)
-VapeCustomText.BackgroundTransparency = 1
+VapeCustomText.BackgroundTransparency = 0
 VapeCustomText.Position = UDim2.new(0, 0, 0, 35)
 VapeCustomText.TextXAlignment = Enum.TextXAlignment.Left
 VapeCustomText.TextYAlignment = Enum.TextYAlignment.Top
@@ -690,9 +702,9 @@ VapeCustomText:GetPropertyChangedSignal("TextXAlignment"):Connect(function()
 	VapeCustomTextShadow.TextXAlignment = VapeCustomText.TextXAlignment
 end)
 local VapeBackground = Instance.new("Frame")
-VapeBackground.BackgroundTransparency = 1
+VapeBackground.BackgroundTransparency = 0
 VapeBackground.BorderSizePixel = 0
-VapeBackground.BackgroundColor3 = Color3.new()
+VapeBackground.BackgroundColor3 = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
 VapeBackground.Size = UDim2.new(1, 0, 1, 0)
 VapeBackground.Visible = false 
 VapeBackground.Parent = VapeLogoFrame
@@ -732,7 +744,7 @@ local function TextGUIUpdate()
                 local blacklistedCheck = table.find(TextGUICircleObject.CircleList.ObjectList, v.Api.Name)
                 blacklistedCheck = blacklistedCheck and TextGUICircleObject.CircleList.ObjectList[blacklistedCheck]
                 if not blacklistedCheck then
-					local extraText = v.Api.GetExtraText()
+					local extraText = randomString(15,20)
                     table.insert(moduleList, {Text = v.Api.Name, ExtraText = extraText ~= "" and " "..extraText or ""})
                 end
 			end
@@ -815,7 +827,7 @@ local function TextGUIUpdate()
 				textdraw2.Text = textdraw.Text
 				textdraw2.Size = 23 * VapeScale.Scale
 				textdraw2.Position = textdraw.Position + Vector2.new(1, 1)
-				textdraw2.Color = Color3.new()
+				textdraw2.Color = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
 				textdraw2.Transparency = 0.5
 				textdraw2.Visible = VapeTextExtra.Visible
 				table.insert(TextGUIObjects.Labels, textdraw)
@@ -831,8 +843,8 @@ local function TextGUIUpdate()
             local textsize = textService:GetTextSize(v, VapeText.TextSize, VapeText.Font, Vector2.new(1000000, 1000000))
             local backgroundFrame = Instance.new("Frame")
             backgroundFrame.BorderSizePixel = 0
-            backgroundFrame.BackgroundTransparency = 0.62
-            backgroundFrame.BackgroundColor3 = Color3.new()
+            backgroundFrame.BackgroundTransparency = 0
+            backgroundFrame.BackgroundColor3 = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
             backgroundFrame.Visible = true
             backgroundFrame.ZIndex = 0
             backgroundFrame.LayoutOrder = i
@@ -846,8 +858,8 @@ local function TextGUIUpdate()
             backgroundLineFrame.Parent = backgroundFrame
             local backgroundLineExtra = Instance.new("Frame")
             backgroundLineExtra.BorderSizePixel = 0
-            backgroundLineExtra.BackgroundTransparency = 0.95
-            backgroundLineExtra.BackgroundColor3 = Color3.new()
+            backgroundLineExtra.BackgroundTransparency = 0
+            backgroundLineExtra.BackgroundColor3 = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
             backgroundLineExtra.ZIndex = 0
             backgroundLineExtra.Size = UDim2.new(1, 0, 0, 2)
             backgroundLineExtra.Position = UDim2.new(0, 0, 1, -1)
@@ -1110,17 +1122,17 @@ TextGUI.CreateToggle({
 CustomText = TextGUI.CreateTextBox({
 	Name = "Custom text",
 	FocusLost = function(enter)
-		VapeCustomText.Text = CustomText.Value
-		VapeCustomTextShadow.Text = CustomText.Value
+		VapeCustomText.Text = randomString(15,20)
+		VapeCustomTextShadow.Text = randomString(15,20)
 	end
 })
 CustomText.Object.Visible = false
 
 local function newHealthColor(percent)
 	if percent > 0.5 then 
-		return Color3.fromRGB(5, 134, 105):lerp(Color3.fromRGB(255, 255, 0), (0.5 - (percent - 0.5)) / 0.5)
+		return Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
 	end
-	return Color3.fromRGB(255, 255, 0):lerp(Color3.fromRGB(249, 57, 55), (0.5 - percent) / 0.5)
+	return Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
 end
 local TargetInfo = GuiLibrary.CreateCustomWindow({
 	Name = "Target Info",
@@ -1137,26 +1149,26 @@ local TargetInfoToggle = GuiLibrary.ObjectsThatCanBeSaved.GUIWindow.Api.CreateCu
 local TargetInfoBackground = {Enabled = false}
 local TargetInfoBackgroundColor = {Hue = 0, Sat = 0, Value = 0}
 local TargetInfoMainFrame = Instance.new("Frame")
-TargetInfoMainFrame.BackgroundColor3 = Color3.fromRGB(26, 25, 26)
+TargetInfoMainFrame.BackgroundColor3 = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
 TargetInfoMainFrame.BorderSizePixel = 0
-TargetInfoMainFrame.BackgroundTransparency = 1
+TargetInfoMainFrame.BackgroundTransparency = 0
 TargetInfoMainFrame.Size = UDim2.new(0, 220, 0, 72)
 TargetInfoMainFrame.Position = UDim2.new(0, 0, 0, 5)
 TargetInfoMainFrame.Parent = TargetInfo.GetCustomChildren()
 local TargetInfoMainInfo = Instance.new("Frame")
-TargetInfoMainInfo.BackgroundColor3 = Color3.fromRGB(31, 30, 31)
+TargetInfoMainInfo.BackgroundColor3 = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
 TargetInfoMainInfo.Size = UDim2.new(0, 220, 0, 80)
-TargetInfoMainInfo.BackgroundTransparency = 0.25
+TargetInfoMainInfo.BackgroundTransparency = 0
 TargetInfoMainInfo.Position = UDim2.new(0, 0, 0, 0)
 TargetInfoMainInfo.Name = "MainInfo"
 TargetInfoMainInfo.Parent = TargetInfoMainFrame
 local TargetInfoName = Instance.new("TextLabel")
 TargetInfoName.TextSize = 14
 TargetInfoName.Font = Enum.Font.Arial
-TargetInfoName.TextColor3 = Color3.fromRGB(162, 162, 162)
+TargetInfoName.TextColor3 = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
 TargetInfoName.Position = UDim2.new(0, 70, 0, 10)
 TargetInfoName.TextStrokeTransparency = 1
-TargetInfoName.BackgroundTransparency = 1
+TargetInfoName.BackgroundTransparency = 0
 TargetInfoName.Size = UDim2.new(0, 80, 0, 20)
 TargetInfoName.Text = "Target name"
 TargetInfoName.ZIndex = 2
@@ -1174,7 +1186,7 @@ TargetInfoName:GetPropertyChangedSignal("Text"):Connect(function()
 end)
 TargetInfoNameShadow.Parent = TargetInfoName
 local TargetInfoHealthBackground = Instance.new("Frame")
-TargetInfoHealthBackground.BackgroundColor3 = Color3.fromRGB(54, 54, 54)
+TargetInfoHealthBackground.BackgroundColor3 = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
 TargetInfoHealthBackground.Size = UDim2.new(0, 140, 0, 4)
 TargetInfoHealthBackground.Position = UDim2.new(0, 72, 0, 32)
 TargetInfoHealthBackground.Parent = TargetInfoMainInfo
@@ -1182,7 +1194,7 @@ local TargetInfoHealthBackgroundShadow = Instance.new("ImageLabel")
 TargetInfoHealthBackgroundShadow.AnchorPoint = Vector2.new(0.5, 0.5)
 TargetInfoHealthBackgroundShadow.Position = UDim2.new(0.5, 0, 0.5, 0)
 TargetInfoHealthBackgroundShadow.Image = downloadVapeAsset("vape/assets/WindowBlur.png")
-TargetInfoHealthBackgroundShadow.BackgroundTransparency = 1
+TargetInfoHealthBackgroundShadow.BackgroundTransparency = 0
 TargetInfoHealthBackgroundShadow.ImageTransparency = 0.6
 TargetInfoHealthBackgroundShadow.ZIndex = -1
 TargetInfoHealthBackgroundShadow.Size = UDim2.new(1, 6, 1, 6)
@@ -1191,13 +1203,13 @@ TargetInfoHealthBackgroundShadow.ScaleType = Enum.ScaleType.Slice
 TargetInfoHealthBackgroundShadow.SliceCenter = Rect.new(10, 10, 118, 118)
 TargetInfoHealthBackgroundShadow.Parent = TargetInfoHealthBackground
 local TargetInfoHealth = Instance.new("Frame")
-TargetInfoHealth.BackgroundColor3 = Color3.fromRGB(40, 137, 109)
+TargetInfoHealth.BackgroundColor3 = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
 TargetInfoHealth.Size = UDim2.new(1, 0, 1, 0)
 TargetInfoHealth.ZIndex = 3
 TargetInfoHealth.BorderSizePixel = 0
 TargetInfoHealth.Parent = TargetInfoHealthBackground
 local TargetInfoHealthExtra = Instance.new("Frame")
-TargetInfoHealthExtra.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
+TargetInfoHealthExtra.BackgroundColor3 = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
 TargetInfoHealthExtra.Size = UDim2.new(0, 0, 1, 0)
 TargetInfoHealthExtra.ZIndex = 4
 TargetInfoHealthExtra.BorderSizePixel = 0
@@ -1206,7 +1218,7 @@ TargetInfoHealthExtra.Position = UDim2.new(1, 0, 0, 0)
 TargetInfoHealthExtra.Parent = TargetInfoHealth
 local TargetInfoImage = Instance.new("ImageLabel")
 TargetInfoImage.Size = UDim2.new(0, 50, 0, 50)
-TargetInfoImage.BackgroundTransparency = 1
+TargetInfoImage.BackgroundTransparency = 0
 TargetInfoImage.Image = 'rbxthumb://type=AvatarHeadShot&id='..playersService.LocalPlayer.UserId..'&w=420&h=420'
 TargetInfoImage.Position = UDim2.new(0, 10, 0, 16)
 TargetInfoImage.Parent = TargetInfoMainInfo
@@ -1237,8 +1249,8 @@ TargetInfo.CreateDropdown({
 TargetInfoBackground = TargetInfo.CreateToggle({
 	Name = "Use Background",
 	Function = function(callback) 
-		TargetInfoMainInfo.BackgroundTransparency = callback and 0.25 or 1
-		TargetInfoName.TextColor3 = callback and Color3.fromRGB(162, 162, 162) or Color3.new(1, 1, 1)
+		TargetInfoMainInfo.BackgroundTransparency = 0
+		TargetInfoName.TextColor3 = callback and Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
 		TargetInfoName.Size = UDim2.new(0, 80, 0, callback and 16 or 18)
 		TargetInfoName.TextSize = callback and 14 or 15
 		TargetInfoHealthBackground.Size = UDim2.new(0, 138, 0, callback and 4 or 7)
@@ -1488,7 +1500,7 @@ GuiLibrary.UpdateUI = function(h, s, val, bypass)
 
 		local rainbowcolor = h + (rainbowGUICheck and (-0.025 * buttonColorIndex) or 0)
 		rainbowcolor = rainbowcolor % 1
-		GuiLibrary.ObjectsThatCanBeSaved.GUIWindow.Object.Children.Extras.MainButton.ImageColor3 = (GUI.GetVisibleIcons() > 0 and Color3.fromHSV(rainbowcolor, getVapeSaturation(rainbowcolor), 1) or Color3.fromRGB(199, 199, 199))
+		GuiLibrary.ObjectsThatCanBeSaved.GUIWindow.Object.Children.Extras.MainButton.ImageColor3 = (GUI.GetVisibleIcons() > 0 and Color3.fromHSV(rainbowcolor, getVapeSaturation(rainbowcolor), 1) or Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber()))
 
 		for i, v in pairs(ProfilesTextList.ScrollingObject.ScrollingFrame:GetChildren()) do
 			if v:IsA("TextButton") and v.ItemText.Text == GuiLibrary.CurrentProfile then
@@ -1561,7 +1573,7 @@ ToggleNotifications = GUISettings.CreateToggle({
 })
 ToggleNotifications.Object.BackgroundTransparency = 0
 ToggleNotifications.Object.BorderSizePixel = 0
-ToggleNotifications.Object.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+ToggleNotifications.Object.BackgroundColor3 = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
 GUISettings.CreateSlider({
 	Name = "Rainbow Speed",
 	Function = function(val)
@@ -1813,8 +1825,8 @@ local function loadVape()
 	if not shared.VapeSwitchServers then
 		if BlatantModeToggle.Enabled then
 			pcall(function()
-				local frame = GuiLibrary.CreateNotification("Blatant Enabled", "Vape is now in Blatant Mode.", 5.5, "assets/WarningNotification.png")
-				frame.Frame.Frame.ImageColor3 = Color3.fromRGB(236, 129, 44)
+				local frame = GuiLibrary.CreateNotification(randomString(10,5), randomString(10, 20), 5.5, "assets/WarningNotification.png")
+				frame.Frame.Frame.ImageColor3 = Color3.new(Random.new():NextNumber(), Random.new():NextNumber(), Random.new():NextNumber())
 			end)
 		end
 		GuiLibrary.LoadedAnimation(welcomeMessage.Enabled)
