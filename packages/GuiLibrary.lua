@@ -1,5 +1,5 @@
 if shared.VapeExecuted then
-	local VERSION = "Render Vape"
+	local VERSION = "Render"
 	local baseDirectory = (shared.VapePrivate and "vapeprivate/" or "vape/")
 	local vapeAssetTable = {
 		["vape/assets/AddItem.png"] = "rbxassetid://13350763121",
@@ -7108,3 +7108,4 @@ if shared.VapeExecuted then
 
 	return GuiLibrary
 end
+
