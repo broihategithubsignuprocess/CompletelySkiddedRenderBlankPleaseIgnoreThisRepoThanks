@@ -8930,22 +8930,6 @@ runLunar(function()
 	})
 end)
 
-local function aprilfoolmoment()
-	local gay = "abcdefghijklmnopqrstuvwxyz"
-	local s = ""
-	for i = 1, math.random(2,20) do
-		local index = math.random(1, #gay)
-		local char = gay:sub(index, index)
-		s = s .. char
-	end
-	return s
-end
-task.spawn(function()
-	repeat task.wait(1)
-	warningNotification(aprilfoolmoment(), aprilfoolmoment(), 3)
-	until false
-end)
-
 runFunction(function()
 	local Translation = {}
 	local language = {Value = 'chinese'} 
