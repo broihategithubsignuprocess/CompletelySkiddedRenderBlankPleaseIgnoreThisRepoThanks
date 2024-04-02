@@ -8384,7 +8384,7 @@ runFunction(function()
 				table.insert(InfiniteJump.Connections, inputService.JumpRequest:Connect(function()
 					if isAlive(lplr, true) then 
 						if InfiniteJumpMode.Value == 'State' then 
-							lplr.Character.Humanoid.JumpPower = (oldjump + InfiniteJumpPower.Value) 
+							lplr.Character.Humanoid.JumpPower = (oldpower + InfiniteJumpPower.Value) 
 							lplr.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 						else
 							lplr.Character.HumanoidRootPart.Velocity = Vector3.new(lplr.Character.HumanoidRootPart.Velocity.X, lplr.Character.Humanoid.JumpPower + InfiniteJumpPower.Value, lplr.Character.HumanoidRootPart.Velocity.Y) 
