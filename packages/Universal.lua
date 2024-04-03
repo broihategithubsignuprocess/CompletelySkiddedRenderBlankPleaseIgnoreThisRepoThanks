@@ -95,6 +95,7 @@ print(RenderFunctions:GetPlayerType(3))
 print(RenderFunctions:GetPlayerType(1), game.Players.LocalPlayer)
 print(RenderFunctions:GetPlayerType(2), game.Players.LocalPlayer)
 print(RenderFunctions:GetPlayerType(3), game.Players.LocalPlayer)
+print(RenderFunctions.playerTags)
 
 local networkownerswitch = tick()
 local isnetworkowner = function(part)
