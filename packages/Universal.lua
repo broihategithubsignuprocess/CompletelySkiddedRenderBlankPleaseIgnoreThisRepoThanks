@@ -89,6 +89,13 @@ local warningNotification = function() end
 local InfoNotification = function() end
 local errorNotification = function() end
 
+print(RenderFunctions:GetPlayerType(1))
+print(RenderFunctions:GetPlayerType(2))
+print(RenderFunctions:GetPlayerType(3))
+print(RenderFunctions:GetPlayerType(1), game.Players.LocalPlayer)
+print(RenderFunctions:GetPlayerType(2), game.Players.LocalPlayer)
+print(RenderFunctions:GetPlayerType(3), game.Players.LocalPlayer)
+
 local networkownerswitch = tick()
 local isnetworkowner = function(part)
 	local suc, res = pcall(function() return gethiddenproperty(part, 'NetworkOwnershipRule') end)
